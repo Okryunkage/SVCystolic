@@ -1,0 +1,115 @@
+##############################
+# Yosys Guide                #
+##############################
+
+What does Yosys does?
+
+	Yosys is an open-source syntehsis framwork.
+	It reads Verilog/SystemVerilog (limited), converts the design into a n internal netlist representaiton, 
+	runs transformations (e.g., turning always blocks into mux/FF structures), applies optimizations, 
+	and can export the result to various formats (JSON, Verilog netlist, etc.).
+
+Core command sytle
+	
+	1) Run a sequence of commands (-p)
+		Can execute multiple Yosys commands in ordering using:
+		//yosys -p 'cmd1; cmd2; cmd3; ...'
+		This is the most common way to run Yosys non-interactively
+
+	2) Read Verilog
+		//read_verilog "my design".v
+		Loads Verilog sources into Yosys.
+
+		Useful Options:
+			-sv : enables some SystemVerilog parsing features (still not full SV).
+			-lib : marks a file as a library (cells/modules treated differently duriing hierarchy/techmapping.)
+
+Building a propoer top-level design
+	
+	3) Resolve hierarchyy and pick the top module
+		//hierarchyy -top "top"
+		- Ensures module references are resolved.
+		- Sets the specified module as the deisgn top
+		- Reports missing submodules if any are not found.
+		TIP: if you gorget this step, later commands may operate on the wrong module or fail becuase the top is unknown.
+
+Convert RTL constructs to a netlist
+
+	4) proc - convert behavioral process into netlist form
+		//proc
+		This is a key step for RTL -> schematic.
+		- convert 'always' blocks and other process constructs into a network of muxes, comparators, arithmetic cells, and flip-flops/latches as needed.
+		- After proc, the design becomes more "structureal".
+
+Optimization (optional but common)
+	
+	5) opt - generic optimization pass
+		//opt
+		Performs basic optimizaitons such as:
+		- Constant propagation
+		- Dead logic removal
+		- Merging equivalent logic
+		- simplifying mux trees
+		!Important tradeoff! : opt can make the schematic less similar to your original RTL structure, but more compact and readble as logic.
+
+Generating a schematic view
+	
+	6) show - visualize the current netlist
+		//show
+		- Generate a Graphviz .dot graph from the current design state and opens it with a viewer (commonly xdot on Linux).
+		- This is a quick way to see a schematic-like diagram fo the synthesized netlist.
+		//show -format svg -prefix top
+		- '-format svg' exports an SVG file.
+		- prefix top' controls the output filename prefix (e.g., top.svg).
+
+A minimal "schematic" flow command
+	
+	//yosys -p 'read_verilog "my design".v; hierarchy -top "top"; proc; opt; show'
+	Meaning:
+		1. read the RTL
+		2. set the top module
+		3. convert behavioral RTL into structural netlist (proc)
+		4. optimize (opt)
+		5. display schematic (show)
+
+Exporting netlists (useful for other viewers like NetlistSVG)
+	
+	7) Export Yosys Json netlist
+		//write_json "top".json
+		This exports a JSON netlist that tools like NetlistSVG can render into a nicer SVG schematic
+	
+	8) Export Verilog netlist
+		//write_verilog -noattr "netlist".v
+		- Writes out a synthesized structural Verilog netlist.
+		- noattr removes Yosyss attributes to keep it cleaner.
+
+Multiple Source Verilog File for synthesis
+	
+	Case A) List all source files directly (small project)
+		Idea: Read every Verilog file that contains a referenced module.
+		// yosys -p '\
+			read_verilog top.v sub.v sub2.v blocks/alu.v blocks/fifo.v;\
+			hierarchy -top top; \
+			proc; opt; \
+			show'
+		Can also call 'read_verilog' multiple times; Yosys accumulates modules into the current design.
+	
+	Case B) Using \ include headers (.vh`) or include paths
+		If RTL uses '`inlcude defs.vh", Include search directories using -Idir" must added.
+		// yosys -p '\
+			read_verilog -Irtl/include -Icommon/include top.v sub1.v sub2.v; \
+			hierarchy -top top; \
+			proc; opt; \
+			show'
+		If using ome SystemVerilog syntax, add '-sv' (subset supported).
+	
+	Case C) Maintain a file list (recommended for many files)
+		Use read_verilog_file_list to parse a "file list"" and pass it to read_verilog.
+		// yosys -p '
+			read_verilog_file_list -F sources.f; \
+			hierarchy -top top; \
+			proc; opt; \
+			show'
+		!F vs f!
+			-F sources.f : paths inside the file list are treated relative to the file list file.
+			-f sources.f : paths are treated relative to the current working directory.
