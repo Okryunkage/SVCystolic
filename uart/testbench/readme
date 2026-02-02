@@ -1,0 +1,18 @@
+In Linux, a child process is a new process started by the current process (e.g., when a shell runs iverilog, python, or ./other.sh).
+
+	VAR=... or set VAR=... (shell variable): exists only in the current shell process. It is not inherited by child processes.
+	export VAR=... (environment variable): is passed to chid processes, so programs you launch can read it.
+
+Two common cases when "calling another script":
+	./other.sh -> runs in a new shell (child process) -> only exported variables are visible there.
+	source other.sh (or .other.sh) -> runs in the same shell process -> normal shell variables are shared.
+
+Also, even if you "export RTL_DIR", Verilog `include typically **does not expand shell environment variables**, so the usual solution is to pass include path to iverilog using -I.
+
+"set -euo pipefail" enables "strict mode" in bash scripts
+
+	-e: Exit immediately if any command returns a non-zero status (fails).
+	-u: Treat using an unset (undefined ) variable as an error and exit.
+	-o: pipefail: In a pipeline (cmd1 | cmd2 | cmd3), make the whole pipeline fail if any command in it fails (not just the last one).
+
+

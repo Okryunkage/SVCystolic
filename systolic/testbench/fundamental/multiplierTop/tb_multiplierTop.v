@@ -13,9 +13,9 @@ module tb_multiplierTop;
 	reg [7:0] ra, rb; //No matter if it's singed or unsigned.
 	multiplier_top8 dut(multiplier,multiplicand,result);
 	//----------
-    function [15:0] compare;
-        input signed [7:0] a;
-        input signed [7:0] b;
+	function [15:0] compare;
+        	input signed [7:0] a;
+        	input signed [7:0] b;
 		compare = a * b;
 	endfunction
 	//----------
@@ -24,7 +24,7 @@ module tb_multiplierTop;
 		input [7:0] b;
 		input [255:0] tag;
 		reg [15:0] exp;
-        begin
+        	begin
 			multiplier = a;
 			multiplicand = b;
 			#1;
@@ -36,20 +36,20 @@ module tb_multiplierTop;
 			end
 			else if(result !== exp)begin
 				errors = errors + 1;
-                $display("MIS @%0t %0s : a=%0d(0x%02h) b=%0d(0x%02h) result=%0d(0x%04h) exp=%0d(0x%04h)",
+				$display("MIS @%0t %0s : a=%0d(0x%02h) b=%0d(0x%02h) result=%0d(0x%04h) exp=%0d(0x%04h)",
 					$time, tag, $signed(a), a, $signed(b), b, $signed(result), result, $signed(exp), exp);
 			end
 		end
-    endtask
+	endtask
 	//----------
-    initial begin
+	initial begin
 		errors = 0;
 		multiplier = 8'h00;
 		multiplicand = 8'h00;
-        $dumpfile("out.vcd");
-        $dumpvars(0, tb_multiplierTop);
+        	$dumpfile("out.vcd");
+        	$dumpvars(0, tb_multiplierTop);
 		test(8'h00, 8'h00, "0*0");
-        test(8'h01, 8'h00, "1*0");
+		test(8'h01, 8'h00, "1*0");
 		test(8'h00, 8'h01, "0*1");
 		test(8'h01, 8'h01, "1*1");
 		test(8'h02, 8'h03, "2*3");
