@@ -7,7 +7,7 @@ module baudrategen#(
 	input wire clk,
 	output reg RXclk, output reg TXclk
 	);
-	localparam maxRateRX =clock/(2*baudrate*oversampling);
+	localparam maxRateRX =clock/(2*baudrate*oversample);
 	localparam maxRateTX =clock/(2*baudrate);
 	localparam RXcountWidth =$clog2(maxRateRX);
 	localparam TXcountWidth =$clog2(maxRateTX);
