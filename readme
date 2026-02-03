@@ -4,6 +4,6 @@
 
 systolic directory for proposed Systolic Array Design.
 
-uart directory for UART module to test the proposed desin on FPGA environment.
+uart directory for UART module to test the proposed design on FPGA environment.
 
 Written by Siyeol Lee / INU.ISE
