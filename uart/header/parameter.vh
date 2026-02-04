@@ -1,6 +1,8 @@
 `ifndef parameter_vh
 `define parameter_vh
 
+`define unit_1ns 1_000_000_000
+
 `define clk100MHz 100_000_000
 `define clk200MHz 200_000_000
 `define clk300MHz 300_000_000
