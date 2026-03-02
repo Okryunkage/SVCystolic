@@ -6,4 +6,6 @@ systolic directory for proposed Systolic Array Design.
 
 uart directory for UART module to test the proposed design on FPGA environment.
 
+required program : iverilog, yosys.
+
 Written by Siyeol Lee / INU.ISE

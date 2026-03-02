@@ -1,3 +1,5 @@
+//The Bus-Width of Accumulator should increase by ceilLog2.
+//This code compensate this issue.
 `timescale 1ns/1ps
 
 module accumulator_rev#(
