@@ -5,9 +5,9 @@
 `timescale 1ns/1ps
 
 module tb_transmitter();
-	parameter integer clock =`clk100MHz;
+	parameter integer clock =`clk500MHz;
 	parameter integer latency = (1_000_000_000/(2*clock));
-	parameter integer baudrate =`baud_slow;
+	parameter integer baudrate =`baud_fast;
 	parameter integer bitwidth =`bitwidth8;
 	parameter integer oversample =16;
 
@@ -51,6 +51,8 @@ module tb_transmitter();
 		$dumpvars(0,tb_transmitter);
 		test(8'h55);
 		test(8'h96);
+		test(8'h47);
+		test(8'h0c);
 		$finish;
 	end
 	always #latency clk =~clk;

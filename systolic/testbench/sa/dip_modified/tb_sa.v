@@ -3,7 +3,7 @@
 `include "multiplier.v"
 `include "accumulator.v"
 `include "pe.v"
-`include "sa.v"
+`include "dip_modified.v"
 `timescale 1ns/1ps
 
 module tb_sa;
@@ -16,7 +16,7 @@ module tb_sa;
 	wire [busize:0] result [(size-1):0];
 	reg [7:0] weight_in[(size-1):0];
 	reg [7:0] in_in[(size-1):0];
-	sa #(size) pe0(clk,preclk,weight_in,in_in,result);
+	dip0 #(size) dip0(clk,preclk,weight_in,in_in,result);
 	//----------
 	integer a,b;
 	integer ww =0;
