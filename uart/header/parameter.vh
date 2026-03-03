@@ -8,6 +8,7 @@
 `define clk300MHz 300_000_000
 `define clk400MHz 400_000_000
 `define clk500MHz 500_000_000
+`define clk1GHz  1000_000_000
 
 `define bitwidth5 5
 `define bitwidth6 6
