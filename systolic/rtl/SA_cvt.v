@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module conventl_SA#(
+module SA_cvt#(
 	parameter integer size=4)(
 	clk,preclk,
 	weight,in,
