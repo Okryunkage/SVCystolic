@@ -4,7 +4,7 @@
 `include "multiplier.v"
 `include "accumulator.v"
 `include "pe_cvt.v"
-`include "conventl_SA.v"
+`include "SA_cvt.v"
 `timescale 1ns/1ps
 
 module tb_sa;
@@ -17,7 +17,7 @@ module tb_sa;
 	wire [(size*buswire-1):0] result;
 	reg [(8*size-1):0] weight_in;
 	reg [(8*size-1):0] in_in;
-	conventl_SA #(size) sa0(clk,preclk,weight_in,in_in,result);
+	SA_cvt #(size) sa0(clk,preclk,weight_in,in_in,result);
 	//----------
 	integer a,b;
 	integer ww =0;
