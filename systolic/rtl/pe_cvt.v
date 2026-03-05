@@ -26,12 +26,13 @@ module pe_cvt#(
 	dadda8 reduc(ppbus, corbus, out0, out1);
 	wire [16:0] mulResult;
 	reg [16:0] treeReg;
-	cpaS #(17) mulACC({out0[15],out0}, {out1[15],out1}, mulResult);
+	//cpaS #(17) mulACC({out0[15],out0}, {out1[15],out1}, mulResult);
+	assign mulResult =$signed({out0[15],out0})+$signed({out1[15],out1});
 	always@(posedge clk)begin
 		inO <=in;
 		psumreg <=psum;
 		treeReg <=mulResult;
 	end
 	//cpaS #(buswire) finalacc({{(buswire-17){treeReg[16]}},treeReg},psumreg,psumO);
-    assign psumO = $signed(treeReg) + $signed(psumreg);
+	assign psumO = $signed(treeReg) + $signed(psumreg);
 endmodule
