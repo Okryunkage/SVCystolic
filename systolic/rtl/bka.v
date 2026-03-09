@@ -8,22 +8,6 @@ module bka #(
 	output [(size-1):0] sum,
 	output cout);
 	
-	function integer ceillog2;
-		input integer value;
-		integer v;
-		begin
-			if(value<=1) ceillog2=0;
-			else begin
-				v=value-1;
-				ceillog2=0;
-				while(v>0)begin
-					ceillog2=ceillog2+1;
-					v =v>>1;
-				end
-			end
-		end
-	endfunction
-	
 	localparam integer log = ceillog2(size);
 	localparam integer sizel = (1<<log); //size_local
 	
