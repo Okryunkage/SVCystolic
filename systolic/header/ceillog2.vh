@@ -1,5 +1,5 @@
-`ifndef ceil_vh
-`define  ceil_vh
+//`ifndef ceil_vh
+//`define  ceil_vh
 
 function integer ceillog2;
 	input integer value;
@@ -17,4 +17,4 @@ function integer ceillog2;
 	end
 endfunction
 
-`endif
+//`endif

@@ -1,4 +1,4 @@
-`include "ceillog2.vh"
+//`include "ceillog2.vh"
 `include "adder.v"
 `include "tree.v"
 `include "multiplier.v"
@@ -8,6 +8,7 @@
 `timescale 1ns/1ps
 
 module tb_sa;
+	`include "ceillog2.vh"
 	localparam size=4;
 	localparam buswire=ceillog2(size)+16;
 	localparam bussize=buswire-1;

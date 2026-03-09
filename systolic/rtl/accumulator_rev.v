@@ -7,6 +7,7 @@ module accumulator_rev#(
 	result0,result1,
 	psum0,psum1,
 	psumO0,psumO1);
+	`include "ceillog2.vh"
 	localparam integer bussize=ceillog2(arraysize)+16;
 	localparam integer busize=bussize-1;
 	localparam integer busadd=ceillog2(arraysize)-1;

@@ -5,6 +5,7 @@ module proposed_rev#(
 	clk,preclk,
 	weight, in,
 	result);
+	`include "ceillog2.vh"
 	localparam integer bussize=ceillog2(size)+16;
 	localparam integer busize=bussize-1;
 	input clk;

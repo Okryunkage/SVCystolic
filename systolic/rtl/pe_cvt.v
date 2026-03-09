@@ -5,6 +5,7 @@ module pe_cvt#(
 	clk, preclk,
 	weight, in, psum,
 	weightO, inO, psumO);
+	`include "ceillog2.vh"
 	localparam integer buswire=ceillog2(size)+16;
 	localparam integer bussize=buswire-1;
 	input clk;

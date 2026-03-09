@@ -5,6 +5,7 @@ module pe_rev#(
 	clk, preclk,
 	weight, in, psum0, psum1,
 	weightO, inO, psumO0, psumO1);
+	`include "ceillog2.vh"
 	localparam integer buswire=ceillog2(size)+16;
 	localparam integer bussize=buswire-1;
 	input clk;

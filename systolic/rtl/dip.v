@@ -5,6 +5,7 @@ module dip#(
 	clk, preclk,
 	weight, in,
 	result);
+	`include "ceillog2.vh"
 	localparam buswire=ceillog2(size)+16;
 	localparam bussize=buswire-1;
 	input clk, preclk;

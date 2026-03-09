@@ -5,6 +5,7 @@ module SA_cvt#(
 	clk,preclk,
 	weight,in,
 	result);
+	`include "ceillog2.vh"
 	localparam integer buswire=ceillog2(size)+16;
 	localparam integer bussize=buswire-1;
 	input clk;
