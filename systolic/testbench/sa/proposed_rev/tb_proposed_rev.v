@@ -5,10 +5,10 @@
 `include "accumulator_rev.v"
 `include "pe_rev.v"
 `include "proposed_rev.v"
-`include "ceillog2.vh"
 `timescale 1ns/1ps
 
 module tb_proposed;
+	`include "ceillog2.vh"
 	localparam size=16;
 	localparam bussize=ceillog2(size)+16;
 	localparam busize=bussize-1;

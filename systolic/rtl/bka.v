@@ -8,6 +8,8 @@ module bka #(
 	output [(size-1):0] sum,
 	output cout);
 	
+	`include "ceillog2.vh"
+
 	localparam integer log = ceillog2(size);
 	localparam integer sizel = (1<<log); //size_local
 	
