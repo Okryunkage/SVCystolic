@@ -4,7 +4,7 @@
 `include "receive.v"
 `timescale 1ns/1ps
 
-module tb_transmitter();
+module tb_transmitter;
 	parameter integer clock =`clk500MHz;
 	parameter integer latency = (1_000_000_000/(2*clock));
 	parameter integer baudrate =`baud_fast;

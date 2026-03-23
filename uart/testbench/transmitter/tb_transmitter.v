@@ -2,7 +2,7 @@
 `include "transmit.v"
 `timescale 1ns/1ps
 
-module tb_transmitter();
+module tb_transmitter;
 	parameter integer clock =`clk100MHz;
 	parameter integer baudrate =`baud_slow;
 	parameter integer bitwidth =`bitwidth8;

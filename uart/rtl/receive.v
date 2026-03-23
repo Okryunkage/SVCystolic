@@ -41,7 +41,7 @@ module receive#(
 			done  <=1'b0;
 			busy  <=1'b0;
 			error <=1'b0;
-			data  <='0;
+			data  <=1'd0;
 			sampleCount <=1'd0;
 			bitIndex <=1'd0;
 		end
