@@ -22,9 +22,9 @@ module receive#(
 	output reg done, busy, error;
 
 	reg [2:0]             state       =reset;
-	reg [(bits-1):0]      data        ='0;
-	reg [(bitsWidth-1):0] bitIndex    ='0;
-	reg [(osrWidth-1):0]  sampleCount ='0;
+	reg [(bits-1):0]      data        =1'd0;
+	reg [(bitsWidth-1):0] bitIndex    =1'd0;
+	reg [(osrWidth-1):0]  sampleCount =1'd0;
 
 	//Two registers for mitigating Metastability
 	reg inFF0 =1'b1, inFF1 =1'b1;
@@ -37,13 +37,13 @@ module receive#(
 
 		if (rst)begin
 			state <=idle;
-			out   <='0;
+			out   <=1'd0;
 			done  <=1'b0;
 			busy  <=1'b0;
 			error <=1'b0;
 			data  <='0;
-			sampleCount <='0;
-			bitIndex <='0;
+			sampleCount <=1'd0;
+			bitIndex <=1'd0;
 		end
 		else begin
 			case(state)
@@ -59,10 +59,10 @@ module receive#(
 				*/
 				idle:begin
 					busy     <=1'b0;
-					bitIndex <='0;
-					data     <='0;
+					bitIndex <=1'd0;
+					data     <=1'd0;
 					error    <=1'b0;
-					sampleCount <='0;
+					sampleCount <=1'd0;
 					if(en&(~rx))begin
 						busy <=1'b1;
 						state <=startBit;
@@ -70,9 +70,9 @@ module receive#(
 				end
 				startBit:begin
 					if(sampleCount==(osrHalf-1))begin
-						sampleCount <='0;
+						sampleCount <=1'd0;
 						if(~rx)begin
-							bitIndex <='0;
+							bitIndex <=1'd0;
 							state    <=dataBits;
 						end
 						else begin
@@ -84,7 +84,7 @@ module receive#(
 				end
 				dataBits:begin
 					if(sampleCount==(oversample-1))begin
-						sampleCount <='0;
+						sampleCount <=1'd0;
 						data[bitIndex] <=rx;
 						if(bitIndex==last)begin
 							state <=stopBit;
@@ -95,7 +95,7 @@ module receive#(
 				end
 				stopBit:begin
 					if(sampleCount==(oversample-1))begin
-						sampleCount <='0;
+						sampleCount <=1'd0;
 						if(!rx) error <=1'b1;
 						out <=data;
 						done <=1'b1;
