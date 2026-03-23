@@ -35,8 +35,8 @@ module transmit #(
 				//if out becomes 0, Transmission starts
 				out <=1'b1;
 				done <=1'b0;
-				bitIndex <='0;
-				data <='0;
+				bitIndex <=1'd0;
+				data <=1'd0;
 				if(start&en) state <=startBit;
 			end
 			startBit:begin
