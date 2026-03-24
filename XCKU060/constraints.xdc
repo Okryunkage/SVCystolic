@@ -25,3 +25,13 @@ set_property IOSTANDARD  LVCMOS33 [get_ports {UARTRX UARTTX}]
 
 set_property PACKAGE_PIN N23 [get_ports KEY1]
 set_property IOSTANDARD LVCMOS33 [get_ports KEY1]
+
+##############################
+##           LEDs           ##
+##############################
+
+set_property PACKAGE_PIN E12 [get_ports {LED[0]}]
+set_property PACKAGE_PIN F12 [get_ports {LED[1]}]
+set_property PACKAGE_PIN L9  [get_ports {LED[2]}]
+set_property PACKAGE_PIN H23 [get_ports {LED[3]}]
+set_property IOSTANDARD LVCMOS33 [get_ports {LED[3:0]}]

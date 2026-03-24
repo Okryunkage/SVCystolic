@@ -4,7 +4,8 @@ module transmit #(
 	parameter bits =8)(
 	clk, en, start,
 	in,
-	out, done, busy);
+	out, done, busy,
+	cts);
 	localparam bitsWidth =$clog2(bits);
 	localparam reset     =3'd0;
 	localparam idle      =3'd1;
@@ -15,11 +16,12 @@ module transmit #(
 	input wire clk, en, start;
 	input wire [(bits-1):0] in;
 	output reg out, done, busy;
+	input wire cts;
 
 	reg [3:0] state =reset;
 	reg [(bits-1):0] data =0;
 
-	reg [(bitsWidth-1):0] bitIndex =0;
+	reg [(bitsWidth-1):0] bitIndex =0; 
 
 	always@(posedge clk)begin
 		case(state)
@@ -27,8 +29,8 @@ module transmit #(
 				out <=1'b1;
 				done <=1'b0;
 				busy <=1'b0;
-				data <='0;
-				bitIndex <='0;
+				data <=1'd0;
+				bitIndex <=1'd0;
 				state <= idle;
 			end
 			idle:begin 
@@ -37,7 +39,7 @@ module transmit #(
 				done <=1'b0;
 				bitIndex <=1'd0;
 				data <=1'd0;
-				if(start&en) state <=startBit;
+				if(start&en&cts) state <=startBit;
 			end
 			startBit:begin
 				data <=in;

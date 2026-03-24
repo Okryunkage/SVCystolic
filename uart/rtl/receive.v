@@ -62,6 +62,7 @@ module receive#(
 					bitIndex <=1'd0;
 					data     <=1'd0;
 					error    <=1'b0;
+					done     <=1'b0;
 					sampleCount <=1'd0;
 					if(en&(~rx))begin
 						busy <=1'b1;
