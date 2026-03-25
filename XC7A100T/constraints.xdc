@@ -14,10 +14,37 @@ create_clock -add -name boardCLKpin -period 10.00 -waveform {0 5} [get_ports boa
 
 set_property PACKAGE_PIN D4 [get_ports UARTRX]
 set_property PACKAGE_PIN C4 [get_ports UARTTX]
-set_property PACKAGE_PIN D3 [get_ports UARTcts]
-set_property PACKAGE_PIN E5 [get_ports UARTrts]
+#set_property PACKAGE_PIN D3 [get_ports UARTcts]
+#set_property PACKAGE_PIN E5 [get_ports UARTrts]
 set_property IOSTANDARD  LVCMOS33 [get_ports {UARTRX UARTTX UARTcts UARTrts}]
+
+##############################
+##          Switch          ##
+##############################
+
+set_property -dict {PACKAGE_PIN T8 IOSTANDARD LVCMOS33} [get_ports TXen]
+set_property -dict {PACKAGE_PIN J15 IOSTANDARD LVCMOS33} [get_ports {switch[0]}]
+set_property -dict {PACKAGE_PIN L16 IOSTANDARD LVCMOS33} [get_ports {switch[1]}]
+set_property -dict {PACKAGE_PIN M13 IOSTANDARD LVCMOS33} [get_ports {switch[2]}]
+set_property -dict {PACKAGE_PIN R15 IOSTANDARD LVCMOS33} [get_ports {switch[3]}]
+set_property -dict {PACKAGE_PIN R17 IOSTANDARD LVCMOS33} [get_ports {switch[4]}]
+set_property -dict {PACKAGE_PIN T18 IOSTANDARD LVCMOS33} [get_ports {switch[5]}]
+set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports {switch[6]}]
+set_property -dict {PACKAGE_PIN R13 IOSTANDARD LVCMOS33} [get_ports {switch[7]}]
+
+set_property -dict {PACKAGE_PIN N17 IOSTANDARD LVCMOS33} [get_ports button]
 
 ##############################
 ##           LEDs           ##
 ##############################
+
+set_property -dict {PACKAGE_PIN V16 IOSTANDARD LVCMOS33} [get_ports {LED8}]
+set_property -dict {PACKAGE_PIN V11 IOSTANDARD LVCMOS33} [get_ports {LED15}]
+set_property -dict {PACKAGE_PIN H17 IOSTANDARD LVCMOS33} [get_ports {LEDarr[0]}]
+set_property -dict {PACKAGE_PIN K15 IOSTANDARD LVCMOS33} [get_ports {LEDarr[1]}]
+set_property -dict {PACKAGE_PIN J13 IOSTANDARD LVCMOS33} [get_ports {LEDarr[2]}]
+set_property -dict {PACKAGE_PIN N14 IOSTANDARD LVCMOS33} [get_ports {LEDarr[3]}]
+set_property -dict {PACKAGE_PIN R18 IOSTANDARD LVCMOS33} [get_ports {LEDarr[4]}]
+set_property -dict {PACKAGE_PIN V17 IOSTANDARD LVCMOS33} [get_ports {LEDarr[5]}]
+set_property -dict {PACKAGE_PIN U17 IOSTANDARD LVCMOS33} [get_ports {LEDarr[6]}]
+set_property -dict {PACKAGE_PIN U16 IOSTANDARD LVCMOS33} [get_ports {LEDarr[7]}]
