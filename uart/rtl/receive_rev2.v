@@ -3,7 +3,7 @@
 module receive#(
 	parameter bits =8,
 	parameter oversample =16)(
-	clk, en, in, rst,
+	clk, tick, en, in, rst,
 	out, done, busy, error,
 	rts, read);
 	localparam bitsWidth =$clog2(bits);
@@ -18,7 +18,7 @@ module receive#(
 
 	localparam [(bitsWidth-1):0] last =(bits-1);
 
-	input wire clk, en, in, rst;
+	input wire clk, tick, en, in, rst;
 	output reg [(bits-1):0] out;
 	output reg done, busy, error;
 //	output reg valid;
@@ -41,7 +41,6 @@ module receive#(
 	assign rts =en&&(state==idle)&&(!valid);
 
 	always@(posedge clk)begin
-		
 		//inFF0 <= in;
 		//inFF1 <= inFF0;
 		rx <=in;
@@ -60,7 +59,7 @@ module receive#(
 			bitIndex <=1'd0;
 			valid <=1'b0;
 		end
-		else begin
+		else if(tick)begin
 			case(state)
 				reset:begin
 					out   <=1'd0;
