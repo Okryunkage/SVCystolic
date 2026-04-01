@@ -8,4 +8,6 @@ uart directory for UART module to test the proposed design on FPGA environment.
 
 required program : iverilog, yosys.
 
+FPGA environment : Nexys A7-100T model with VIVADO IDE
+
 Written by Siyeol Lee / INU.ISE

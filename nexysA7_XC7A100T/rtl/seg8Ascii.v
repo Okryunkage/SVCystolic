@@ -15,7 +15,7 @@ module seg8Ascii (
 
 	always@(posedge clk or posedge rst) begin
 		if(rst) digitIndex <=3'd0;
-		else if(scan_tick) digitIndex <=digitIndex+3'd1;
+		else if(scanTick) digitIndex <=digitIndex+3'd1;
     end
 
 	always@(*)begin
