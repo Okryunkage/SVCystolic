@@ -66,4 +66,8 @@
 `define ASCII_y 8'h79
 `define ASCII_z 8'h7A
 
+`define ASCII_SPACE 8'h20
+`define ASCII_MINUS 8'h2D
+`define ASCII_UNDER 8'h5F
+
 `endif
