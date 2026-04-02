@@ -1,5 +1,9 @@
 `timescale 1ns/1ps
 
+//valid register for indicating whether the byte is all received.
+//if valid==1, it only updated to 0 when read input goes high.
+//It means, receive module will only resume receiving when the other logic connected to receive module done reading the received output.
+
 module receive#(
 	parameter bits =8,
 	parameter oversample =16)(
