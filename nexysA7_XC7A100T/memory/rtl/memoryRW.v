@@ -1,0 +1,104 @@
+`timescale 1ns/1ps
+
+module memoryRW(
+	//******************************
+	//***     Common Signals     ***
+	//******************************
+	input 		sysclk,
+	input 		sysrst,
+	input[26:0] address,
+	input   	command,
+	input		enable,
+
+	output      init_calib_complete,
+	output      ui_clk,
+	output      ui_clk_sync_rst,
+	output      app_rdy,
+
+	//******************************
+	//***       Read  Mode       ***
+	//******************************
+	//output app_rd_data,
+	//output app_rd_data_end,
+	//output ap_rd_data_valid,
+
+	//******************************
+	//***       Write  Mode      ***
+	//******************************
+	input[63:0] app_wdf_data,
+	//input[7:0]  app_wdf_mask,
+	input       app_wdf_wren,
+	input       app_wdf_end,
+
+	output      app_wdf_rdy,
+
+	//******************************
+	//***           ETC          ***
+	//******************************
+	//input app_sr_req,
+	//input app_ref_req,
+	//input app_zq_req,
+
+	//output app_sr_active,
+	//output app_ref_ack,
+	//output app_zq_ack,
+
+	//******************************
+	//***   Memory  Connection   ***
+	//******************************
+	inout[15:0]  ddr2_dq,
+	inout[1:0]   ddr2_dqs_n,
+	inout[1:0]   ddr2_dqs_p,
+	output[12:0] ddr2_addr,
+	output[2:0]  ddr2_ba,
+	output       ddr2_ras_n,
+	output       ddr2_cas_n,
+	output       ddr2_we_n,
+	output       ddr2_ck_p,
+	output       ddr2_ck_n,
+	output       ddr2_cke,
+	output       ddr2_cs_n,
+	output[1:0]  ddr2_dm,
+	output       ddr2_odt,
+
+	//******************************
+	//***           IO           ***
+	//******************************
+	output reg[127:0] readReg,
+	output reg        readValid
+);
+
+	wire appRDY;
+	wire[63:0] readData;
+	wire readDataEND, readDataVALID;
+	wire app_sr_active, app_ref_ack, app_zq_ack;
+	memory mem(
+		.sys_clk_i(sysclk), .sys_rst(sysrst), .app_addr(address), .app_cmd({2'b0,command}), .app_en(enable),
+		.init_calib_complete(init_calib_complete), .ui_clk(ui_clk), .ui_clk_sync_rst(ui_clk_sync_rst), .app_rdy(appRDY),
+		.app_rd_data(readData), .app_rd_data_end(readDataEND), .app_rd_data_valid(readDataVALID),
+		.app_wdf_data(app_wdf_data), .app_wdf_mask(8'b0), .app_wdf_wren(app_wdf_wren), .app_wdf_end(app_wdf_end),
+		.app_wdf_rdy(app_wdf_rdy),
+
+		.app_sr_req(1'b0), .app_ref_req(1'b0), .app_zq_req(1'b0),
+		.app_sr_active(app_sr_active), .app_ref_ack(app_ref_ack), .app_zq_ack(app_zq_ack),
+		.ddr2_dq(ddr2_dq), .ddr2_dqs_n(ddr2_dqs_n), .ddr2_dqs_p(ddr2_dqs_p), .ddr2_addr(ddr2_addr),
+		.ddr2_ba(ddr2_ba), .ddr2_ras_n(ddr2_ras_n), .ddr2_cas_n(ddr2_cas_n), .ddr2_we_n(ddr2_we_n),
+		.ddr2_ck_n(ddr2_ck_n), .ddr2_ck_p(ddr2_ck_p), .ddr2_cke(ddr2_cke), .ddr2_cs_n(ddr2_cs_n),
+		.ddr2_dm(ddr2_dm), .ddr2_odt(ddr2_odt));
+	
+	wire enrdy =enable&appRDY;
+	always@(posedge ui_clk)begin
+		if(ui_clk_sync_rst)begin
+			readReg <=128'd0;
+			readValid <=1'b0;
+		end
+		else if(readDataVALID)begin
+			readValid <=1'b0;
+			if(!readDataEND) readReg[127:64] <=readData;
+			else begin
+				readReg[63:0] <=readData;
+				readValid     <=1'b1;
+			end
+		end
+	end
+endmodule

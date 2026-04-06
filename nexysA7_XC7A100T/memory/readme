@@ -1,0 +1,42 @@
+<Common Signals>
+INPUT SIGNALS
+	- sys_clk_i: FPAG board system Clock. MMCM 및 PLL 출력, 혹은 Crystal oscillator 출력 입력. MIG IP에서 설정한 clock을 입력해야 함.
+	- sys_rst: Active-Low reset 신호. 메모리 첫 동작 시 MIG calibration이 진행될 수 있도록 함.
+	- app_addr: 메모리 Address. 16bit PHY-DDR2 databus 및 BL8 configuration에서 Address가 1 증가할 때 16bit을 읽어옴.
+	- app_cmd: LSB만 control. LSB==0 means Read Mode | LSB==1 meand Write Mode
+	- app_en: enable 신호가 True 일 때, read|write 명령이 가능함.
+OUTPUT SIGNALS
+	- init_calib_complete: calibration 완료 신호. 해당 신호가 True로 toggle된 이후 read|write 진행.
+	- ui_clk: MIG output Clock. User Logic은 해당 Clock을 기반으로 동작해야 함.
+	- ui_clk_sync_rst: User Interface Synchronous Reset Signal.
+	- app_rdy: MIG ready Signal.
+
+<Read Mode>
+INPUT SIGNALS
+	- 
+OUTPUT SIGNALS
+	- app_rd_data: read data wire. (posedge ui_clk & app_rd_data_valid)일 때, user logic Register에 저장.
+	- app_rd_data_end: read data의 마지막 beat라는 표시.
+	- app_rd_data_valid: 읽힌 데이터가 valid하다는 신호. command 전달 후 몇 사이클 뒤에 출력됨.
+	* (app_en & app_rdy)일 때, app_cmd와 app_addr이 MIG에 전달.
+
+<Write Mode>
+INPUT SIGNALS
+	- app_wdf_data: 작성 데이터 wire.
+	- app_wdf_mask: Byte 단위 마스크. 어떤 바이트를 메모리에 쓰고, 어떤 바이트는 현재 값을 남겨둘지 정하는 마스크.
+	- app_wdf_wren: Valid 신호. app_wdf_data 및 app_wdf_mask가 유효하다는 신호.
+	- app_wdf_end: write data 전송의 마지막 beat라는 표시. 128bit를 써야하므로, 64bit bus의 두번째에서 이를 True로 toggle.
+	* (app_en & app_rdy)일 때, command가 MIG에 accepted. 이 때, app_cmd와 app_addr이 MIG에 전달되며, wdf 신호는 최대 2 ui_clk 이내에 와도 됨.
+OUTPUT SIGNALS
+	- app_wdf_rdy: MIG Write Data FIFO Ready Signal.
+	* (app_wdf_rdy & app_wdf_wren)일 때, write data beat가 들어감.
+
+<ETC>
+INPUT SIGNALS
+	- app_sr_req: 1'b0으로 고정 //reserved signal
+	- app_ref_req: 1'b0으로 고정 //refresh request signal
+	- app_zq_req: 1'b0으로 고정 //ZQ calibration request signal
+OUTPUT SIGNALS
+	- app_sr_active: reserved signal
+	- app_ref_ack: ignore
+	- app_zq_ack: ignore
