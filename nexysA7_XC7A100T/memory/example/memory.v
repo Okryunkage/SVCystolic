@@ -1,20 +1,51 @@
 `timescale 1ps/1ps
 
 module memory(
+	//******************************
+	//***     Common Signals     ***
+	//******************************
 	input            sys_clk_i,
 	input			 sys_rst,
 	//User Address, Command, Enable Signal
 	input  [26:0]    app_addr,
 	input  [2:0]     app_cmd,
 	input            app_en,
+
+	//Calibration Complete Signal
+	output           init_calib_complete,
+	//User CLK output
+	output           ui_clk,
+	output           ui_clk_sync_rst,
+	//MIG ready
+	output           app_rdy,
+
+	//******************************
+	//***        Read Mode       ***
+	//******************************
+	//Read Data
+	output [63:0]    app_rd_data,
+	//Read Data End
+	output           app_rd_data_end,
+	output           app_rd_data_valid,
+
+	//******************************
+	//***       Write Mode       ***
+	//******************************
 	//wriet data FIFO
 	input  [63:0]    app_wdf_data,
-	//Write Data Final bit Signal
-	input            app_wdf_end,
 	//Byte Write Mask. Active-Low
 	input  [7:0]     app_wdf_mask,
 	//Valid Signal
 	input            app_wdf_wren,
+	//Write Data Final bit Signal
+	input            app_wdf_end,
+
+	//MIG write data FIFO ready
+	output           app_wdf_rdy,
+
+	//******************************
+	//***           ETC          ***
+	//******************************
 	//app_sr_req is reserved to 0
 	input            app_sr_req,
 	//refresh Request Signal. Active-high
@@ -22,6 +53,17 @@ module memory(
 	input            app_ref_req,
 	//ZQ calibartion
 	input            app_zq_req,
+
+	//reserved signal
+	output           app_sr_active,
+	//refresh <= ignore
+	output           app_ref_ack,
+	//ignore this too
+	output           app_zq_ack,
+
+	//******************************
+	//***    Memory Connection   ***
+	//******************************
 	//Data Line
 	inout  [15:0]    ddr2_dq,
 	inout  [1:0]     ddr2_dqs_n,
@@ -42,27 +84,7 @@ module memory(
 	//Data Mask
 	output [1:0]     ddr2_dm,
 	//On-Die Termination
-	output [0:0]     ddr2_odt,
-	//Read Data
-	output [63:0]    app_rd_data,
-	//Read Data End
-	output           app_rd_data_end,
-	output           app_rd_data_valid,
-	//MIG ready
-	output           app_rdy,
-	//MIG write data FIFO ready
-	output           app_wdf_rdy,
-	//reserved signal
-	output           app_sr_active,
-	//refresh <= ignore
-	output           app_ref_ack,
-	//ignore this too
-	output           app_zq_ack,
-	//User CLK output
-	output           ui_clk,
-	output           ui_clk_sync_rst,
-	//Calibration Complete Signal
-	output           init_calib_complete
+	output [0:0]     ddr2_odt
 );
   memory_mig u_memory_mig (
 	.ddr2_addr                      (ddr2_addr),
@@ -100,7 +122,7 @@ module memory(
 	.ui_clk                         (ui_clk),
 	.ui_clk_sync_rst                (ui_clk_sync_rst),
 	.app_wdf_mask                   (app_wdf_mask),
-	.sys_clk_i                       (sys_clk_i),
+	.sys_clk_i                      (sys_clk_i),
 	.sys_rst                        (sys_rst)
     );
 endmodule
