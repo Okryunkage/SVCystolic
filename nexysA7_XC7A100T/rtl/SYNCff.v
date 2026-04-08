@@ -1,5 +1,13 @@
 `timescale 1ns/1ps
 
+/*
+******************************
+***   Flip-Flop Synchro    ***
+******************************
+Two-Stage Synchronizer used to safely transfer an asynchronous signal into the clk domain.
+It helps reducec metastability risk when signals come from another clock domain or external source.
+*/
+
 module SYNCff#(
 	parameter width=1)(
 		clk, rst,
