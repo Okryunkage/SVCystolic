@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
 //Signal Description can be found on </nexysA7_XC7A100T/memory/readme>
-module memEx(
+module mig_ui(
 	input migclk,
 	input rst_n,
 
