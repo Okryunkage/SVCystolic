@@ -18,7 +18,8 @@ module mig_ui(
 	inout[15:0]  ddr2_dq,
 	inout[1:0]   ddr2_dqs_n,
 	inout[1:0]   ddr2_dqs_p,
-	output[12:0] ddr2_ba,
+	output[12:0] ddr2_addr,
+	output[2:0] ddr2_ba,
 	output ddr2_ras_n,
 	output ddr2_cas_n,
 	output ddr2_we_n,
@@ -58,28 +59,28 @@ module mig_ui(
 	wire rstrobe_sync, wstrobe_sync;
 
 	SYNCflag SYNCrs(
-		.aRST(rst_n),
+		.aRST(~rst_n),
 		.aCLK(boardclk),
 		.aFLAG(rstrobe),
-		.bRST(~ui_clk_sync_rst),
+		.bRST(ui_clk_sync_rst),
 		.bCLK(ui_clk),
 		.bFLAG(rstrobe_sync));
 
 	SYNCflag SYNCws(
-		.aRST(rst_n),
+		.aRST(~rst_n),
 		.aCLK(boardclk),
 		.aFLAG(wstrobe),
-		.bRST(~ui_clk_sync_rst),
+		.bRST(ui_clk_sync_rst),
 		.bCLK(ui_clk),
 		.bFLAG(wstrobe_sync));
 
 	reg complete;
 
 	SYNCflag SYNCcomplete(
-		.aRST(~ui_clk_sync_rst),
+		.aRST(ui_clk_sync_rst),
 		.aCLK(ui_clk),
 		.aFLAG(complete),
-		.bRST(rst_n),
+		.bRST(~rst_n),
 		.bCLK(boardclk),
 		.bFLAG(transaction_complete));
 
@@ -123,7 +124,7 @@ module mig_ui(
 	always@(posedge ui_clk)begin
 		if(ui_clk_sync_rst) data_out <=64'h0;
 		else begin
-			if((state==stateREAD)&&(mem_rd_data_valid))||((state=statePREREAD)&&(mem_rdy)&&(mem_rd_data_valid))begin
+			if(((state==stateREAD)&&(mem_rd_data_valid))||((state==statePREREAD)&&(mem_rdy)&&(mem_rd_data_valid)))begin
 				//when (data is available normally)or(data available right after the command accepted)
 				if(~addr[0])begin
 					if(~mem_rd_data_end)begin
