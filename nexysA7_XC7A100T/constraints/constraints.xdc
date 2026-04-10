@@ -32,14 +32,18 @@ set_property -dict {PACKAGE_PIN T18 IOSTANDARD LVCMOS33} [get_ports {switch[5]}]
 set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports {switch[6]}]
 set_property -dict {PACKAGE_PIN R13 IOSTANDARD LVCMOS33} [get_ports {switch[7]}]
 
-set_property -dict {PACKAGE_PIN N17 IOSTANDARD LVCMOS33} [get_ports button]
+set_property -dict {PACKAGE_PIN N17 IOSTANDARD LVCMOS33} [get_ports buttonC]
+set_property -dict {PACKAGE_PIN M18 IOSTANDARD LVCMOS33} [get_ports buttonT]
+set_property -dict {PACKAGE_PIN P18 IOSTANDARD LVCMOS33} [get_ports buttonB]
+#set_property -dict {PACKAGE_PIN P17 IOSTANDARD LVCMOS33} [get_ports buttonL]
+#set_property -dict {PACKAGE_PIN M17 IOSTANDARD LVCMOS33} [get_ports buttonR]
 
 ##############################
 ##           LEDs           ##
 ##############################
 
 set_property -dict {PACKAGE_PIN V16 IOSTANDARD LVCMOS33} [get_ports {LED8}]
-set_property -dict {PACKAGE_PIN V11 IOSTANDARD LVCMOS33} [get_ports {LED15}]
+#set_property -dict {PACKAGE_PIN V11 IOSTANDARD LVCMOS33} [get_ports {LED15}]
 set_property -dict {PACKAGE_PIN H17 IOSTANDARD LVCMOS33} [get_ports {LEDarr[0]}]
 set_property -dict {PACKAGE_PIN K15 IOSTANDARD LVCMOS33} [get_ports {LEDarr[1]}]
 set_property -dict {PACKAGE_PIN J13 IOSTANDARD LVCMOS33} [get_ports {LEDarr[2]}]
