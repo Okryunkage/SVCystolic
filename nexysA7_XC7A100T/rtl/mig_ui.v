@@ -197,6 +197,12 @@ module mig_ui(
 					if(mem_wdf_rdy)begin
 						if(~addr[0])begin
 							case(width)
+							//When think of writing 64'h1122334455667788 to address A to (A+7),
+							//The default writing configuration will write 8'h11 in address (A+7)
+							//However, since reading operation reverse the Byte order as written above, 
+							//the data would appear in LSB Byte of data_out register.
+							//Resulting data_out to be 64'h8877665544332211.
+							//Thus, to match read and write operation, write Byte orientation should be reversed as same as read opration
 								RAMw64:begin
 									mem_wdf_mask <=8'h00;
 									mem_wdf_data <={data_in[7:0],data_in[15:8],data_in[23:16],data_in[31:24],
@@ -250,7 +256,7 @@ module mig_ui(
 						end
 						else begin
 							//I followed the original example,
-							//but it seems this writing only needed when its RAMw64
+							//but it seems that this writing only needed when its RAMw64
 							mem_wdf_mask <=8'hFE; //1111_1110
 							mem_wdf_data <={56'h0,data_in[7:0]};
 						end

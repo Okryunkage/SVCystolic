@@ -40,3 +40,24 @@ OUTPUT SIGNALS
 	- app_sr_active: reserved signal
 	- app_ref_ack: ignore
 	- app_zq_ack: ignore
+
+<ddr2 memory Signal>
+DATA LINE
+	- ddr2_dq: 데이터 버스
+	- ddr2_dqs_p: positive data strobe. 타이밍 기준 신호로, 샘플링 타이밍을 알려줌.
+	- ddr2_dqs_n: negative data strobe. 
+	* DDR은 클럭의 rising/falling edge를 모두 사용하기 때문에, 
+	* 시스템 클럭만 보고 sampling하는 것보다, 데이터와 함께 움직이는 DQS를 기준으로 하는 것이 정확함.
+	* write 시, FPGA의 MIG가 data와 함께 DQS를 같이 보내며, read 시 DDR 메모리에서 DQS를 보냄.
+	- ddr2_dm: Data Mask. write 동작에서 어떤 바이트를 쓸지, 무시할지 정하는 신호. ddr2 data bus가 16bit(2Byte)일 때, 2bit bus가 필요.
+	- ddr2_addr: memory address.
+	- ddr2_ba: bank address. DDR2 내부 메모리는 여러 개의 bank로 나뉘어 있음.
+	- ddr2_ras_n: Row Address Strobe. Command Signal
+	- ddr2_cas_n: Column Address Strobe. Command Signal
+	- ddr2_we_n: Write Enable. Command Signal | Command Signal 세개가 조합되어 명령을 전달.
+	- ddr2_ck_p: positive differential Clock
+	- ddr2_ck_n: negative differential Clock
+	- ddr2_cke: Clock Enable Signal
+	- ddr2_cs_n: Chip select
+	- ddr2_odt: On-Die Termination. 메모리 칩 내부 종단 저항을 켜고 끄는 신호. 고속 신호에서 반사(reflection)를 줄여 신호 무결성 moderate
+	- ddr2_rdqs_n: optional read data strobe negative. Optional Signal
