@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module SYNCx(
+module SYNCpulse(
 	input clk,
 	input rst,
 	input signal,

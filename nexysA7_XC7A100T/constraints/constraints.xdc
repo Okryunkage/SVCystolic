@@ -5,7 +5,8 @@
 set_property -dict {PACKAGE_PIN E3 IOSTANDARD LVCMOS33} [get_ports boardCLK]
 #-dict option can make multiple config in one set_property instruction
 create_clock -add -name boardCLKpin -period 10.00 -waveform {0 5} [get_ports boardCLK]
-# -waveform {0 5} means rising edge at 0 ns and falling edge at 5 ns, if not used, the default setting would be applied. (default = 50% duty cycle)
+# -waveform {0 5} means rising edge at 0 ns and falling edge at 5 ns, 
+#if not used, the default setting would be applied. (default = 50% duty cycle)
 # -add tells Vivado to add this clock definition instead of overwriting
 
 ##############################
@@ -22,7 +23,6 @@ set_property IOSTANDARD  LVCMOS33 [get_ports {UARTRX UARTTX UARTcts UARTrts}]
 ##          Switch          ##
 ##############################
 
-set_property -dict {PACKAGE_PIN T8 IOSTANDARD LVCMOS33} [get_ports TXen]
 set_property -dict {PACKAGE_PIN J15 IOSTANDARD LVCMOS33} [get_ports {switch[0]}]
 set_property -dict {PACKAGE_PIN L16 IOSTANDARD LVCMOS33} [get_ports {switch[1]}]
 set_property -dict {PACKAGE_PIN M13 IOSTANDARD LVCMOS33} [get_ports {switch[2]}]
@@ -31,6 +31,15 @@ set_property -dict {PACKAGE_PIN R17 IOSTANDARD LVCMOS33} [get_ports {switch[4]}]
 set_property -dict {PACKAGE_PIN T18 IOSTANDARD LVCMOS33} [get_ports {switch[5]}]
 set_property -dict {PACKAGE_PIN U18 IOSTANDARD LVCMOS33} [get_ports {switch[6]}]
 set_property -dict {PACKAGE_PIN R13 IOSTANDARD LVCMOS33} [get_ports {switch[7]}]
+set_property -dict {PACKAGE_PIN T8 IOSTANDARD LVCMOS33} [get_ports {switch[8]}]
+set_property -dict {PACKAGE_PIN U8 IOSTANDARD LVCMOS33} [get_ports {switch[9]}]
+set_property -dict {PACKAGE_PIN R16 IOSTANDARD LVCMOS33} [get_ports {switch[10]}]
+set_property -dict {PACKAGE_PIN T13 IOSTANDARD LVCMOS33} [get_ports {switch[11]}]
+set_property -dict {PACKAGE_PIN H6 IOSTANDARD LVCMOS33} [get_ports {switch[12]}]
+set_property -dict {PACKAGE_PIN U12 IOSTANDARD LVCMOS33} [get_ports {switch[13]}]
+set_property -dict {PACKAGE_PIN U11 IOSTANDARD LVCMOS33} [get_ports {switch[14]}]
+set_property -dict {PACKAGE_PIN V10 IOSTANDARD LVCMOS33} [get_ports {switch[15]}]
+
 
 set_property -dict {PACKAGE_PIN N17 IOSTANDARD LVCMOS33} [get_ports buttonC]
 set_property -dict {PACKAGE_PIN M18 IOSTANDARD LVCMOS33} [get_ports buttonT]
@@ -42,8 +51,6 @@ set_property -dict {PACKAGE_PIN P18 IOSTANDARD LVCMOS33} [get_ports buttonB]
 ##           LEDs           ##
 ##############################
 
-set_property -dict {PACKAGE_PIN V16 IOSTANDARD LVCMOS33} [get_ports {LED8}]
-#set_property -dict {PACKAGE_PIN V11 IOSTANDARD LVCMOS33} [get_ports {LED15}]
 set_property -dict {PACKAGE_PIN H17 IOSTANDARD LVCMOS33} [get_ports {LEDarr[0]}]
 set_property -dict {PACKAGE_PIN K15 IOSTANDARD LVCMOS33} [get_ports {LEDarr[1]}]
 set_property -dict {PACKAGE_PIN J13 IOSTANDARD LVCMOS33} [get_ports {LEDarr[2]}]
@@ -52,6 +59,15 @@ set_property -dict {PACKAGE_PIN R18 IOSTANDARD LVCMOS33} [get_ports {LEDarr[4]}]
 set_property -dict {PACKAGE_PIN V17 IOSTANDARD LVCMOS33} [get_ports {LEDarr[5]}]
 set_property -dict {PACKAGE_PIN U17 IOSTANDARD LVCMOS33} [get_ports {LEDarr[6]}]
 set_property -dict {PACKAGE_PIN U16 IOSTANDARD LVCMOS33} [get_ports {LEDarr[7]}]
+set_property -dict {PACKAGE_PIN V16 IOSTANDARD LVCMOS33} [get_ports {LEDarr[8]}]
+set_property -dict {PACKAGE_PIN T15 IOSTANDARD LVCMOS33} [get_ports {LEDarr[9]}]
+set_property -dict {PACKAGE_PIN U14 IOSTANDARD LVCMOS33} [get_ports {LEDarr[10]}]
+set_property -dict {PACKAGE_PIN T16 IOSTANDARD LVCMOS33} [get_ports {LEDarr[11]}]
+set_property -dict {PACKAGE_PIN V15 IOSTANDARD LVCMOS33} [get_ports {LEDarr[12]}]
+set_property -dict {PACKAGE_PIN V14 IOSTANDARD LVCMOS33} [get_ports {LEDarr[13]}]
+set_property -dict {PACKAGE_PIN V12 IOSTANDARD LVCMOS33} [get_ports {LEDarr[14]}]
+set_property -dict {PACKAGE_PIN V11 IOSTANDARD LVCMOS33} [get_ports {LEDarr[15]}]
+
 
 ##############################
 ##           7Seg           ##

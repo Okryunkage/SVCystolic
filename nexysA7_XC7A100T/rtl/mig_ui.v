@@ -168,7 +168,7 @@ module mig_ui(
 			state <=stateIDLE;
 			complete <=0;
 			mem_cmd <=CMDwrite;
-			mem_wfd_mask <=8'h00;
+			mem_wdf_mask <=8'h00;
 			mem_wdf_data <=64'h0;
 			mem_wdf_wren <=1'b0;
 			mem_wdf_end <=1'b0;
