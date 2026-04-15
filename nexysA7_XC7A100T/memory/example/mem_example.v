@@ -1,5 +1,6 @@
 `timescale 1ns/1ps
 
+//The same module in </nexysA7_XC7A100T/rtl/0etc/mig_ui.v>
 //Signal Description can be found on </nexysA7_XC7A100T/memory/readme>
 module memEx(
 	input migclk,
@@ -18,7 +19,8 @@ module memEx(
 	inout[15:0]  ddr2_dq,
 	inout[1:0]   ddr2_dqs_n,
 	inout[1:0]   ddr2_dqs_p,
-	output[12:0] ddr2_ba,
+	output[12:0] ddr2_addr,
+	output[2:0] ddr2_ba,
 	output ddr2_ras_n,
 	output ddr2_cas_n,
 	output ddr2_we_n,
@@ -123,7 +125,7 @@ module memEx(
 	always@(posedge ui_clk)begin
 		if(ui_clk_sync_rst) data_out <=64'h0;
 		else begin
-			if((state==stateREAD)&&(mem_rd_data_valid))||((state=statePREREAD)&&(mem_rdy)&&(mem_rd_data_valid))begin
+			if(((state==stateREAD)&&(mem_rd_data_valid))||((state==statePREREAD)&&(mem_rdy)&&(mem_rd_data_valid)))begin
 				//when (data is available normally)or(data available right after the command accepted)
 				if(~addr[0])begin
 					if(~mem_rd_data_end)begin
@@ -167,7 +169,7 @@ module memEx(
 			state <=stateIDLE;
 			complete <=0;
 			mem_cmd <=CMDwrite;
-			mem_wfd_mask <=8'h00;
+			mem_wdf_mask <=8'h00;
 			mem_wdf_data <=64'h0;
 			mem_wdf_wren <=1'b0;
 			mem_wdf_end <=1'b0;
@@ -196,6 +198,12 @@ module memEx(
 					if(mem_wdf_rdy)begin
 						if(~addr[0])begin
 							case(width)
+							//When think of writing 64'h1122334455667788 to address A to (A+7),
+							//The default writing configuration will write 8'h11 in address (A+7)
+							//However, since reading operation reverse the Byte order as written above, 
+							//the data would appear in LSB Byte of data_out register.
+							//Resulting data_out to be 64'h8877665544332211.
+							//Thus, to match read and write operation, write Byte orientation should be reversed as same as read opration
 								RAMw64:begin
 									mem_wdf_mask <=8'h00;
 									mem_wdf_data <={data_in[7:0],data_in[15:8],data_in[23:16],data_in[31:24],

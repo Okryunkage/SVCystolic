@@ -24,7 +24,7 @@ module receive_rev_tick#(
 //	output reg valid;
 	reg valid;
 	output wire rts;
-	input wire read;
+	input wire read;//<---if read is True, valid goes 0 in idle state, meaning that reading operation can be proceed.
 
 	reg [2:0]             state       =reset;
 	reg [(bits-1):0]      data        =1'd0;
