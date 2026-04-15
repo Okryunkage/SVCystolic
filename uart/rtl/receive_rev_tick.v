@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module receive#(
+module receive_rev_tick#(
 	parameter bits =8,
 	parameter oversample =16)(
 	clk, tick, en, in, rst,

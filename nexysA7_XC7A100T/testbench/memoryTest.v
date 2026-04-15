@@ -137,9 +137,27 @@ module memoryTest(
 	##        Clock  Gen        ##
 	##############################
 	*/
-	wire clk200, locked, segCLK;
+	wire clk200, locked, segCLK, RXtick, TXtick;
 	mmcm200 clkmmcm(.reset(1'b0),.clk_in1(boardCLK),.locked(locked),.clk_out1(clk200));
-	tickgen #(.CLK(100_000_000),.TICK(8_000),.ACCwidth(32)) segTickGen(boardCLK,{1'b0},segCLK);
+	
+	tickgen#(.CLK(100_000_000),.TICK(8_000),.ACCwidth(32)) segTickGen(boardCLK,{1'b0},segCLK);
+	
+	baudrategen#(.clock(100_000_000),.baudrate(1_000_000),.oversample(20)) UARTickGen(boardCLK,{1'b0},RXtick,TXtick);
+
+	/*
+	##############################
+	##       UART Moudle        ##
+	##############################
+	*/
+	transmit_rev#(8) TXmodule(
+		.clk(boardCLK),.tick(TXtick),.en(TXen),.start(TXstart),
+		.in(),
+		.out(),.done(),.busy(),
+		.cts());
+	receive_rev_tick#(8,20) RXmodule(
+		.clk(boardCLK),.tick(RXtick),.en()),.in(),.rst(),
+		.out(),.done(),.busy(),.error(),.
+		.rst(),.read());
 
 	/*
 	##############################
@@ -148,13 +166,13 @@ module memoryTest(
 	*/
 	wire[63:0] dataOut;
 	wire transactionComplete, ready;
-	mig_ui migT(
+	reg[26:0] addressReg;
+	mig_ui128 migT(
 		.migclk(clk200),
 		.rst_n(~resetSYNC0),
 		.boardclk(boardCLK),
-		.addr(28'b0000_0000_0000_0000_00000_0000_0000),
-		.width(2'd0),
-		.data_in(64'h31_32_33_34_35_36_37_38),
+		.addr(addressReg),
+		.data_in(),
 		.data_out(dataOut),
 		.rstrobe(),
 		.wstrobe(),
@@ -177,5 +195,6 @@ module memoryTest(
 	reg[2:0] state;
 	reg[4:0] count;
 	always@(posedge boardCLK)begin
+		
 	end
 endmodule
