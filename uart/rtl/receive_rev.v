@@ -5,7 +5,7 @@
 //case.
 //It means, receive module will only resume receiving when the other logic connected to receive module done reading the received output.
 
-module receive#(
+module receive_rev#(
 	parameter bits =8,
 	parameter oversample =16)(
 	clk, en, in, rst,

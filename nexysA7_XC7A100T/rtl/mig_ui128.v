@@ -7,7 +7,6 @@ module mig_ui128(
 
 	input wire       boardclk,
 	input wire[26:0] addr,
-	input wire[1:0]  width,
 	input wire[127:0] data_in,
 	output reg[127:0] data_out,
 	input wire       rstrobe,

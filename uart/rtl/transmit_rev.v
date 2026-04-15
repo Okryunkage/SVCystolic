@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module transmit #(
+module transmit_rev #(
 	parameter bits =8)(
 	clk, tick, en, start,
 	in,
