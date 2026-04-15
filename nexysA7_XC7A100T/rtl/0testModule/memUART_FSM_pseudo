@@ -1,0 +1,87 @@
+If reset button pushed, initialization proceed.
+	wstrobe <=0.
+	rstrobe <=0.
+	countR  <=0.
+	countT  <=0. 
+	writeAddress <=0.
+	readAddress  <=0.
+	waitFlag <=0.
+	receiveReg[127:0] <=0. (dataIn)
+	readReg[127:0]    <=0.
+	state <=idle
+	TXstart <=0;
+	sendITEM <=0;
+	*initially begins at idle state
+
+FSM description:
+	idle:
+		LED0 reg <=True.
+		TXen <=False.
+		if RXbusy signal rise, goto receive state
+
+	receive:
+		*data saved to receiveReg[127:0] in FIFO manner
+		*countR register used to count the number of receivement.
+		*5bit register used for countR register. the MSB indicate reveiceReg full.
+		LED0 reg <=False.
+		if RXdone rise,
+			if RXout ==8'hFF,
+				countR <=0
+				goto memRead_wating state.
+			else,
+				receiveReg update.
+				countR up.
+				if countR[4],
+					countR <=0.
+					goto memWrite_waiting state.
+				else,
+					goto idle state.
+			
+	memWrite_waiting:
+		LED0 reg <=False.
+		LED1 reg <=True.
+		if RXbusy signal rise, waitFlag on.
+		if waitFlag on & Rxdone rise,
+			waitFlag down.
+			if RXout ==8'hFF,
+				wstrobe <=1'b1.
+				goto memWrite state.
+				LED1 reg <=False.
+	
+	memWrite:
+		wstrobe <=1'b0.
+		if transactionComplete rise,
+			writeAddress update.
+			goto idle state.
+
+	memRead_waiting:
+		LED0 reg <=False.
+		LED2 reg <=True.
+		if RXbusy signal rise, waitFlag on.
+		if waitFlag on & RXdone rise,
+			waitFlag down.
+			if RXout ==8'hFF,
+				rstrobe <=1'b1.
+				goto memRead state.
+				LED2 reg <=False.
+
+	memRead:
+		rstrobe <=1'b0.
+		if transactionComplete rise,
+			readReg <=data_out.
+			readAddress update.
+			goto transmit state.
+	
+	transmit:
+		TXen <=True.
+		if !TXflag,
+			TXstart <=True.
+			TXflag <=True.
+			{sendITEM,readReg[127:0]} <={readReg[119:0],8'b0}.
+		if TXbusy & TXflag, TXstart <=False.
+		if TXdone & TXflag,
+			TXflag <=False.
+			countT up.
+			if countT ==16,
+				countT <=0.
+				goto idle state.

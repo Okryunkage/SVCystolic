@@ -27,9 +27,7 @@ module mig_ui128(
 	output[0:0] ddr2_cke,
 	output[0:0] ddr2_cs_n,
 	output[1:0] ddr2_dm,
-	output[0:0] ddr2_odt,
-
-	output wire mem_rdy
+	output[0:0] ddr2_odt
 );
 
 	wire ui_clk, ui_clk_sync_rst;
@@ -41,6 +39,7 @@ module mig_ui128(
 	reg mem_wdf_end, mem_wdf_wren;
 	reg[7:0] mem_wdf_mask;
 	wire mem_wdf_rdy;
+	wire mem_rdy;
 
 	memory mem(
 		.sys_clk_i(migclk), .sys_rst(rst_n), .app_addr(addr[27:0]), .app_cmd(mem_cmd), .app_en(mem_en),
