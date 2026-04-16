@@ -154,7 +154,7 @@ module memUART(
 		.clk(boardCLK),.tick(TXtick),.en(TXen),.start(TXstart),
 		.in(sendITEM),
 		.out(UARTRX),.done(TXdone),.busy(TXbusy),
-		.cts());
+		.cts({1'b1}));
 	wire RXdone, RXbusy;
 	wire[7:0] RXout;
 	receive#(8,20) RXmodule(
@@ -203,12 +203,15 @@ module memUART(
 	localparam transmitS =3'd6;
 
 	reg[2:0] state;
-	reg[3:0] countR, countT;
+	reg[4:0] countR, countT;
 	reg[26:0] wAddress, rAddress;
 	reg waitFlag;
 	reg[127:0] readReg;
-	reg[2:0] LEDREG;
-	reg TXflag;
+	reg[6:0] LEDREG;
+	reg TX0flag;
+	reg TX1flag;
+
+	reg[63:0] segREG;
 
 	always@(posedge boardCLK)begin
 		if(resetSYNC0)begin
@@ -226,14 +229,21 @@ module memUART(
 			sendITEM <=8'b0;
 			LEDREG   <=3'b0;
 			TXen     <=1'b0;
-			TXflag   <=1'b0;
+			TX0flag  <=1'b0;
+			TX1flag  <=1'b0;
+
+			segREG   <=64'b0;
 		end
 		else begin
 			case(state)
 				idle:begin
-					LEDREG[0] <=1'b1;
+					LEDREG <=7'b000_0001;
 					TXen      <=1'b0;
 					if(RXbusy) state <=receiveS;
+					if(countR==5'd16)begin
+						countR <=4'd0;
+						state <=memWriteW;
+					end
 				end
 
 				receiveS:begin
@@ -244,20 +254,16 @@ module memUART(
 						end
 						else begin
 							dataIn <={dataIn[119:0],RXout};
-							if(countR==4'd15)begin
-								countR <=4'b0;
-								state <=memWriteW;
-							end
-							else begin
-								countR <=countR+5'd1;
-								state <=idle;
-							end
+							countR <=countR+5'd1;
+							state <=idle;
+
+							segREG <={segREG[55:0],RXout};
 						end
 					end
 				end
 
 				memWriteW:begin
-					LEDREG[1:0] <=2'b10;
+					LEDREG <=7'b000_0100;
 					if(RXbusy) waitFlag <=1'b1;
 					if(waitFlag&RXdone)begin
 						waitFlag <=1'b0;
@@ -265,7 +271,7 @@ module memUART(
 							wstrobe <=1'b1;
 							state <=memWrite;
 							addressReg <=wAddress;
-							LEDREG[1] <=1'b0;
+							LEDREG <=7'b0;
 						end
 					end
 				end
@@ -279,7 +285,7 @@ module memUART(
 				end
 
 				memReadW:begin
-					LEDREG[2:0] <=3'b100;
+					LEDREG <=7'b001_0000;
 					if(RXbusy) waitFlag <=1'b1;
 					if(waitFlag&RXdone)begin
 						waitFlag <=1'b0;
@@ -287,53 +293,52 @@ module memUART(
 							rstrobe <=1'b1;
 							state <=memRead;
 							addressReg <=rAddress;
-							LEDREG[2] <=1'b0;
+							LEDREG <=7'b0;
 						end
 					end
 				end
 
 				memRead:begin
+					LEDREG <=7'b010_0000;
 					rstrobe <=1'b0;
 					if(transactionComplete)begin
 						readReg <=dataOut;
 						rAddress <=rAddress+27'd8;
 						state <=transmitS;
+						LEDREG <=7'b0;
+						TXen <=1'b1;
+
+						segREG <=dataOut[95:32];
 					end
 				end
 
 				transmitS:begin
-					TXen <=1'b1;
-					if(!TXflag)begin
+					LEDREG <=7'b100_0000;
+					if((!TX0flag)&(!TX1flag))begin
 						TXstart <=1'b1;
-						TXflag <=1'b1;
+						TX0flag <=1'b1;
 						{sendITEM,readReg[127:0]} <={readReg[127:0],8'b0};
 					end
-					if(TXbusy&TXflag) TXstart <=1'b0;
-					if(TXdone&TXflag)begin
-						TXflag <=1'b0;
+					if(TXbusy&TX0flag)begin
+						TX0flag <=1'b0;
+						TXstart <=1'b0;
+						TX1flag <=1'b1;
+					end
+					if(TXdone&TX1flag)begin
+						TX1flag <=1'b0;
 						if(countT==4'd15)begin
 							countT <=5'b0;
-							state <=memWriteW;
-						end
-						else begin
-							countT <=countT+5'd1;
 							state <=idle;
+							LEDREG <=7'b0;
 						end
+						else countT <=countT+5'd1;
 					end
 				end
 			endcase
 		end
-	end
-
-	/*
-	##############################
-	##        Status LEDs       ##
-	##############################
-	*/
-	always@(posedge boardCLK)begin
 		if(segtick)begin
-			LEDarr[2:0] <=LEDREG;
-			LEDarr[6:3] <=countR;
+			LEDarr <=LEDREG;
 		end
 	end
+	seg8Ascii ascii(boardCLK,resetSYNC0,segtick,segREG,segSel,seg,segDot);
 endmodule
