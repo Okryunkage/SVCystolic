@@ -13,11 +13,15 @@ class MnistLinearQAT(nn.Module):
 	def __init__(self):
 		super().__init__()
 		self.quant = QuantStub()
+		#QuantStub() converts float activations to quantized values.
 		self.fc = nn.Linear(784, 10)
+		#fully-connected layer with input dimension of 784, output dimension of 10.
 		self.dequant = DeQuantStub()
+		#DeQuanStub converts quantized values back to float.
 
 	def forward(self, x):
 		x = x.view(x.size(0), -1)
+		#stratch the image from [batch,1,28,28] to [batch,784]
 		x = self.quant(x)
 		x = self.fc(x)
 		x = self.dequant(x)
@@ -28,10 +32,12 @@ class MnistLinearQAT(nn.Module):
 ##############################
 def evaluate(model, loader, device):
 	model.eval()
+	#switch model to evaluation mode.
 	correct = 0
 	total = 0
 
 	with torch.no_grad():
+	#No gradient calculation in this block.
 		for images, labels in loader:
 			images = images.to(device)
 			labels = labels.to(device)
@@ -52,6 +58,7 @@ epochs = 5
 lr = 0.01
 
 transform = transforms.Compose([
+#composing multiple procedure into one transforms
 	transforms.ToTensor(),
 	transforms.Normalize((0.1307,), (0.3081,))
 ])
@@ -71,12 +78,12 @@ test_dataset = datasets.MNIST(
 )
 
 train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+#num_workers: The number of seperate processes to load data. If 0, the main process loads it.
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
-
-# --------------------------------------------------
-# 4) FP32 기본 모델 생성
-# --------------------------------------------------
+##############################
+#   fp Model instantiation   #
+##############################
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Train device:", device)
 
@@ -85,12 +92,9 @@ model_fp32 = MnistLinearQAT().to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model_fp32.parameters(), lr=lr)
 
-
-# --------------------------------------------------
-# 5) QAT 준비
-#	- quantized backend와 qconfig를 맞춤
-#	- QAT는 보통 CPU 쪽 백엔드 기준으로 준비/변환
-# --------------------------------------------------
+##############################
+#      QAT Preparation       #
+##############################
 backend = "x86"
 torch.backends.quantized.engine = backend
 
