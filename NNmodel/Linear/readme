@@ -18,7 +18,7 @@ What is Inheritance(상속)?
 	- promotes code reuse
 	- reduces duplication
 	- makes code easier to organize
-	- allows cutomization by extending existing classes.
+	- allows cutomization by extending existing classes
 	* A child class can keep the features of the parent class and also add its own new behavior.
 
 ----------------------------------------------------------------------------------------------------
