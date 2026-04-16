@@ -308,7 +308,6 @@ module memUART(
 						LEDREG <=7'b0;
 						TXen <=1'b1;
 
-						segREG <=dataOut[95:32];
 					end
 				end
 
