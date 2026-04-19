@@ -74,9 +74,9 @@ train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, nu
 test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
 
 
-# --------------------------------------------------
-# 4) FP32 기본 모델 생성
-# --------------------------------------------------
+##############################
+#      FP32 Basic Model      #
+##############################
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("Train device:", device)
 
@@ -85,26 +85,21 @@ model_fp32 = MnistLinearQAT().to(device)
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.SGD(model_fp32.parameters(), lr=lr)
 
-
-# --------------------------------------------------
-# 5) QAT 준비
-#	- quantized backend와 qconfig를 맞춤
-#	- QAT는 보통 CPU 쪽 백엔드 기준으로 준비/변환
-# --------------------------------------------------
+##############################
+#      QAT  Preparation      #
+##############################
 backend = "x86"
 torch.backends.quantized.engine = backend
 
 model_fp32.qconfig = torch.ao.quantization.get_default_qat_qconfig(backend)
 
-# prepare_qat는 fake-quant / observer를 삽입한 학습용 모델을 만든다
 model_qat = torch.ao.quantization.prepare_qat(model_fp32.train(), inplace=False).to(device)
 
 print(model_qat)
 
-
-# --------------------------------------------------
-# 6) QAT 학습
-# --------------------------------------------------
+##############################
+#        QAT Learning        #
+##############################
 for epoch in range(epochs):
 	model_qat.train()
 	running_loss = 0.0
@@ -126,45 +121,38 @@ for epoch in range(epochs):
 
 	print(f"Epoch [{epoch+1}/{epochs}] Loss: {epoch_loss:.4f} QAT Acc: {qat_acc*100:.2f}%")
 
-
-# --------------------------------------------------
-# 7) QAT 학습된 float checkpoint 저장
-#	- 이건 아직 convert 전이라 학습용 checkpoint
-# --------------------------------------------------
+##############################
+#  Save QAT float checkpoint #
+##############################
 qat_ckpt_path = "mnist_linear_qat_preconvert.pth"
 torch.save(model_qat.state_dict(), qat_ckpt_path)
 print(f"Saved QAT training checkpoint: {qat_ckpt_path}")
 
-
-# --------------------------------------------------
-# 8) convert 전에 평가
-# --------------------------------------------------
+##############################
+#  Evaluation Before Convert #
+##############################
 model_qat.eval()
 qat_eval_acc = evaluate(model_qat, test_loader, device)
 print(f"QAT prepared-model accuracy: {qat_eval_acc*100:.2f}%")
 
-
-# --------------------------------------------------
-# 9) INT8 모델로 변환
-#	- convert는 CPU 모델에서 수행
-# --------------------------------------------------
+##############################
+#       Convert to INT8      #
+##############################
 model_qat_cpu = copy.deepcopy(model_qat).to("cpu")
 model_qat_cpu.eval()
 
 model_int8 = torch.ao.quantization.convert(model_qat_cpu, inplace=False)
 print(model_int8)
 
-
-# --------------------------------------------------
-# 10) INT8 평가
-# --------------------------------------------------
+##############################
+#   Evaluate to INT8 Model   #
+##############################
 int8_acc = evaluate(model_int8, test_loader, torch.device("cpu"))
 print(f"INT8 converted-model accuracy: {int8_acc*100:.2f}%")
 
-
-# --------------------------------------------------
-# 11) INT8 모델 저장
-# --------------------------------------------------
+##############################
+#       Save INT8 Model      #
+##############################
 int8_path = "mnist_linear_qat_int8.pth"
 torch.save(model_int8.state_dict(), int8_path)
 print(f"Saved INT8 model state_dict: {int8_path}")
@@ -175,9 +163,8 @@ if os.path.exists(qat_ckpt_path):
 if os.path.exists(int8_path):
 	print(f"INT8 model size: {os.path.getsize(int8_path)} bytes")
 
-
-# --------------------------------------------------
-# 12) 파라미터 수
-# --------------------------------------------------
+##############################
+#   Print Parameter Number   #
+##############################
 num_params = sum(p.numel() for p in MnistLinearQAT().fc.parameters())
 print(f"Number of trainable parameters in linear layer: {num_params}")
