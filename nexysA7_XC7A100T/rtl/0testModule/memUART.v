@@ -153,8 +153,7 @@ module memUART(
 	transmit#(8) TXmodule(
 		.clk(boardCLK),.tick(TXtick),.en(TXen),.start(TXstart),
 		.in(sendITEM),
-		.out(UARTRX),.done(TXdone),.busy(TXbusy),
-		.cts({1'b1}));
+		.out(UARTRX),.done(TXdone),.busy(TXbusy));
 	wire RXdone, RXbusy;
 	wire[7:0] RXout;
 	receive#(8,20) RXmodule(
