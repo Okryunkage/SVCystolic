@@ -4,7 +4,7 @@ rootDir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 currentDir="$(pwd)"
 rtlDir="$rootDir/rtl"
 tbDir="$rootDir/testbench"
-hDir="$rootDir/adder"
+hDir="$rootDir/adder/fixedPoint"
 
 echo $rootDir
 echo $currentDir
@@ -19,4 +19,4 @@ iverilog -g2012 -Wall \
 	"tb_adder.v" \
 	-o out
 vvp out
-gtkwave out.vcd &
+#gtkwave out.vcd &

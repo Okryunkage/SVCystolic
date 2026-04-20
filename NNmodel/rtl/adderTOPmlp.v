@@ -6,7 +6,8 @@ module adderTOPmlp#(
 	parameter integer outNum   =5,
 	parameter integer inWidth  =1,
 	parameter integer wWidth   =8,
-	parameter integer bWidth   =1,
+	parameter integer b1Width  =16,
+	parameter integer b2Width  =32,
 	parameter integer hidWidth =20,
 	parameter integer outWidth= 32)(
 	input  wire[3:0] a,
@@ -17,9 +18,9 @@ module adderTOPmlp#(
 	assign inFlat ={b[3],b[2],b[1],b[0],a[3],a[2],a[1],a[0]};
 
 	localparam integer fc1wWidth =hidNum*inNum*wWidth;
-	localparam integer fc1bWidth =hidNum*bWidth;
+	localparam integer fc1bWidth =hidNum*b1Width;
 	localparam integer fc2wWidth =outNum*hidNum*wWidth;
-	localparam integer fc2bWidth =outNum*bWidth;
+	localparam integer fc2bWidth =outNum*b2Width;
 	
 	`include "mlp_params_flat.vh"
 	
@@ -29,14 +30,14 @@ module adderTOPmlp#(
 
 	fc#(.inNum(inNum),.outNum(hidNum),
 		.inWidth(inWidth),.wWidth(wWidth),
-		.bWidth(bWidth),.outWidth(hidWidth),
+		.bWidth(b1Width),.outWidth(hidWidth),
 		.inSigned(0))
 		fc1(.inFlat(inFlat),.wFlat(fc1_w_flat),.bFlat(fc1_b_flat),.outFlat(z1_flat));
 	relu#(.number(hidNum),.width(hidWidth)) relu1(.inFlat(z1_flat),.outFlat(h1_flat));
 
 	fc#(.inNum(hidNum),.outNum(outNum),
 		.inWidth(hidWidth),.wWidth(wWidth),
-		.bWidth(bWidth),.outWidth(outWidth),
+		.bWidth(b2Width),.outWidth(outWidth),
 		.inSigned(1))
 		fc2(.inFlat(h1_flat),.wFlat(fc2_w_flat),.bFlat(fc2_b_flat),.outFlat(z2_flat));
 

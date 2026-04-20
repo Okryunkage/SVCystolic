@@ -42,7 +42,7 @@ module fc#(
 	endfunction
 
 	always@*begin
-		outFlat ={{outNum*outWidth}{1'b0}};
+		outFlat ={(outNum*outWidth){1'b0}};
 		for(o=0;o<outNum;o=o+1)begin
 			acc =bExtend(bFlat[(o*bWidth)+:bWidth]);
 
@@ -51,7 +51,7 @@ module fc#(
 				wExt =wExtend(wFlat[(((o*inNum)+i)*wWidth)+:wWidth]);
 				multResult =inExt*wExt;
 
-				acc =acc+multResult[(outWidth-1):0];
+				acc =acc+ $signed(multResult[(outWidth-1):0]);
 			end
 			outFlat[(o*outWidth)+:outWidth] =acc;
 		end
