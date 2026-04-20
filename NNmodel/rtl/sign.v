@@ -11,7 +11,7 @@ module sign#(
 
 	always@*begin
 		for(n=0;n<number;n=n+1)begin
-			inElement =inFlat[(n*width)+:width];
+			inElement =$signed(inFlat[(n*width)+:width]);
 			if(inElement>0) outBits[n] =1'b1;
 			else outBits[n] =1'b0;
 		end
