@@ -1,46 +1,57 @@
 `timescale 1ns/1ps
 
-module adderTOPmlp#(
+module mnistTOPmlp#(
 	parameter integer inNum    =784,
 	parameter integer hidNum   =128,
 	parameter integer outNum   =10,
+	
 	parameter integer inWidth  =8,
-	parameter integer wWidth   =8,
+	parameter integer w1Width  =8,
 	parameter integer b1Width  =32,
+	parameter integer accWidth =32,
+
+	parameter integer a1Width  =12,
+	parameter integer w2Width  =8,
 	parameter integer b2Width  =32,
-	parameter integer hidWidth =20,
-	parameter integer outWidth= 32)(
-	input  wire[3:0] a,
-	input  wire[3:0] b,
-	output wire[4:0] out);
-
-	wire [(inNum*inWidth-1):0] inFlat;
-	assign inFlat ={b[3],b[2],b[1],b[0],a[3],a[2],a[1],a[0]};
-
-	localparam integer fc1wWidth =hidNum*inNum*wWidth;
-	localparam integer fc1bWidth =hidNum*b1Width;
-	localparam integer fc2wWidth =outNum*hidNum*wWidth;
-	localparam integer fc2bWidth =outNum*b2Width;
+	parameter integer outWidth =32)(
+	input  wire[(inNum*inWidth-1):0] imgFlat,
+	output wire[3:0] predDigit);
 	
-	`include "mlp_params_flat.vh"
-	
-	wire signed[(hidNum*hidWidth-1):0] z1_flat;
-	wire signed[(hidNum*hidWidth-1):0] h1_flat;
-	wire signed[(outNum*outWidth-1):0] z2_flat;
+	`include "mnist_fixed_mlp_params.vh"
 
+	wire signed[(hidNum*accWidth-1):0] accFlat;
+	wire signed[(hidNum*accWidth-1):0] reluFlat;
+	wire       [(hidNum*a1Width-1):0] actFlat;
+	wire signed[(outNum*outWidth-1):0] outFlat;
+	/*
+	//Verification
+	initial begin
+		if (inNum !=IN_N_FILE)  $error("inNum mismatch");
+		if (hidNum!=HID_N_FILE) $error("hidNum mismatch");
+		if (outNum!=OUT_N_FILE) $error("outNum mismatch");
+		if (inWidth != X_BITS_FILE)  $error("inWidth mismatch");
+		if (w1Width != W1_W_FILE)    $error("w1Width mismatch");
+		if (b1Width != B1_W_FILE)    $error("b1Width mismatch");
+		if (a1Width != A1_BITS_FILE) $error("a1Width mismatch");
+		if (w2Width != W2_W_FILE)    $error("w2Width mismatch");
+		if (b2Width != B2_W_FILE)    $error("b2Width mismatch");
+	end
+	//...
+	*/
 	fc#(.inNum(inNum),.outNum(hidNum),
-		.inWidth(inWidth),.wWidth(wWidth),
-		.bWidth(b1Width),.outWidth(hidWidth),
+		.inWidth(inWidth),.wWidth(w1Width),
+		.bWidth(b1Width),.outWidth(accWidth),
 		.inSigned(0))
-		fc1(.inFlat(inFlat),.wFlat(fc1_w_flat),.bFlat(fc1_b_flat),.outFlat(z1_flat));
-	relu#(.number(hidNum),.width(hidWidth)) relu1(.inFlat(z1_flat),.outFlat(h1_flat));
+		fc1(.inFlat(imgFlat),.wFlat(fc1_w_flat),.bFlat(fc1_b_flat),.outFlat(accFlat));
+	relu#(.number(hidNum),.width(accWidth)) relu1(.inFlat(accFlat),.outFlat(reluFlat));
+	requantUsign#(.number(hidNum),.inWidth(accWidth),.outWidth(a1Width),.shift(B1_FRAC_FILE-A1_FRAC_FILE))
+		requant(.inFlat(reluFlat),.outFlat(actFlat));
 
 	fc#(.inNum(hidNum),.outNum(outNum),
-		.inWidth(hidWidth),.wWidth(wWidth),
+		.inWidth(a1Width),.wWidth(w2Width),
 		.bWidth(b2Width),.outWidth(outWidth),
-		.inSigned(1))
-		fc2(.inFlat(h1_flat),.wFlat(fc2_w_flat),.bFlat(fc2_b_flat),.outFlat(z2_flat));
+		.inSigned(0))
+		fc2(.inFlat(actFlat),.wFlat(fc2_w_flat),.bFlat(fc2_b_flat),.outFlat(outFlat));
 
-	sign#(.number(outNum),.width(outWidth)) sign(.inFlat(z2_flat),.outBits(out));
-
+	argmax#(.width(outWidth),.number(10)) argmax0(.inFlat(outFlat),.outIndex(predDigit));
 endmodule
