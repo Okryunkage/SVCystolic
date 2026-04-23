@@ -1,0 +1,107 @@
+<<<`self` and `@staticmethod` in Python>>>
+
+- In Python, `self` refers to the instance object that calls a method.  
+- It allows the method to access or modify the data stored inside that specific object.
+
+#####Example#####
+class SVC:
+    def __init__(self,name):
+        self.name =name
+    def research(self):
+        print(self.name,"hello, SVC!")
+#################
+
+- Here, self.name means the name value stored in that particular Dog object.
+- When bark() is called, self tells Python which object is using the method.
+
+For instance:
+	lab1 =SVC("cial")
+	lab2 =SVC("tulga")
+	lab1.research()
+	lab2.research()
+
+- Each object uses the same method, but self makes it work with that object's own data.
+
+<What @staticmethod means>
+- @staticmethod is used for a function inside a class that does not need access to the instance (self) or the class itself (cls).
+
+#####Example#####
+class MathTool:
+    @staticmethod
+    def add(a,b):
+        return a+b
+#################
+
+- This function is placed inside the class for organization, but it behaves like a normal function.
+- It does not use any object-specific data.
+
+It can be called like this:
+	MathTool.add(3, 4)
+or
+	tool =MathTool()
+	tool.add(3, 4)
+
+- In both cases, no self is passed automatically.
+
+<Difference between self and @staticmethod>
+- A method with self works on a specific object and can access that object's attributes.
+- A method with @staticmethod does not depend on any object state and is simply grouped inside the class.
+
+<In PyTorch custom autograd functions>
+- In classes such as torch.autograd.Function, methods like forward() and backward() are usually written as @staticmethod because they are defined by PyTorch's required interface and do not use instance data.
+
+#####Example#####
+class RoundSTE(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx,x):
+        return torch.round(x)
+    @staticmethod
+    def backward(ctx,grad_output):
+        return grad_output
+#################
+
+- Here, forward() and backward() are not regular instance methods, so self is not used.
+
+<<<What `ctx` means in PyTorch custom autograd functions>>>
+
+- In `torch.autograd.Function`, `ctx` stands for **context**.  
+- It is an object used to pass information from `forward()` to `backward()`.
+
+- When writing a custom autograd function, the `forward()` method may compute some values that are needed later during backpropagation.  
+- Those values can be stored in `ctx` during `forward()` and retrieved in `backward()`.
+
+#####Example#####
+class Square(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx,x):
+        ctx.save_for_backward(x)
+        return x*x
+    @staticmethod
+    def backward(ctx,grad_output):
+        (x,) =ctx.saved_tensors
+        return grad_output*2*x
+#################
+
+- In this example, the input x is saved during forward() because it is needed in backward() to compute the gradient of x^2.
+
+<Why ctx is needed>
+
+- In custom autograd functions, forward() and backward() are defined as @staticmethod.
+- Because they are not regular instance methods, they do not use self.
+
+- Instead, PyTorch provides ctx as a way to store temporary information that connects the forward pass and the backward pass.
+
+#####RoundSTE example#####
+class RoundSTE(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, x):
+        return torch.round(x)
+    @staticmethod
+    def backward(ctx, grad_output):
+        return grad_output
+##########################
+
+- Here, ctx is included because it is part of PyTorch's required function interface.
+- However, it is not actually used, since the backward pass does not need any saved values from the forward pass.
+
+- In such cases, it is also common to write _ctx to indicate that the argument is unused.
