@@ -256,9 +256,9 @@ def train():
 	for epoch in range(1, EPOCHS+1):
 		model.train()
 
-		total = 0
-		correct = 0
-		loss_sum = 0.0
+		total =0
+		correct =0
+		loss_sum =0.0
 
 		for x,y in train_loader:
 			x =x.to(DEVICE)
@@ -315,19 +315,81 @@ def debug_one_sample(model,dataset,idx=0):
 	print(f"acc2      = {acc2[0].tolist()}")
 
 ##############################
-##     export  txt / vh     ##
+##                          ##
 ##############################
-def twos_hex(v, width):
-	mask = (1 << width) - 1
-	x = int(v) & mask
-	hex_digits = (width + 3) // 4
+def twos_hex(v,width):
+	mask =(1<<width)-1
+	x =int(v)&mask
+	hex_digits=(width+3)//4
 	return f"{width}'h{x:0{hex_digits}X}"
 
 def flatten_row_major(mat_2d):
-	out = []
+	out =[]
 	for row in mat_2d:
 		out.extend(row)
 	return out
+
+FC1_W_TILE_MEM = "fc1_w_tile.mem"
+FC1_B_TILE_MEM = "fc1_b_tile.mem"
+FC2_W_TILE_MEM = "fc2_w_tile.mem"
+FC2_B_TILE_MEM = "fc2_b_tile.mem"
+
+FC1_TILE = 8
+FC2_TILE = 5
+
+def pack_word_lsb_first(values, elem_bits):
+	"""
+	Pack multiple integer values into one hex word string.
+
+	values[0] goes to the least-significant segment,
+	values[1] goes to the next segment, ...
+	"""
+	word =0
+	mask =(1<<elem_bits)-1
+	for i,v in enumerate(values):
+		word |=((int(v)&mask)<<(i*elem_bits))
+
+	total_bits =len(values)*elem_bits
+	hex_digits =(total_bits+3)//4
+	return f"{word:0{hex_digits}x}"
+
+def export_fc_weight_tile_mem(qW,tile,elem_bits,path):
+	"""
+	qW shape: [OUT_NUM, IN_NUM]
+
+	line order:
+		tile-major, then input-major
+
+	For each line, TILE weights are packed into one word:
+		values[0] -> LSB segment
+		values[1] -> next segment
+		...
+	"""
+	out_num,in_num =qW.shape
+	assert out_num%tile ==0,f"OUT_NUM={out_num} must be divisible by tile={tile}"
+
+	with open(path,"w",encoding="utf-8") as f:
+		for tile_base in range(0,out_num,tile):
+			for i in range(in_num):
+				vals =[qW[tile_base+k,i] for k in range(tile)]
+				f.write(pack_word_lsb_first(vals,elem_bits)+"\n")
+
+def export_fc_bias_tile_mem(qB,tile,elem_bits,path):
+	"""
+	qB shape: [OUT_NUM]
+
+	line order:
+		tile-major
+
+	Each line packs TILE bias values into one word.
+	"""
+	out_num =qB.shape[0]
+	assert out_num%tile ==0, f"OUT_NUM={out_num} must be divisible by tile={tile}"
+
+	with open(path,"w",encoding="utf-8") as f:
+		for tile_base in range(0,out_num,tile):
+			vals = [qB[tile_base + k] for k in range(tile)]
+			f.write(pack_word_lsb_first(vals,elem_bits)+"\n")
 
 @torch.no_grad()
 def export_files(model):
@@ -414,10 +476,18 @@ def export_files(model):
 		f.write("\n".join(lines))
 
 	print(f"Saved Verilog header to: {VH_PATH}")
+	# tile-packed mem export for BRAM-based sequential FC
+	export_fc_weight_tile_mem(qW1, tile=FC1_TILE, elem_bits=W1_BITS, path=FC1_W_TILE_MEM)
+	export_fc_bias_tile_mem  (qB1, tile=FC1_TILE, elem_bits=B1_BITS, path=FC1_B_TILE_MEM)
 
-# ============================================================
-# 10) main
-# ============================================================
+	export_fc_weight_tile_mem(qW2, tile=FC2_TILE, elem_bits=W2_BITS, path=FC2_W_TILE_MEM)
+	export_fc_bias_tile_mem  (qB2, tile=FC2_TILE, elem_bits=B2_BITS, path=FC2_B_TILE_MEM)
+
+	print(f"Saved tile mem files: {FC1_W_TILE_MEM}, {FC1_B_TILE_MEM}, {FC2_W_TILE_MEM}, {FC2_B_TILE_MEM}")
+
+##############################
+##           Main           ##
+##############################
 if __name__ == "__main__":
 	model = train()
 
