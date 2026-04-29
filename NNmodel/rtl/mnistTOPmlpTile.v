@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module mnistTOPmlp#(
+module mnistTOPmlpTile#(
 	parameter integer inNum     =784,
 	parameter integer hidNum    =128,
 	parameter integer outNum    =10,

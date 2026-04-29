@@ -4,8 +4,7 @@ module uartTOP#(
 	parameter integer boardCLK   =150_000_000,
 	parameter integer oversample =20,
 	parameter integer baudrate   =1_000_000,
-	parameter integer ACCwidth   =24
-)(
+	parameter integer ACCwidth   =24)(
 	input  wire clk,
 	input  wire rst,
 

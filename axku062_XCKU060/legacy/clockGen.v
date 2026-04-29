@@ -7,7 +7,6 @@ module clockGen#(
 	input  wire boardCLKn,
 	output wire clock
 );
-	`include "ceillog2.vh"
 	wire CLKibuf;
 	wire baseCLK;
 	IBUFDS clkIBUFDS(
@@ -25,7 +24,7 @@ module clockGen#(
 		end
 		else begin:genDivide
 			localparam integer divide =board/(2*target);
-			localparam integer divide_width =ceillog2(divide);
+			localparam integer divide_width =$clog2(divide);
 			reg [(divide_width-1):0] count =1'd0;
 			reg divClock =1'd0;
 			assign clock=divClock;
