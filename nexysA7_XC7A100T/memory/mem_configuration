@@ -1,0 +1,35 @@
+Memory Selection : DDR2 SDRAM
+
+In Controller Option:
+	Clock Period : 3,3333 [ps], 
+	PHY to Controller CLock Ratio: 2:1,
+	Memory Part: MT47H64M16HR-25E,
+	Data Width: 16,
+	Data Mask: checked,
+	Number of Bank Machines: 4,
+	ORDERING: Strict
+
+In Memory Options:
+	Input Clock Period: 5000 ps,
+	Burst Type: Sequential,
+	Output Drive Strength: Fullstrength,
+	RTT -ODT: 50ohms,
+	Controller Chip Select Pin: Enable,
+	Memory Address Mapping Selection: [Bank|ROW|COLUMN]
+
+FPGA Options:
+	System Clock: No Buffer,
+	Reference Clock: Use System Clock,
+	System Reset Polarity: ACTIVE LOW,
+	Debug Signals Control: OFF,
+	Internal Vref: checked,
+	IO Power Reduction: ON,
+	XADC Instantiation: Enabled
+
+Extended FPGA Options:
+	Internal Termination for High Range Banks: 50 ohms
+
+IO Planning Option:
+	Pin/Bank Selection Mode: Fixed Pin Out: Pre-existing pin out is known and fixed
+
+After configuration, load mig.ucf file in /nexysA7_XC7A100T/memory/constraints/ directory.
