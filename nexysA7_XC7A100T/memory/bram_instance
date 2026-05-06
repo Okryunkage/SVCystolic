@@ -1,0 +1,37 @@
+The module instance information can be found in project's XXX(project_name).gen/sources_1/ip/bram(instance_name)/bram.veo file.
+
+fc1w your_instance_name (
+  .clka(clka),    // input wire clka
+  .ena(ena),      // input wire ena
+  .wea(wea),      // input wire [0 : 0] wea
+  .addra(addra),  // input wire [12 : 0] addra
+  .dina(dina),    // input wire [63 : 0] dina
+  .douta(douta)  // output wire [63 : 0] douta
+);
+
+fc1b your_instance_name (
+  .clka(clka),    // input wire clka
+  .ena(ena),      // input wire ena
+  .wea(wea),      // input wire [0 : 0] wea
+  .addra(addra),  // input wire [2 : 0] addra
+  .dina(dina),    // input wire [255 : 0] dina
+  .douta(douta)  // output wire [255 : 0] douta
+);
+
+fc2w your_instance_name (
+  .clka(clka),    // input wire clka
+  .ena(ena),      // input wire ena
+  .wea(wea),      // input wire [0 : 0] wea
+  .addra(addra),  // input wire [6 : 0] addra
+  .dina(dina),    // input wire [39 : 0] dina
+  .douta(douta)  // output wire [39 : 0] douta
+);
+
+fc2b your_instance_name (
+  .clka(clka),    // input wire clka
+  .ena(ena),      // input wire ena
+  .wea(wea),      // input wire [0 : 0] wea
+  .addra(addra),  // input wire [0 : 0] addra
+  .dina(dina),    // input wire [159 : 0] dina
+  .douta(douta)  // output wire [159 : 0] douta
+);

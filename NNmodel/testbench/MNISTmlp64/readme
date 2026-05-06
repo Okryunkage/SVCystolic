@@ -1,0 +1,35 @@
+pillow library needed for testGen.py
+
+The testbench uses a runtime plusarg mechanism to pass values into the simulation without modifying the source code.
+A plusarg is an argument given when the simulator is launched, usually in the form +NAME=value.
+This is useful when the same testbench needs to be reused with different settings across multiple simulation runs.
+
+In Verilog, this is commonly done with $value$plusargs.
+Here, the $value part means that the simulator not only checks for the existence of a runtime argument, but also extracts the value associated with it.
+For example, if the simulator is launched with +EXPECTED_LABEL=7, $value$plusargs can parse the 7 and store it in a variable.
+This is different from $test$plusargs, which only checks whether a plusarg is present and does not read any value from it.
+
+In this testbench, the plusarg mechanism is used to set the expected classification label at runtime.
+
+##############################
+integer expected_label_int;
+reg[3:0] EXPECTED_LABEL;
+
+initial begin
+	expected_label_int =0;
+	if ($value$plusargs("EXPECTED_LABEL=%d",expected_label_int)) EXPECTED_LABEL =expected_label_int[3:0]; 
+	else EXPECTED_LABEL = 4'd0;
+    $display("EXPECTED_LABEL =%0d",EXPECTED_LABEL);
+end
+##############################
+
+n this code, expected_label_int is a temporary integer variable used to receive the value read from the runtime plusarg.
+EXPECTED_LABEL is the 4-bit signal that is actually used inside the testbench.
+
+At the start of simulation, the code first assigns a default value of 0.
+Then it calls $value$plusargs("EXPECTED_LABEL=%d", expected_label_int).
+This tells the simulator to look for a runtime argument matching the pattern +EXPECTED_LABEL=<decimal number>.
+If such an argument is found, the decimal value is parsed and written into expected_label_int, and then its lower 4 bits are copied into EXPECTED_LABEL.
+If the argument is not provided, the testbench falls back to 4'd0.
+
+This makes it possible to change the expected label for each simulation run without editing the testbench source or recompiling the design.
