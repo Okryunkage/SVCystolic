@@ -75,7 +75,7 @@ module fcBRAM#(
 			else         inputExtend ={{(accWidth-inWidth){1'b0}},var};
 		end
 	endfunction
-	function signed[(wWidth-1):0] weightExtend;
+	function signed[(accWidth-1):0] weightExtend;
 		input[(wWidth-1):0] var;
 		begin
 			weightExtend ={{(accWidth-wWidth){var[wWidth-1]}},var};
@@ -99,7 +99,7 @@ module fcBRAM#(
 			wbaseAddr <={wAddrW{1'b0}};
 			inIdx     <={inIdxW{1'b0}};
 			tileIdx   <={tileIdxW{1'b0}};
-			for(i=0;i<tile;i=i+1) acc[k] <={accWidth{1'b0}};
+			for(i=0;i<tile;i=i+1) acc[i] <={accWidth{1'b0}};
 		end
 		else begin
 			done <=1'b0;

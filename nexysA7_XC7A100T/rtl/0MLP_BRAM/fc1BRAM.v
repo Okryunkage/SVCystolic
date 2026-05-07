@@ -1,22 +1,23 @@
 `timescale 1ns/1ps
 
-module fc1BRAM#(
-	parameter tile     =8,
-
-	parameter inNum    =784,
-	parameter outNum   =64,
-	parameter inWidth  =8,
-	parameter wWidth   =8,
-	parameter bWidth   =32,
-	parameter accWidth =32,
-	parameter inSigned =0)(
+module fc1BRAM(
 	input                                    clk,
 	input                                    rst,
 	input                                    start,
-	input            [(inNum*inWidth-1):0]   inFlat,
+	input            [(784*8-1):0]           inFlat,
 	output reg                               busy,
 	output reg                               done,
-	output reg signed[(outNum*accWidth-1):0] outFlat);
+	output reg signed[(64*32-1):0]           outFlat);
+
+	parameter tile     =8;
+
+	parameter inNum    =784;
+	parameter outNum   =64;
+	parameter inWidth  =8;
+	parameter wWidth   =8;
+	parameter bWidth   =32;
+	parameter accWidth =32;
+	parameter inSigned =0;
 
 	localparam numTile  =outNum/tile;
 	localparam tileIdxW =$clog2(numTile);
@@ -77,7 +78,7 @@ module fc1BRAM#(
 			else         inputExtend ={{(accWidth-inWidth){1'b0}},var};
 		end
 	endfunction
-	function signed[(wWidth-1):0] weightExtend;
+	function signed[(accWidth-1):0] weightExtend;
 		input[(wWidth-1):0] var;
 		begin
 			weightExtend ={{(accWidth-wWidth){var[wWidth-1]}},var};
@@ -101,7 +102,7 @@ module fc1BRAM#(
 			wbaseAddr <={wAddrW{1'b0}};
 			inIdx     <={inIdxW{1'b0}};
 			tileIdx   <={tileIdxW{1'b0}};
-			for(i=0;i<tile;i=i+1) acc[k] <={accWidth{1'b0}};
+			for(i=0;i<tile;i=i+1) acc[i] <={accWidth{1'b0}};
 		end
 		else begin
 			done <=1'b0;
@@ -119,7 +120,7 @@ module fc1BRAM#(
 				end
 				biasReq:begin
 					baddr <=tileIdx;
-					state<=biasLoad;
+					state<=biasWait;
 				end
 				biasWait: state <=biasLoad;
 				biasLoad:begin

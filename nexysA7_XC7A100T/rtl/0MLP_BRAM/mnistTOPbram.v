@@ -1,33 +1,34 @@
 `timescale 1ns/1ps
 
-module mnistTOPmlpTile#(
-	parameter integer inNum     =784,
-	parameter integer hidNum    =128,
-	parameter integer outNum    =10,
-	parameter integer inWidth   =8,
-	parameter integer w1Width   =8,
-	parameter integer b1Width   =32,
-	parameter integer acc1Width =32,
-	parameter integer a1Width   =12,
-	parameter integer w2Width   =8,
-	parameter integer b2Width   =32,
-	parameter integer outWidth  =32,
-	parameter integer fc1Tile   =8,
-	parameter integer fc2Tile   =5)(
+module mnistTOPbram(
 	input  wire                      clk,
 	input  wire                      rst,
 	input  wire                      start,
-	input  wire[(inNum*inWidth-1):0] imgFlat,
+	input  wire[(784*8-1):0] imgFlat,
 	output reg                       busy,
 	output reg                       done,
 	output wire[3:0]                 predDigit);
 
-	localparam[2:0] idle        =3'd0;
-	localparam[2:0] fc1start    =3'd1;
-	localparam[2:0] fc1wait     =3'd2;
-	localparam[2:0] fc2start    =3'd3;
-	localparam[2:0] fc2wait     =3'd4;
-	localparam[2:0] done        =3'd5;
+	localparam integer inNum     =784;
+	localparam integer hidNum    =64;
+	localparam integer outNum    =10;
+	localparam integer inWidth   =8;
+	localparam integer w1Width   =8;
+	localparam integer b1Width   =32;
+	localparam integer acc1Width =32;
+	localparam integer a1Width   =8;
+	localparam integer w2Width   =8;
+	localparam integer b2Width   =32;
+	localparam integer outWidth  =32;
+	localparam integer fc1Tile   =8;
+	localparam integer fc2Tile   =5;
+
+	localparam[2:0] idleS       =3'd0;
+	localparam[2:0] fc1startS   =3'd1;
+	localparam[2:0] fc1waitS    =3'd2;
+	localparam[2:0] fc2startS   =3'd3;
+	localparam[2:0] fc2waitS    =3'd4;
+	localparam[2:0] doneS       =3'd5;
 
 	reg[2:0] state;
 
@@ -40,31 +41,18 @@ module mnistTOPmlpTile#(
 	wire       [(hidNum*a1Width-1):0]   act1Flat;
 	wire signed[(outNum*outWidth-1):0]  acc2Flat;
 
-	`include "mnist_fixed_mlp_params.vh"
-
-	fcBRAM#(
-		.tile(fc1Tile),
-		.inNum(inNum),.outNum(hidNum),
-		.inWidth(inWidth),.wWidth(w1Width),.bWidth(b1Width),.accWidth(acc1Width),
-		.inSigned(0),
-		.wMEMfile("fc1_w_tile.mem"),.bMEMfile("fc1_b_tile.mem"))
-		fc1seq(.clk(clk),.rst(rst),.start(fc1_start),.inFlat(imgFlat),.busy(fc1busy),.done(fc1done),.outFlat(acc1Flat));
+	fc1BRAM fc1(.clk(clk),.rst(rst),.start(fc1start),.inFlat(imgFlat),.busy(fc1busy),.done(fc1done),.outFlat(acc1Flat));
 	relu#(.number(hidNum),.width(acc1Width)) relu1(.inFlat(acc1Flat),.outFlat(relu1Flat));
-	requantUsign#(.number(hidNum),.inWidth(acc1Width),.outWidth(a1Width),.shift(B1_FRAC_FILE-A1_FRAC_FILE))
-		rq1(.inFlat(relu1Flat),outFlat(act1Flat));
+	//shift for (B1_FRAC_FILE-A1_FRAC_FILE) =(X_FRAC+W1_FRAC)-A1_FRAC =8+6-4 =10
+	requantUsign#(.number(hidNum),.inWidth(acc1Width),.outWidth(a1Width),.shift(10))
+		rq1(.inFlat(relu1Flat),.outFlat(act1Flat));
 	
-	fcBRAM#(
-		.tile(fc2Tile),
-		.inNum(hidNum),.outNum(outNum),
-		.inWidth(a1Width),.wWidth(w2Width),.bWidth(b2Width),.accWidth(outWidth),
-		.inSigned(0),
-		.wMEMfile("fc2_w_tile.mem"),.bMEMfile("fc2_b_tile.mem"))
-		fc2seq(.clk(clk),.rst(rst),.start(fc2_start),.inFlat(act1Flat),.busy(fc2busy),.done(fc2done),.outFlat(acc2Flat));
+	fc2BRAM fc2(.clk(clk),.rst(rst),.start(fc2start),.inFlat(act1Flat),.busy(fc2busy),.done(fc2done),.outFlat(acc2Flat));
 	argmax#(.number(outNum),.width(outWidth)) argmax0(.inFlat(acc2Flat),.outIndex(predDigit));
 
 	always@(posedge clk or posedge rst)begin
 		if(rst)begin
-			state    <=idle;
+			state    <=idleS;
 			fc1start <=1'b0;
 			fc2start <=1'b0;
 			busy     <=1'b0;
@@ -75,29 +63,29 @@ module mnistTOPmlpTile#(
 			fc2start <=1'b0;
 			done     <=1'b0;
 			case(state)
-				idle:begin
+				idleS:begin
 					busy <=1'b0;
 					if(start)begin
 						busy  <=1'b1;
-						state <=fc1start;
+						state <=fc1startS;
 					end
 				end
-				fc1start:begin
+				fc1startS:begin
 					fc1start <=1'b1;
-					state    <=fc1wait;
+					state    <=fc1waitS;
 				end
-				fc1wait: if(fc1done) state <=fc2start;
-				fc2start:begin
+				fc1waitS: if(fc1done) state <=fc2startS;
+				fc2startS:begin
 					fc2start <=1'b1;
-					state    <=fc2wait;
+					state    <=fc2waitS;
 				end
-				fc2wait: if(fc2done) state <=done;
-				done:begin
+				fc2waitS: if(fc2done) state <=doneS;
+				doneS:begin
 					busy  <=1'b0;
 					done  <=1'b1;
-					state <=idle;
+					state <=idleS;
 				end
-				default: state <=idle;
+				default: state <=idleS;
 			endcase
 		end
 	end
