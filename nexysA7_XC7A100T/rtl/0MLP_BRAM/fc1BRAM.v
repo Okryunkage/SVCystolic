@@ -9,9 +9,7 @@ module fc1BRAM#(
 	parameter wWidth   =8,
 	parameter bWidth   =32,
 	parameter accWidth =32,
-	parameter inSigned =0,
-	parameter wMEMfile ="fc_w.mem",
-	parameter bMEMfile ="fc_b.mem")(
+	parameter inSigned =0)(
 	input                                    clk,
 	input                                    rst,
 	input                                    start,
@@ -23,7 +21,7 @@ module fc1BRAM#(
 	localparam numTile  =outNum/tile;
 	localparam tileIdxW =$clog2(numTile);
 
-	localparam wDepth   =numTile*outNum;
+	localparam wDepth   =numTile*inNum;
 	localparam wAddrW   =$clog2(wDepth);
 	localparam bAddrW   =$clog2(numTile);
 	localparam inIdxW   =$clog2(inNum);
@@ -31,10 +29,12 @@ module fc1BRAM#(
 
 	localparam[2:0] idle     =3'd0;
 	localparam[2:0] biasReq  =3'd1;
-	localparam[2:0] biasLoad =3'd2;
-	localparam[2:0] wReq     =3'd3;
-	localparam[2:0] MAC      =3'd4;
-	localparam[2:0] write    =3'd5;
+	localparam[2:0] biasWait =3'd2;
+	localparam[2:0] biasLoad =3'd3;
+	localparam[2:0] wReq     =3'd4;
+	localparam[2:0] wWait    =3'd5;
+	localparam[2:0] MAC      =3'd6;
+	localparam[2:0] write    =3'd7;
 
 	reg[2:0] state;
 
@@ -56,8 +56,8 @@ module fc1BRAM#(
 		bdata <=bMEM[baddr];
 	end
 	*/
-	fc1w fc1w0(.clka(clk),.ena(1'b1),.wea(1'b0),.addra(waddr),.dina(64'd0),.douta(wdata));
-	fc1b fc1b0(.clka(clk),.ena(1'b1),.wea(1'b0),.addra(baddr),.dina(256'd0),.douta(bdata));
+	fc1w fc1w0(.clka(clk),.ena(1'b1),.wea(1'b0),.addra(waddr),.dina({(tile*wWidth){1'b0}}),.douta(wdata));
+	fc1b fc1b0(.clka(clk),.ena(1'b1),.wea(1'b0),.addra(baddr),.dina({(tile*bWidth){1'b0}}),.douta(bdata));
 	integer i;
 
 	reg[(inIdxW-1):0]   inIdx;
@@ -117,18 +117,26 @@ module fc1BRAM#(
 						state     <=biasReq;
 					end
 				end
-				biasReq: state<=biasLoad;
+				biasReq:begin
+					baddr <=tileIdx;
+					state<=biasLoad;
+				end
+				biasWait: state <=biasLoad;
 				biasLoad:begin
 					for(i=0;i<tile;i=i+1) acc[i] <=biasExtend(bdata[(i*bWidth)+:bWidth]);
 					inIdx <={inIdxW{1'b0}};
 					waddr <=wbaseAddr;
 					state <=wReq;
 				end
-				wReq: state <=MAC;
+				wReq:begin
+					waddr <=wbaseAddr+inIdx;
+					state <=wWait;
+				end
+				wWait: state <=MAC;
 				MAC:begin
 					inExtend =inputExtend(inFlat[(inIdx*inWidth)+:inWidth]);
 					for(i=0;i<tile;i=i+1)begin
-						wExtend  =weightExtend(wdata[(i*wWidth)+:wWidth]);
+						wExtend =weightExtend(wdata[(i*wWidth)+:wWidth]);
 						multCut =$signed(inExtend*wExtend);
 						acc[i] <=acc[i]+multCut;
 					end
@@ -136,7 +144,7 @@ module fc1BRAM#(
 					else begin
 						inIdx <=inIdx+1'b1;
 						waddr <=wbaseAddr+inIdx+1'b1;
-						state <=MAC;
+						state <=wReq;
 					end
 				end
 				write:begin
