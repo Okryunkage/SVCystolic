@@ -1,22 +1,23 @@
 `timescale 1ns/1ps
 
-module fc2BRAM#(
-	parameter tile     =5,
-
-	parameter inNum    =64,
-	parameter outNum   =10,
-	parameter inWidth  =8,
-	parameter wWidth   =8,
-	parameter bWidth   =32,
-	parameter accWidth =32,
-	parameter inSigned =0)(
+module fc2BRAM(
 	input                                    clk,
 	input                                    rst,
 	input                                    start,
-	input            [(inNum*inWidth-1):0]   inFlat,
+	input            [(64*8-1):0]            inFlat,
 	output reg                               busy,
 	output reg                               done,
-	output reg signed[(outNum*accWidth-1):0] outFlat);
+	output reg signed[(10*32-1):0]           outFlat);
+
+	localparam tile     =5;
+
+	localparam inNum    =64;
+	localparam outNum   =10;
+	localparam inWidth  =8;
+	localparam wWidth   =8;
+	localparam bWidth   =32;
+	localparam accWidth =32;
+	localparam inSigned =0;
 
 	localparam numTile  =outNum/tile;
 	localparam tileIdxW =$clog2(numTile);
@@ -27,16 +28,18 @@ module fc2BRAM#(
 	localparam inIdxW   =$clog2(inNum);
 	localparam outIdxW  =$clog2(numTile);
 
-	localparam[2:0] idle     =3'd0;
-	localparam[2:0] biasReq  =3'd1;
-	localparam[2:0] biasWait =3'd2;
-	localparam[2:0] biasLoad =3'd3;
-	localparam[2:0] wReq     =3'd4;
-	localparam[2:0] wWait    =3'd5;
-	localparam[2:0] MAC      =3'd6;
-	localparam[2:0] write    =3'd7;
+	localparam[3:0] idle     =3'd0;
+	localparam[3:0] biasReq  =3'd1;
+	localparam[3:0] biasWait0=3'd2;
+	localparam[3:0] biasWait1=3'd3;
+	localparam[3:0] biasLoad =3'd4;
+	localparam[3:0] wReq     =3'd5;
+	localparam[3:0] wWait0   =3'd6;
+	localparam[3:0] wWait1   =3'd7;
+	localparam[3:0] MAC      =3'd8;
+	localparam[3:0] write    =3'd9;
 
-	reg[2:0] state;
+	reg[3:0] state;
 
 	//(* ram_style ="block" *) reg signed[(tile*wWidth-1):0] wMEM[0:(wDepth-1)];
 	//(* ram_style ="block" *) reg signed[(tile*bWidth-1):0] bMEM[0:(numTile-1)];
@@ -56,8 +59,8 @@ module fc2BRAM#(
 		bdata <=bMEM[baddr];
 	end
 	*/
-	fc1w fc1w0(.clka(clk),.ena(1'b1),.wea(1'b0),.addra(waddr),.dina({(tile*wWidth){1'b0}}),.douta(wdata));
-	fc1b fc1b0(.clka(clk),.ena(1'b1),.wea(1'b0),.addra(baddr),.dina({(tile*bWidth){1'b0}}),.douta(bdata));
+	fc2w fc2w0(.clka(clk),.ena(1'b1),.wea(1'b0),.addra(waddr),.dina({(tile*wWidth){1'b0}}),.douta(wdata));
+	fc2b fc2b0(.clka(clk),.ena(1'b1),.wea(1'b0),.addra(baddr),.dina({(tile*bWidth){1'b0}}),.douta(bdata));
 	integer i;
 
 	reg[(inIdxW-1):0]   inIdx;
@@ -77,7 +80,7 @@ module fc2BRAM#(
 			else         inputExtend ={{(accWidth-inWidth){1'b0}},var};
 		end
 	endfunction
-	function signed[(wWidth-1):0] weightExtend;
+	function signed[(accWidth-1):0] weightExtend;
 		input[(wWidth-1):0] var;
 		begin
 			weightExtend ={{(accWidth-wWidth){var[wWidth-1]}},var};
@@ -101,7 +104,7 @@ module fc2BRAM#(
 			wbaseAddr <={wAddrW{1'b0}};
 			inIdx     <={inIdxW{1'b0}};
 			tileIdx   <={tileIdxW{1'b0}};
-			for(i=0;i<tile;i=i+1) acc[k] <={accWidth{1'b0}};
+			for(i=0;i<tile;i=i+1) acc[i] <={accWidth{1'b0}};
 		end
 		else begin
 			done <=1'b0;
@@ -119,9 +122,10 @@ module fc2BRAM#(
 				end
 				biasReq:begin
 					baddr <=tileIdx;
-					state<=biasLoad;
+					state<=biasWait0;
 				end
-				biasWait: state <=biasLoad;
+				biasWait0: state <=biasWait1;
+				biasWait1: state <=biasLoad;
 				biasLoad:begin
 					for(i=0;i<tile;i=i+1) acc[i] <=biasExtend(bdata[(i*bWidth)+:bWidth]);
 					inIdx <={inIdxW{1'b0}};
@@ -130,9 +134,10 @@ module fc2BRAM#(
 				end
 				wReq:begin
 					waddr <=wbaseAddr+inIdx;
-					state <=wWait;
+					state <=wWait0;
 				end
-				wWait: state <=MAC;
+				wWait0: state <=wWait1;
+				wWait1: state <=MAC;
 				MAC:begin
 					inExtend =inputExtend(inFlat[(inIdx*inWidth)+:inWidth]);
 					for(i=0;i<tile;i=i+1)begin
