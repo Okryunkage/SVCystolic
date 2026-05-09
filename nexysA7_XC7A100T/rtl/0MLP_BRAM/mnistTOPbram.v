@@ -4,7 +4,7 @@ module mnistTOPbram(
 	input  wire                      clk,
 	input  wire                      rst,
 	input  wire                      start,
-	input  wire[(784*8-1):0] imgFlat,
+	input  wire[(784*8-1):0]         imgFlat,
 	output reg                       busy,
 	output reg                       done,
 	output wire[3:0]                 predDigit);
