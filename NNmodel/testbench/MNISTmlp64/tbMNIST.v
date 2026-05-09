@@ -6,7 +6,7 @@
 `include "mnistTOPmlp.v"
 `timescale 1ns/1ps
 
-module tb_mnistTOPmlp_debug;
+module tb_mnistTOPmlp;
 	`include "mnistMLP64.vh"
 	localparam integer IN_NUM     =IN_N_FILE;
 	localparam integer HID_NUM    =HID_N_FILE;
@@ -48,8 +48,8 @@ module tb_mnistTOPmlp_debug;
 		dut(.imgFlat(imgFlat),.predDigit(predDigit));
 
 	initial begin
-		$dumpfile("mnist_out.vcd");
-		$dumpvars(0, tb_mnistTOPmlp_debug);
+		$dumpfile("out.vcd");
+		$dumpvars(0, tb_mnistTOPmlp);
 	end
 
 	task print_acc1;
