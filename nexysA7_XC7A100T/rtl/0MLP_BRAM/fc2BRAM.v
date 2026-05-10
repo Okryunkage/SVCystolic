@@ -28,16 +28,16 @@ module fc2BRAM(
 	localparam inIdxW   =$clog2(inNum);
 	localparam outIdxW  =$clog2(numTile);
 
-	localparam[3:0] idle     =3'd0;
-	localparam[3:0] biasReq  =3'd1;
-	localparam[3:0] biasWait0=3'd2;
-	localparam[3:0] biasWait1=3'd3;
-	localparam[3:0] biasLoad =3'd4;
-	localparam[3:0] wReq     =3'd5;
-	localparam[3:0] wWait0   =3'd6;
-	localparam[3:0] wWait1   =3'd7;
-	localparam[3:0] MAC      =3'd8;
-	localparam[3:0] write    =3'd9;
+	localparam[3:0] idle     =4'd0;
+	localparam[3:0] biasReq  =4'd1;
+	localparam[3:0] biasWait0=4'd2;
+	localparam[3:0] biasWait1=4'd3;
+	localparam[3:0] biasLoad =4'd4;
+	localparam[3:0] wReq     =4'd5;
+	localparam[3:0] wWait0   =4'd6;
+	localparam[3:0] wWait1   =4'd7;
+	localparam[3:0] MAC      =4'd8;
+	localparam[3:0] write    =4'd9;
 
 	reg[3:0] state;
 
@@ -74,22 +74,29 @@ module fc2BRAM(
 	reg signed[(accWidth-1):0] multCut;
 
 	function signed[(accWidth-1):0] inputExtend;
-		input[(inWidth-1):0] var;
+		input[(inWidth-1):0] inValue;
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
+		//    !!!!!!!!!!DO NOT EVER USE "VAR" AS THE INPUT VARIABLE NAME!!!!!!!!!!    //
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
 		begin
-			if(inSigned) inputExtend ={{(accWidth-inWidth){var[inWidth-1]}},var};
-			else         inputExtend ={{(accWidth-inWidth){1'b0}},var};
+			if(inSigned) inputExtend ={{(accWidth-inWidth){inValue[inWidth-1]}},inValue};
+			else         inputExtend ={{(accWidth-inWidth){1'b0}},inValue};
 		end
 	endfunction
 	function signed[(accWidth-1):0] weightExtend;
-		input[(wWidth-1):0] var;
+		input[(wWidth-1):0] inValue;
 		begin
-			weightExtend ={{(accWidth-wWidth){var[wWidth-1]}},var};
+			weightExtend ={{(accWidth-wWidth){inValue[wWidth-1]}},inValue};
 		end
 	endfunction
 	function signed[(accWidth-1):0] biasExtend;
-		input[(bWidth-1):0] var;
+		input[(bWidth-1):0] inValue;
 		begin
-			biasExtend ={{(accWidth-bWidth){var[bWidth-1]}},var};
+			biasExtend ={{(accWidth-bWidth){inValue[bWidth-1]}},inValue};
 		end
 	endfunction
 

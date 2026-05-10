@@ -29,7 +29,7 @@ module UARTtest(
 	tickgen #(.CLK(200_000_000),.TICK(8_000),.ACCwidth(32)) segTickGen(clk200,{1'b0},segCLK);
 
 	reg[63:0] asciiData;
-	seg8Ascii(clk200,{1'b0},asciiData,segSel,seg,segDot);
+	seg8Ascii ascii(clk200,{1'b0},asciiData,segSel,seg,segDot);
 
     transmit #(.bits(8)) TX(.clk(clk200),.tick(TXclk),.en(TXen),.start(start),.in(sendITEM),.out(UARTRX),.done(done),.busy(busy),.cts({1'b1}));
 	receive #(.bits(8),.oversample(20)) RX(.clk(clk200),.tick(RXclk),.en(!TXen),.in(UARTTX),.rst({1'b0}),.out(RXout),.done(doneRX),.busy(busyRX),.error(errorRX));
