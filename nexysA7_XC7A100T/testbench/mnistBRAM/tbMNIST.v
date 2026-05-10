@@ -3,6 +3,7 @@
 `include "fc1BRAM.v"
 `include "fc2BRAM.v"
 `include "sign.v"
+`include "relu.v"
 `include "argmax.v"
 `include "requantize.v"
 `include "mnistTOPbram.v"
@@ -73,7 +74,7 @@ module tb_mnistTOPbram;
 		integer k;
 		begin
 			$write("acc1Flat =[");
-			for(k=0;k<hidNum;k=K+1)begin
+			for(k=0;k<hidNum;k=k+1)begin
 				$write("%0d",$signed(dut.acc1Flat[(k*acc1Width)+:acc1Width]));
 				if(k!=hidNum-1) $write(", ");
 			end
@@ -85,9 +86,9 @@ module tb_mnistTOPbram;
 		integer k;
 		begin
 			$write("relu1Flat = [");
-			for(k=0;k<HID_NUM;k=k+1)begin
-				$write("%0d",$signed(dut.reluFlat[(k*ACC1_WIDTH)+:ACC1_WIDTH]));
-				if(k !=HID_NUM-1) $write(", ");
+			for(k=0;k<hidNum;k=k+1)begin
+				$write("%0d",$signed(dut.relu1Flat[(k*acc1Width)+:acc1Width]));
+				if(k !=hidNum-1) $write(", ");
 			end
 			$write("]\n");
 		end
@@ -96,10 +97,10 @@ module tb_mnistTOPbram;
 	task print_act1;
 		integer k;
 		begin
-			$write("actFlat = [");
-			for(k=0; k<HID_NUM; k=k+1)begin
-				$write("%0d",dut.actFlat[(k*A1_WIDTH)+:A1_WIDTH]);
-				if(k !=HID_NUM-1) $write(", ");
+			$write("act1Flat = [");
+			for(k=0; k<hidNum; k=k+1)begin
+				$write("%0d",dut.act1Flat[(k*a1Width)+:a1Width]);
+				if(k !=hidNum-1) $write(", ");
 			end
 			$write("]\n");
 		end
@@ -108,10 +109,10 @@ module tb_mnistTOPbram;
 	task print_acc2;
 		integer k;
 		begin
-			$write("outFlat = [");
-			for(k=0;k<OUT_NUM;k=k+1) begin
-				$write("%0d",$signed(dut.outFlat[(k*OUT_WIDTH)+:OUT_WIDTH]));
-				if(k !=OUT_NUM-1) $write(", ");
+			$write("acc2Flat = [");
+			for(k=0;k<outNum;k=k+1) begin
+				$write("%0d",$signed(dut.acc2Flat[(k*outWidth)+:outWidth]));
+				if(k !=outNum-1) $write(", ");
 			end
 			$write("]\n");
 		end
@@ -122,7 +123,7 @@ module tb_mnistTOPbram;
 			$display("--------------------------------------------------");
 			$display("DEBUG CASE");
 			$display("predDigit      = %0d",predDigit);
-			$display("EXPECTED_LABEL = %0d",EXPECTED_LABEL);
+			$display("EXPECTED_LABEL = %0d",expectedLabel);
 			print_input_head();
 			print_acc1();
 			print_relu1();

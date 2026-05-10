@@ -1,3 +1,6 @@
+//Convert a binary input value into packed decimal ASCII digits,
+//With the least-significant decimal digit stored in the lowest byte.
+
 `timescale 1ns/1ps
 
 module bin2decASCII0#(

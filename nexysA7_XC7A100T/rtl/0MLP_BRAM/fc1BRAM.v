@@ -72,22 +72,29 @@ module fc1BRAM(
 	reg signed[(accWidth-1):0] multCut;
 
 	function signed[(accWidth-1):0] inputExtend;
-		input[(inWidth-1):0] var;
+		input[(inWidth-1):0] inValue;
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
+		//    !!!!!!!!!!DO NOT EVER USE "VAR" AS THE INPUT VARIABLE NAME!!!!!!!!!!    //
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
 		begin
-			if(inSigned) inputExtend ={{(accWidth-inWidth){var[inWidth-1]}},var};
-			else         inputExtend ={{(accWidth-inWidth){1'b0}},var};
+			if(inSigned) inputExtend ={{(accWidth-inWidth){inValue[inWidth-1]}},inValue};
+			else         inputExtend ={{(accWidth-inWidth){1'b0}},inValue};
 		end
 	endfunction
 	function signed[(accWidth-1):0] weightExtend;
-		input[(wWidth-1):0] var;
+		input[(wWidth-1):0] inValue;
 		begin
-			weightExtend ={{(accWidth-wWidth){var[wWidth-1]}},var};
+			weightExtend ={{(accWidth-wWidth){inValue[wWidth-1]}},inValue};
 		end
 	endfunction
 	function signed[(accWidth-1):0] biasExtend;
-		input[(bWidth-1):0] var;
+		input[(bWidth-1):0] inValue;
 		begin
-			biasExtend ={{(accWidth-bWidth){var[bWidth-1]}},var};
+			biasExtend ={{(accWidth-bWidth){inValue[bWidth-1]}},inValue};
 		end
 	endfunction
 
