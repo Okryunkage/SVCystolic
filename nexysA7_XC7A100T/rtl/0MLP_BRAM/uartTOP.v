@@ -13,7 +13,7 @@ module uartTOP#(
 	output wire uartTX,
 
 	input  wire       TXstart,
-	input  wire [7:0] Txitem,
+	input  wire [7:0] TXitem,
 
 	output wire TXdone,
 	output wire TXbusy,

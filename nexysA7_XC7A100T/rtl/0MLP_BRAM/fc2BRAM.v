@@ -46,8 +46,8 @@ module fc2BRAM(
 
 	reg[(wAddrW-1):0] waddr;
 	reg[(bAddrW-1):0] baddr;
-	reg signed[(wWidth*tile-1):0] wdata;
-	reg signed[(bWidth*tile-1):0] bdata;
+	wire signed[(wWidth*tile-1):0] wdata;
+	wire signed[(bWidth*tile-1):0] bdata;
 	/*
 	initial begin
 		$readmemh(wMEMfile,wMEM);

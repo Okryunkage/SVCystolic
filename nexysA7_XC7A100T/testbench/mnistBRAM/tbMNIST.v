@@ -2,9 +2,7 @@
 `include "MNISTbram.v"
 `include "fc1BRAM.v"
 `include "fc2BRAM.v"
-`include "sign.v"
-`include "relu.v"
-`include "argmax.v"
+`include "functions.v"
 `include "requantize.v"
 `include "mnistTOPbram.v"
 `timescale 1ns/1ps
