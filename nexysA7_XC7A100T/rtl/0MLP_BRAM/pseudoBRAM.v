@@ -30,7 +30,7 @@ module pseudoBRAM#(
 			reg[(dataWidth-1):0] doutPIPE;
 			always@(posedge clka)begin
 				if(ena)begin
-					if(wea) mem[addra] <= dina;
+					if(wea) mem[addra] <=dina;
 					doutPIPE <=mem[addra];
 					douta    <=doutPIPE;
 				end

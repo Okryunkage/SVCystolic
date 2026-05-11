@@ -28,24 +28,26 @@ module fc1BRAM(
 	localparam inIdxW   =$clog2(inNum);
 	localparam outIdxW  =$clog2(numTile);
 
-	localparam[2:0] idle     =3'd0;
-	localparam[2:0] biasReq  =3'd1;
-	localparam[2:0] biasWait =3'd2;
-	localparam[2:0] biasLoad =3'd3;
-	localparam[2:0] wReq     =3'd4;
-	localparam[2:0] wWait    =3'd5;
-	localparam[2:0] MAC      =3'd6;
-	localparam[2:0] write    =3'd7;
+	localparam[3:0] idle     =4'd0;
+	localparam[3:0] biasReq  =4'd1;
+	localparam[3:0] biasWait0=4'd2;
+	localparam[3:0] biasWait1=4'd3;
+	localparam[3:0] biasLoad =4'd4;
+	localparam[3:0] wReq     =4'd5;
+	localparam[3:0] wWait0   =4'd6;
+	localparam[3:0] wWait1   =4'd7;
+	localparam[3:0] MAC      =4'd8;
+	localparam[3:0] write    =4'd9;
 
-	reg[2:0] state;
+	reg[3:0] state;
 
 	//(* ram_style ="block" *) reg signed[(tile*wWidth-1):0] wMEM[0:(wDepth-1)];
 	//(* ram_style ="block" *) reg signed[(tile*bWidth-1):0] bMEM[0:(numTile-1)];
 
 	reg[(wAddrW-1):0] waddr;
 	reg[(bAddrW-1):0] baddr;
-	reg signed[(wWidth*tile-1):0] wdata;
-	reg signed[(bWidth*tile-1):0] bdata;
+	wire signed[(wWidth*tile-1):0] wdata;
+	wire signed[(bWidth*tile-1):0] bdata;
 	/*
 	initial begin
 		$readmemh(wMEMfile,wMEM);
@@ -115,6 +117,7 @@ module fc1BRAM(
 			done <=1'b0;
 			case(state)
 				idle:begin
+					busy <=1'b0;
 					if(start)begin
 						busy      <=1'b1;
 						outFlat   <={(outNum*accWidth){1'b0}};
@@ -127,9 +130,10 @@ module fc1BRAM(
 				end
 				biasReq:begin
 					baddr <=tileIdx;
-					state<=biasWait;
+					state<=biasWait0;
 				end
-				biasWait: state <=biasLoad;
+				biasWait0: state <=biasWait1;
+				biasWait1: state <=biasLoad;
 				biasLoad:begin
 					for(i=0;i<tile;i=i+1) acc[i] <=biasExtend(bdata[(i*bWidth)+:bWidth]);
 					inIdx <={inIdxW{1'b0}};
@@ -138,9 +142,10 @@ module fc1BRAM(
 				end
 				wReq:begin
 					waddr <=wbaseAddr+inIdx;
-					state <=wWait;
+					state <=wWait0;
 				end
-				wWait: state <=MAC;
+				wWait0: state <=wWait1;
+				wWait1: state <=MAC;
 				MAC:begin
 					inExtend =inputExtend(inFlat[(inIdx*inWidth)+:inWidth]);
 					for(i=0;i<tile;i=i+1)begin
