@@ -11,8 +11,8 @@ class SVC:
         print(self.name,"hello, SVC!")
 #################
 
-- Here, self.name means the name value stored in that particular Dog object.
-- When bark() is called, self tells Python which object is using the method.
+- Here, self.name means the name value stored in that particular SVC object.
+- When research() is called, self tells Python which object is using the method.
 
 For instance:
 	lab1 =SVC("cial")

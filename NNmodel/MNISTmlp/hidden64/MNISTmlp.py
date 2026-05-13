@@ -11,34 +11,29 @@ DEVICE ="cuda" if torch.cuda.is_available() else "cpu"
 SEED = 0
 torch.manual_seed(SEED)
 
-INPUT_DIM  =784
-HIDDEN_DIM =64
-OUTPUT_DIM =10
+batchSize =128
+epochNum  =10
+learnRate =1e-3
 
-BATCH_SIZE =128
-EPOCHS     =10
-LR         =1e-3
+inNum   =784
+hidNum  =64
+outNum  =10
+inWidth =8
+inFrac  =8
+w1Width =8
+w1Frac  =6
+b1Width =32
+b1Frac  =inFrac+w1Frac
+a1Width =8
+a1Frac  =4
+w2Width =8
+w2Frac  =6
+b2Width =32
+b2Frac  =a1Frac+w2Frac
 
-#input format config
-X_BITS =8
-X_FRAC =8
-#Layer1 params
-W1_BITS =8 # signed
-W1_FRAC =6
-B1_BITS =32 # signed, accumulator-aligned
-B1_FRAC =X_FRAC+W1_FRAC# important
-#Hidden activation after ReLU
-A1_BITS =8 # unsigned
-A1_FRAC =4
-#Layer2 params
-W2_BITS =8 # signed
-W2_FRAC =6
-B2_BITS =32 # signed, accumulator-aligned
-B2_FRAC =A1_FRAC+W2_FRAC # important
-
-MODEL_PATH ="mnistMLP64.pth"
-TXT_PATH   ="mnistMLP64.txt"
-VH_PATH    ="../mnistMLP64.vh"
+modelPath  ="mnistMLP64.pth"
+txtPath   ="mnistMLP64.txt"
+vhPath    ="../mnistMLP64.vh"
 
 ##############################
 ##     Function Prepare     ##
@@ -55,12 +50,12 @@ def fake_quant_signed(x,num_bits,frac_bits):
 	#symmetric signed fake quant
 	#q =round(x*2^frac_bits), clipped to signed range
 	#dq =q/2^frac_bits
-	qmin =-(1<<(num_bits-1))
+	qmin = -(1<<(num_bits-1))
 	qmax = (1<<(num_bits-1))-1
 	scale = 1<<frac_bits
 	q =RoundSTE.apply(x*scale)
 	q =torch.clamp(q,qmin,qmax)
-	dq =q/scale
+	dq =(q/scale)
 	return dq
 
 def fake_quant_unsigned(x,num_bits,frac_bits):
@@ -68,11 +63,11 @@ def fake_quant_unsigned(x,num_bits,frac_bits):
 	#q =round(x*2^frac_bits), clipped to unsigned range
 	#dq =q/2^frac_bits
 	qmin =0
-	qmax =(1<<num_bits)-1
-	scale =1<<frac_bits
+	qmax = (1<<num_bits)-1
+	scale = 1<<frac_bits
 	q =RoundSTE.apply(x*scale)
 	q =torch.clamp(q,qmin,qmax)
-	dq =q/scale
+	dq =(q/scale)
 	return dq
 
 @torch.no_grad()
@@ -112,24 +107,10 @@ def round_shift_right_signed(x,shift):
 transform =transforms.Compose([
 	transforms.ToTensor(),
 	transforms.Lambda(lambda x: x.view(-1))])
-train_dataset =datasets.MNIST(
-	root="../data",
-	train=True,
-	download=True,
-	transform=transform)
-test_dataset =datasets.MNIST(
-	root="../data",
-	train=False,
-	download=True,
-	transform=transform)
-train_loader =torch.utils.data.DataLoader(
-	train_dataset,
-	batch_size=BATCH_SIZE,
-	shuffle=True)
-test_loader =torch.utils.data.DataLoader(
-	test_dataset,
-	batch_size=BATCH_SIZE,
-	shuffle=False)
+train_dataset =datasets.MNIST(root="../data", train=True, download=True, transform=transform)
+test_dataset =datasets.MNIST(root="../data", train=False, download=True, transform=transform)
+train_loader =torch.utils.data.DataLoader(train_dataset, batch_size=batchSize, shuffle=True)
+test_loader =torch.utils.data.DataLoader(test_dataset, batch_size=batchSize, shuffle=False)
 
 ##############################
 ## Fixed-Point Aware Model  ##
@@ -137,22 +118,18 @@ test_loader =torch.utils.data.DataLoader(
 class FixedPointMNISTMLP(nn.Module):
 	def __init__(self):
 		super().__init__()
-		self.fc1 =nn.Linear(INPUT_DIM,HIDDEN_DIM,bias=True)
-		self.fc2 =nn.Linear(HIDDEN_DIM,OUTPUT_DIM,bias=True)
+		self.fc1 =nn.Linear(inNum,hidNum,bias=True)
+		self.fc2 =nn.Linear(hidNum,outNum,bias=True)
 	def forward(self, x):
-		# input quant
-		x_q =fake_quant_unsigned(x,X_BITS,X_FRAC)
-		# layer1 params
-		w1_q =fake_quant_signed(self.fc1.weight,W1_BITS,W1_FRAC)
-		b1_q =fake_quant_signed(self.fc1.bias,  B1_BITS,B1_FRAC)
-		z1 = F.linear(x_q,w1_q,b1_q)
-		h1 = F.relu(z1)
-		# hidden activation quant
-		h1_q =fake_quant_unsigned(h1,A1_BITS,A1_FRAC)
-		# layer2 params
-		w2_q = fake_quant_signed(self.fc2.weight,W2_BITS,W2_FRAC)
-		b2_q = fake_quant_signed(self.fc2.bias,  B2_BITS,B2_FRAC)
-		z2 = F.linear(h1_q,w2_q,b2_q)
+		x_q =fake_quant_unsigned(x,inWidth,inFrac)
+		w1_q =fake_quant_signed(self.fc1.weight,w1Width,w1Frac)
+		b1_q =fake_quant_signed(self.fc1.bias,  b1Width,b1Frac)
+		z1   =F.linear(x_q,w1_q,b1_q)
+		h1   =F.relu(z1)
+		h1_q =fake_quant_unsigned(h1,a1Width,a1Frac)
+		w2_q =fake_quant_signed(self.fc2.weight,w2Width,w2Frac)
+		b2_q =fake_quant_signed(self.fc2.bias,  b2Width,b2Frac)
+		z2   =F.linear(h1_q,w2_q,b2_q)
 		return z2
 
 ##############################
@@ -178,7 +155,6 @@ def evaluate_fake_quant(model,loader):
 		total +=y.size(0)
 		correct +=(pred ==y).sum().item()
 		loss_sum +=loss.item()*y.size(0)
-
 	return (loss_sum/total),(correct/total)
 
 ##############################
@@ -189,10 +165,10 @@ def export_integer_params(model):
 	#Move the trained parameters to CPU before export so that
 	#they can be handled easily for saving, printing, or converting
 	#to formats such as NumPy arrays or text files.
-	qW1 =quantize_signed_to_int(model.fc1.weight.cpu(), W1_BITS,W1_FRAC)
-	qB1 =quantize_signed_to_int(model.fc1.bias.cpu(),   B1_BITS,B1_FRAC)
-	qW2 =quantize_signed_to_int(model.fc2.weight.cpu(), W2_BITS,W2_FRAC)
-	qB2 =quantize_signed_to_int(model.fc2.bias.cpu(),   B2_BITS,B2_FRAC)
+	qW1 =quantize_signed_to_int(model.fc1.weight.cpu(), w1Width,w1Frac)
+	qB1 =quantize_signed_to_int(model.fc1.bias.cpu(),   b1Width,b1Frac)
+	qW2 =quantize_signed_to_int(model.fc2.weight.cpu(), w2Width,w2Frac)
+	qB2 =quantize_signed_to_int(model.fc2.bias.cpu(),   b2Width,b2Frac)
 	return qW1,qB1,qW2,qB2
 
 ##############################
@@ -203,29 +179,29 @@ def integer_like_forward_batch(x_float,qW1,qB1,qW2,qB2):
 	"""
 	x_float : [N,784] float in [0,1]
 	qW1     : [128,784] int
-	qB1     : [128] int, scale = 2^-(X_FRAC + W1_FRAC)
+	qB1     : [128] int, scale =2^-(inFrac+w1Frac)
 	qW2     : [10,128] int
-	qB2     : [10] int, scale = 2^-(A1_FRAC + W2_FRAC)
+	qB2     : [10] int, scale =2^-(a1Frac+w2Frac)
 
 	Returns:
 		pred        : [N]
 		x_int       : [N,784]
-		acc1        : [N,128]  (before relu, scale=B1_FRAC)
-		act1_int    : [N,128]  (requantized hidden activation, scale=A1_FRAC)
-		acc2        : [N,10]   (final logits integer domain, scale=B2_FRAC)
+		acc1        : [N,128]  (before relu, scale=b1Frac)
+		act1_int    : [N,128]  (requantized hidden activation, scale=a1Frac)
+		acc2        : [N,10]   (final logits integer domain, scale=b2Frac)
 	"""
 	# input quantization
-	x_int =quantize_unsigned_to_int(x_float.cpu(),X_BITS,X_FRAC)
+	x_int =quantize_unsigned_to_int(x_float.cpu(),inWidth,inFrac)
 	# layer1 integer MAC
-	acc1 =x_int@qW1.transpose(0, 1)+qB1
+	acc1 =x_int@qW1.transpose(0,1)+qB1
 	# relu in integer domain
 	acc1_relu =torch.clamp(acc1,min=0)
-	# requantize acc1_relu from scale 2^-B1_FRAC to 2^-A1_FRAC
-	# act1_int ~= round(acc1_relu / 2^(B1_FRAC - A1_FRAC))
-	shift1 =B1_FRAC-A1_FRAC
+	# requantize acc1_relu from scale 2^-b1Frac to 2^-a1Frac
+	# act1_int ~= round(acc1_relu / 2^(b1Frac - a1Frac))
+	shift1 =b1Frac-a1Frac
 	act1_int =round_shift_right_signed(acc1_relu,shift1)
 	# clamp hidden activation to unsigned activation format
-	a1_qmax =(1<<A1_BITS)-1
+	a1_qmax =(1<<a1Width)-1
 	act1_int =torch.clamp(act1_int,0,a1_qmax)
 	# layer2 integer MAC
 	acc2 =act1_int@qW2.transpose(0,1)+qB2
@@ -240,7 +216,7 @@ def evaluate_integer_like(model, loader):
 	total =0
 	correct =0
 	for x,y in loader:
-		pred, _, _, _, _ =integer_like_forward_batch(x,qW1,qB1,qW2,qB2)
+		pred,_,_,_,_ =integer_like_forward_batch(x,qW1,qB1,qW2,qB2)
 		total +=y.size(0)
 		correct +=(pred ==y.cpu()).sum().item()
 	return (correct/total)
@@ -250,10 +226,10 @@ def evaluate_integer_like(model, loader):
 ##############################
 def train():
 	model =FixedPointMNISTMLP().to(DEVICE)
-	optimizer =optim.Adam(model.parameters(),lr=LR)
+	optimizer =optim.Adam(model.parameters(),lr=learnRate)
 	criterion =nn.CrossEntropyLoss()
 
-	for epoch in range(1, EPOCHS+1):
+	for epoch in range(0,epochNum):
 		model.train()
 
 		total =0
@@ -265,7 +241,7 @@ def train():
 			y =y.to(DEVICE)
 
 			logits =model(x)
-			loss =criterion(logits, y)
+			loss =criterion(logits,y)
 
 			optimizer.zero_grad()
 			loss.backward()
@@ -289,8 +265,8 @@ def train():
 			f"fakeQ_acc={test_acc_fake*100:.2f}% | "
 			f"intLike_acc={test_acc_int*100:.2f}%")
 
-	torch.save(model.state_dict(),MODEL_PATH)
-	print(f"Saved model to: {MODEL_PATH}")
+	torch.save(model.state_dict(),modelPath)
+	print(f"Saved model to: {modelPath}")
 	return model
 
 ##############################
@@ -385,22 +361,22 @@ def export_fc_bias_tile_mem(qB,tile,elem_bits,path):
 
 @torch.no_grad()
 def export_files(model):
-	qW1, qB1, qW2, qB2 = export_integer_params(model)
+	qW1,qB1,qW2,qB2 =export_integer_params(model)
 
 	# text
-	with open(TXT_PATH, "w", encoding="utf-8") as f:
+	with open(txtPath, "w", encoding="utf-8") as f:
 		f.write("=== Fixed-point MNIST MLP parameters ===\n\n")
 
-		f.write(f"INPUT_DIM={INPUT_DIM}\n")
-		f.write(f"HIDDEN_DIM={HIDDEN_DIM}\n")
-		f.write(f"OUTPUT_DIM={OUTPUT_DIM}\n\n")
+		f.write(f"inNum={inNum}\n")
+		f.write(f"hidNum={hidNum}\n")
+		f.write(f"outNum={outNum}\n\n")
 
-		f.write(f"X_BITS={X_BITS}, X_FRAC={X_FRAC}\n")
-		f.write(f"W1_BITS={W1_BITS}, W1_FRAC={W1_FRAC}\n")
-		f.write(f"B1_BITS={B1_BITS}, B1_FRAC={B1_FRAC}\n")
-		f.write(f"A1_BITS={A1_BITS}, A1_FRAC={A1_FRAC}\n")
-		f.write(f"W2_BITS={W2_BITS}, W2_FRAC={W2_FRAC}\n")
-		f.write(f"B2_BITS={B2_BITS}, B2_FRAC={B2_FRAC}\n\n")
+		f.write(f"inWidth={inWidth}, inFrac={inFrac}\n")
+		f.write(f"w1Width={w1Width}, w1Frac={w1Frac}\n")
+		f.write(f"b1Width={b1Width}, b1Frac={b1Frac}\n")
+		f.write(f"a1Width={a1Width}, a1Frac={a1Frac}\n")
+		f.write(f"w2Width={w2Width}, w2Frac={w2Frac}\n")
+		f.write(f"b2Width={b2Width}, b2Frac={b2Frac}\n\n")
 
 		f.write(f"fc1.weight_int shape = {tuple(qW1.shape)}\n")
 		f.write(f"{qW1.tolist()}\n\n")
@@ -414,7 +390,7 @@ def export_files(model):
 		f.write(f"fc2.bias_int shape = {tuple(qB2.shape)}\n")
 		f.write(f"{qB2.tolist()}\n\n")
 
-	print(f"Saved text params to: {TXT_PATH}")
+	print(f"Saved text params to: {txtPath}")
 
 	# vh
 	fc1_w = flatten_row_major(qW1.tolist())
@@ -422,57 +398,57 @@ def export_files(model):
 	fc2_w = flatten_row_major(qW2.tolist())
 	fc2_b = qB2.tolist()
 
-	fc1_ww = len(fc1_w) * W1_BITS
-	fc1_bw = len(fc1_b) * B1_BITS
-	fc2_ww = len(fc2_w) * W2_BITS
-	fc2_bw = len(fc2_b) * B2_BITS
+	fc1_ww = len(fc1_w) * w1Width
+	fc1_bw = len(fc1_b) * b1Width
+	fc2_ww = len(fc2_w) * w2Width
+	fc2_bw = len(fc2_b) * b2Width
 
-	elems_fc1_w = ", ".join(twos_hex(v, W1_BITS) for v in reversed(fc1_w))
-	elems_fc1_b = ", ".join(twos_hex(v, B1_BITS) for v in reversed(fc1_b))
-	elems_fc2_w = ", ".join(twos_hex(v, W2_BITS) for v in reversed(fc2_w))
-	elems_fc2_b = ", ".join(twos_hex(v, B2_BITS) for v in reversed(fc2_b))
+	elems_fc1_w = ", ".join(twos_hex(v, w1Width) for v in reversed(fc1_w))
+	elems_fc1_b = ", ".join(twos_hex(v, b1Width) for v in reversed(fc1_b))
+	elems_fc2_w = ", ".join(twos_hex(v, w2Width) for v in reversed(fc2_w))
+	elems_fc2_b = ", ".join(twos_hex(v, b2Width) for v in reversed(fc2_b))
 
 	lines = []
 	lines.append("// Auto-generated fixed-point parameters for Verilog")
 	lines.append("")
-	lines.append(f"localparam integer IN_N_FILE   = {INPUT_DIM};")
-	lines.append(f"localparam integer HID_N_FILE  = {HIDDEN_DIM};")
-	lines.append(f"localparam integer OUT_N_FILE  = {OUTPUT_DIM};")
+	lines.append(f"localparam integer inNum_file  ={inNum};")
+	lines.append(f"localparam integer hidNum_file ={hidNum};")
+	lines.append(f"localparam integer outNum_file ={outNum};")
 	lines.append("")
-	lines.append(f"localparam integer X_BITS_FILE  = {X_BITS};")
-	lines.append(f"localparam integer X_FRAC_FILE  = {X_FRAC};")
-	lines.append(f"localparam integer W1_W_FILE    = {W1_BITS};")
-	lines.append(f"localparam integer W1_FRAC_FILE = {W1_FRAC};")
-	lines.append(f"localparam integer B1_W_FILE    = {B1_BITS};")
-	lines.append(f"localparam integer B1_FRAC_FILE = {B1_FRAC};")
-	lines.append(f"localparam integer A1_BITS_FILE = {A1_BITS};")
-	lines.append(f"localparam integer A1_FRAC_FILE = {A1_FRAC};")
-	lines.append(f"localparam integer W2_W_FILE    = {W2_BITS};")
-	lines.append(f"localparam integer W2_FRAC_FILE = {W2_FRAC};")
-	lines.append(f"localparam integer B2_W_FILE    = {B2_BITS};")
-	lines.append(f"localparam integer B2_FRAC_FILE = {B2_FRAC};")
+	lines.append(f"localparam integer inWidth_file ={inWidth};")
+	lines.append(f"localparam integer inFrac_file  ={inFrac};")
+	lines.append(f"localparam integer w1Width_file ={w1Width};")
+	lines.append(f"localparam integer w1Frac_file  ={w1Frac};")
+	lines.append(f"localparam integer b1Width_file ={b1Width};")
+	lines.append(f"localparam integer b1Frac_file  ={b1Frac};")
+	lines.append(f"localparam integer a1Width_file ={a1Width};")
+	lines.append(f"localparam integer a1Frac_file  ={a1Frac};")
+	lines.append(f"localparam integer w2Width_file ={w2Width};")
+	lines.append(f"localparam integer w2Frac_file  ={w2Frac};")
+	lines.append(f"localparam integer b2Width_file ={b2Width};")
+	lines.append(f"localparam integer b2Frac_file  ={b2Frac};")
 	lines.append("")
-	lines.append(f"localparam integer FC1_WW = {fc1_ww};")
-	lines.append(f"localparam integer FC1_BW = {fc1_bw};")
-	lines.append(f"localparam integer FC2_WW = {fc2_ww};")
-	lines.append(f"localparam integer FC2_BW = {fc2_bw};")
+	lines.append(f"localparam integer FC1_WW ={fc1_ww};")
+	lines.append(f"localparam integer FC1_BW ={fc1_bw};")
+	lines.append(f"localparam integer FC2_WW ={fc2_ww};")
+	lines.append(f"localparam integer FC2_BW ={fc2_bw};")
 	lines.append("")
-	lines.append(f"localparam [FC1_WW-1:0] fc1_w_flat = {{ {elems_fc1_w} }};")
-	lines.append(f"localparam [FC1_BW-1:0] fc1_b_flat = {{ {elems_fc1_b} }};")
-	lines.append(f"localparam [FC2_WW-1:0] fc2_w_flat = {{ {elems_fc2_w} }};")
-	lines.append(f"localparam [FC2_BW-1:0] fc2_b_flat = {{ {elems_fc2_b} }};")
+	lines.append(f"localparam [FC1_WW-1:0] fc1_w_flat ={{ {elems_fc1_w} }};")
+	lines.append(f"localparam [FC1_BW-1:0] fc1_b_flat ={{ {elems_fc1_b} }};")
+	lines.append(f"localparam [FC2_WW-1:0] fc2_w_flat ={{ {elems_fc2_w} }};")
+	lines.append(f"localparam [FC2_BW-1:0] fc2_b_flat ={{ {elems_fc2_b} }};")
 	lines.append("")
 
-	with open(VH_PATH, "w", encoding="utf-8") as f:
+	with open(vhPath, "w", encoding="utf-8") as f:
 		f.write("\n".join(lines))
 
-	print(f"Saved Verilog header to: {VH_PATH}")
+	print(f"Saved Verilog header to: {vhPath}")
 	# tile-packed mem export for BRAM-based sequential FC
-	export_fc_weight_tile_mem(qW1, tile=FC1_TILE, elem_bits=W1_BITS, path=FC1_W_TILE_MEM)
-	export_fc_bias_tile_mem  (qB1, tile=FC1_TILE, elem_bits=B1_BITS, path=FC1_B_TILE_MEM)
+	export_fc_weight_tile_mem(qW1, tile=FC1_TILE, elem_bits=w1Width, path=FC1_W_TILE_MEM)
+	export_fc_bias_tile_mem  (qB1, tile=FC1_TILE, elem_bits=b1Width, path=FC1_B_TILE_MEM)
 
-	export_fc_weight_tile_mem(qW2, tile=FC2_TILE, elem_bits=W2_BITS, path=FC2_W_TILE_MEM)
-	export_fc_bias_tile_mem  (qB2, tile=FC2_TILE, elem_bits=B2_BITS, path=FC2_B_TILE_MEM)
+	export_fc_weight_tile_mem(qW2, tile=FC2_TILE, elem_bits=w2Width, path=FC2_W_TILE_MEM)
+	export_fc_bias_tile_mem  (qB2, tile=FC2_TILE, elem_bits=b2Width, path=FC2_B_TILE_MEM)
 
 	print(f"Saved tile mem files: {FC1_W_TILE_MEM}, {FC1_B_TILE_MEM}, {FC2_W_TILE_MEM}, {FC2_B_TILE_MEM}")
 
@@ -482,12 +458,12 @@ def export_files(model):
 if __name__ == "__main__":
 	model = train()
 
-	test_loss, test_acc_fake = evaluate_fake_quant(model, test_loader)
-	test_acc_int = evaluate_integer_like(model, test_loader)
+	test_loss,test_acc_fake =evaluate_fake_quant(model,test_loader)
+	test_acc_int =evaluate_integer_like(model,test_loader)
 
 	print("\nFinal Results")
 	print(f"Fake-quant test accuracy   : {test_acc_fake*100:.2f}%")
 	print(f"Integer-like test accuracy : {test_acc_int*100:.2f}%")
 
 	debug_one_sample(model, test_dataset, idx=0)
-	export_files(model)
+	#export_files(model)
