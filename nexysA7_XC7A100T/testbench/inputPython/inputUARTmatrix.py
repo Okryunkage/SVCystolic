@@ -13,15 +13,16 @@ VERSION =1
 FLAG_INCLUDE_LABEL =0x01
 #if 0x01, label is sent.
 HEADER_STRUCT =struct.Struct("<BBIHHI")
-# Packet header, little-endian:
-# version      : uint8
-# flags        : uint8
-# batch_id     : uint32
-# batch_size   : uint16
-# vector_len   : uint16
-# payload_len  : uint32
+#Packet header, little-endian:
+#version      : uint8
+#flags        : uint8
+#batch_id     : uint32
+#batch_size   : uint16
+#vector_len   : uint16
+#payload_len  : uint32
 
 def quantize_mnist_u8(images:torch.Tensor)->torch.Tensor:
+	#arrow means nothing. just for output type recognition
 	#input : torch.Tensor type
 	#output: torch.Tensor type
 	#output type written after arrow is just a hint, not forced.
@@ -34,23 +35,27 @@ def make_packet(
 		labels: torch.Tensor,
 		batch_id: int,
 		include_label: bool,)->bytes:
-	if image_matrix_u8.dtype != torch.uint8:
+	if image_matrix_u8.dtype !=torch.uint8:
 		raise ValueError("image_matrix_u8 must be torch.uint8")
-	batch_size,vector_len = image_matrix_u8.shape
+	batch_size,vector_len =image_matrix_u8.shape
 	image_payload =image_matrix_u8.cpu().numpy().tobytes(order="C")
+	#Convert the tensor to raw bytes in C-order (row-major order).
+	#For a [batch_size,vector_len] matrix, this sends all pixels of image 0 first,
+	#then all pixels of image 1, and so on.
 	flags =0
 	payload =image_payload
 	if include_label:
-		flag |=FLAG_INCLUDE_LABEL
+		flags |=FLAG_INCLUDE_LABEL
 		label_payload =labels.to(torch.uint8).cpu().numpy().tobytes(order="C")
 		payload +=label_payload
 	header =HEADER_STRUCT.pack(VERSION,flags,batch_id,batch_size,vector_len,len(payload))
 
 	checksum =(sum(header)+sum(payload))&0xFF
+	#checksum to verify received data is valid
 	packet =SOF+header+payload+bytes([checksum])
 	return packet
 
-def wait_ack(ser:serial.Serial, timeout_msg:str="ACLK timeout"):
+def wait_ack(ser:serial.Serial, timeout_msg:str="ACK timeout"):
 	ack =ser.read(1)
 	if ack !=b"\x06":
 		if len(ack)==0:
@@ -59,19 +64,60 @@ def wait_ack(ser:serial.Serial, timeout_msg:str="ACLK timeout"):
 	
 def main():
 	parser =argparse.ArgumentParser(description="send quantized MNIST batches to FPGA through UART")
-    parser.add_argument("--port", required=True, help="UART port, e.g. COM4 or /dev/ttyUSB0")
-    parser.add_argument("--baud", type=int, default=1_000_000, help="UART baud rate")
-    parser.add_argument("--batch-size", type=int, default=16, help="Number of images per packet")
-    parser.add_argument("--num-batches", type=int, default=1, help="Number of batches to send")
-    parser.add_argument("--split", choices=["train", "test"], default="test")
-    parser.add_argument("--data-dir", default="./data")
-    parser.add_argument("--include-label", action="store_true", help="Append labels after image payload")
-    parser.add_argument("--drop-last", action="store_true", help="Only send full batches")
-    parser.add_argument("--shuffle", action="store_true")
-    parser.add_argument("--ack", action="store_true", help="Wait for 0x06 ACK after each packet")
-    parser.add_argument("--timeout", type=float, default=2.0, help="UART read timeout in seconds")
-    parser.add_argument("--delay-ms", type=float, default=0.0, help="Delay after each packet")
-    parser.add_argument("--rtscts", action="store_true", help="Enable RTS/CTS hardware flow control")
+	parser.add_argument("--port", required=True, help="UART port, e.g. COM4 or /dev/ttyUSB0")
+	parser.add_argument("--baud", type=int, default=1_000_000, help="UART baud rate")
+	parser.add_argument("--batch-size", type=int, default=16, help="Number of images per packet")
+	parser.add_argument("--num-batches", type=int, default=1, help="Number of batches to send")
+	parser.add_argument("--split", choices=["train", "test"], default="test")
+	parser.add_argument("--data-dir", default="./data")
+	parser.add_argument("--include-label", action="store_true", help="Append labels after image payload")
+	parser.add_argument("--drop-last", action="store_true", help="Only send full batches")
+	#if last batch < batch size, drop last batch
+	parser.add_argument("--shuffle", action="store_true")
+	parser.add_argument("--ack", action="store_true", help="Wait for 0x06 ACK after each packet")
+	parser.add_argument("--timeout", type=float, default=2.0, help="UART read timeout in seconds")
+	parser.add_argument("--delay-ms", type=float, default=0.0, help="Delay after each packet")
+	parser.add_argument("--rtscts", action="store_true", help="Enable RTS/CTS hardware flow control")
 
 	args =parser.parse_args()
-	tramsform = tramsform.ToTensor()
+	transform =transforms.ToTensor()
+
+	dataset =datasets.MNIST(
+		root =args.data_dir,
+		train =(args.split=="train"),
+		download =True,
+		transform =transform)
+
+	loader =DataLoader(
+		dataset,
+		batch_size =args.batch_size,
+		shuffle =args.shuffle,
+		drop_last =args.drop_last)
+
+	ser =serial.Serial(
+		port =args.port,
+		baudrate =args.baud,
+		timeout =args.timeout,
+		rtscts =args.rtscts)
+
+	try:
+		for batch_id,(images,labels) in enumerate(loader):
+			if batch_id >=args.num_batches:
+				break
+			image_matrix_u8 =quantize_mnist_u8(images)
+			packet =make_packet(
+				image_matrix_u8 =image_matrix_u8,
+				labels =labels,
+				batch_id =batch_id,
+				include_label =args.include_label)
+			ser.write(packet)
+			if args.ack:
+				wait_ack(ser)
+			if args.delay_ms >0:
+				time.sleep(args.delay_ms/1000.0)
+			print(f"Sent batch {batch_id}, packet size ={len(packet)} bytes")
+	finally:
+		ser.close()
+
+if __name__ =="__main__":
+	main()

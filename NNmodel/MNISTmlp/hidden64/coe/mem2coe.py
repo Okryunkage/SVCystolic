@@ -32,7 +32,7 @@ def memTOcoe(memPath,coePath):
 				f.write(line+";\n")
 			else:
 				f.write(line+",\n")
-memTOcoe("fc1_w_tile.mem","fc1_w_tile.coe")
-memTOcoe("fc2_w_tile.mem","fc2_w_tile.coe")
-memTOcoe("fc1_b_tile.mem","fc1_b_tile.coe")
-memTOcoe("fc2_b_tile.mem","fc2_b_tile.coe")
+memTOcoe("../mem/fc1_w_tile.mem","fc1_w_tile.coe")
+memTOcoe("../mem/fc2_w_tile.mem","fc2_w_tile.coe")
+memTOcoe("../mem/fc1_b_tile.mem","fc1_b_tile.coe")
+memTOcoe("../mem/fc2_b_tile.mem","fc2_b_tile.coe")
