@@ -10,11 +10,13 @@ SOF =b"\xAA\x55"
 #Start Of Frame
 #if UART reciever receive 0xAA then 0x55, it can recognize packet start
 VERSION =1
+PACKET_TYPE_IMAGE =0x01
 FLAG_INCLUDE_LABEL =0x01
 #if 0x01, label is sent.
-HEADER_STRUCT =struct.Struct("<BBIHHI")
+HEADER_STRUCT =struct.Struct("<BBBIHHI")
 #Packet header, little-endian:
 #version      : uint8
+#packet_type  : uint8
 #flags        : uint8
 #batch_id     : uint32
 #batch_size   : uint16
@@ -48,7 +50,7 @@ def make_packet(
 		flags |=FLAG_INCLUDE_LABEL
 		label_payload =labels.to(torch.uint8).cpu().numpy().tobytes(order="C")
 		payload +=label_payload
-	header =HEADER_STRUCT.pack(VERSION,flags,batch_id,batch_size,vector_len,len(payload))
+	header =HEADER_STRUCT.pack(VERSION,PACKET_TYPE_IMAGE,flags,batch_id,batch_size,vector_len,len(payload))
 
 	checksum =(sum(header)+sum(payload))&0xFF
 	#checksum to verify received data is valid
@@ -111,6 +113,7 @@ def main():
 				batch_id =batch_id,
 				include_label =args.include_label)
 			ser.write(packet)
+			ser.flush()
 			if args.ack:
 				wait_ack(ser)
 			if args.delay_ms >0:
