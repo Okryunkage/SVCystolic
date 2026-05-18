@@ -1,260 +1,216 @@
-`timescale 1ns / 1ps
+`timescale 1ns/1ps
 
 module uartPacketDec#(
-	parameter [7:0] SOF0              =8'hAA,
-	parameter [7:0] SOF1              =8'h55,
-	parameter [7:0] EXPECTED_VERSION  =8'd1,
-	parameter [7:0] FLAG_INCLUDE_LABEL =8'h01,
-	parameter       CHECK_PAYLOAD_LEN =1)(
+	parameter [7:0] SOF0            =8'hAA,
+	parameter [7:0] SOF1            =8'h55,
+	parameter [7:0] versionEXP      =8'd1,
+	parameter [7:0] incLABELmask    =8'h01,
+	parameter       payloadLENcheck =1)(
 	
 	input  wire        clk,
-	input  wire        rst_n,
-	input  wire        rx_valid,
-	input  wire [7:0]  rx_data,
+	input  wire        rst,
+	input  wire        rxDone,
+	input  wire [7:0]  rxData,
 
-	output reg         header_valid,
+	output reg         headerValid,
+	//1-cyle pulse after header is decoded
 	output reg  [7:0]  version,
 	output reg  [7:0]  flags,
-	output reg  [31:0] batch_id,
-	output reg  [15:0] batch_size,
-	output reg  [15:0] vector_len,
-	output reg  [31:0] payload_len,
-
-	output reg         payload_valid,
-	output reg  [7:0]  payload_data,
-	output reg  [31:0] payload_index,
-	output reg         payload_is_label,
-
-	output reg         packet_done,
-	output reg         packet_error,
-	output reg         checksum_error,
-	output reg         header_error,
-
-	output reg  [7:0]  received_checksum,
-	output reg  [7:0]  computed_checksum,
-
+	output reg  [31:0] batchID,
+	output reg  [15:0] batchSize,
+	output reg  [15:0] vectorLEN,
+	output reg  [31:0] payloadLEN,
+	output reg         payloadValid,
+	output reg  [7:0]  payloadData,
+	output reg  [31:0] payloadIndex,
+	output reg         payloadLabel,
+	output reg         packetDone,
+	output reg         packetError,
+	output reg         checksumError,
+	output reg         headerError,
+	output reg  [7:0]  rxChecksum,
+	//received Checksum
+	output reg  [7:0]  cmChecksum,
+	//computed Checksum
 	output wire        busy);
 
-	localparam [2:0] ST_WAIT_SOF0  =3'd0;
-	localparam [2:0] ST_WAIT_SOF1  =3'd1;
-	localparam [2:0] ST_HEADER     =3'd2;
-	localparam [2:0] ST_PAYLOAD    =3'd3;
-	localparam [2:0] ST_CHECKSUM   =3'd4;
-
-	localparam [3:0] HEADER_BYTES  =4'd14;
-
+	localparam [2:0] waitSOF0s  =3'd0;
+	localparam [2:0] waitSOF1s  =3'd1;
+	localparam [2:0] HEADERs    =3'd2;
+	localparam [2:0] PAYLOADs   =3'd3;
+	localparam [2:0] CHECKSUMs  =3'd4;
+	
+	localparam [3:0] HEADERbytes  =4'd14;
+	/*
+	#Packet header, little-endian:
+	#version      : uint8
+	#flags        : uint8
+	#batch_id     : uint32
+	#batch_size   : uint16
+	#vector_len   : uint16
+	#payload_len  : uint32
+	*/
 	reg [2:0]  state;
-	reg [3:0]  header_count;
-	reg [31:0] payload_count;
+	reg [3:0]  HEADERcount;
+	reg [31:0] PAYLOADcount;
 
-	reg [7:0]  checksum_acc;
+	reg [7:0]  CHECKSUMacc;
 
-	reg [31:0] image_byte_count;
-	reg [31:0] expected_payload_len;
+	reg [31:0] imgBYTEcount;
+	reg [31:0] payloadLENexp;
 
-	wire [31:0] image_byte_count_calc;
-	wire [31:0] expected_payload_len_calc;
-	wire [31:0] payload_len_with_current;
+	wire [31:0] imgBYTEcountCALC;
+	wire [31:0] payloadLENexpCALC;
+	wire [31:0] payloadLENcurrent;
 
-	assign busy =(state !=ST_WAIT_SOF0);
+	assign busy =(state !=waitSOF0s);
 
-	// batch_size * vector_len
-	// For MNIST, this is usually batch_size * 784.
-	assign image_byte_count_calc =
-		{16'd0, batch_size} * {16'd0, vector_len};
+	assign imgBYTEcountCALC ={16'd0,batchSize}*{16'd0,vectorLEN};
+	//Extend operand to 32 bits so the multiplication result is not truncated.
+	assign payloadLENexpCALC =imgBYTEcountCALC+((flags & incLABELmask)?{16'd0,batchSize}:32'd0);
 
-	assign expected_payload_len_calc =
-		image_byte_count_calc +
-		((flags & FLAG_INCLUDE_LABEL) ? {16'd0, batch_size} : 32'd0);
+	//Used when receiving the last byte of payloadLEN.
+	//payloadLEN is little-endian
+	//Complete payload length including the current RX byte.
+	assign payloadLENcurrent ={rxData,payloadLEN[23:0]};
 
-	// Used when receiving the last byte of payload_len.
-	// payload_len is little-endian:
-	// byte 10 -> payload_len[7:0]
-	// byte 11 -> payload_len[15:8]
-	// byte 12 -> payload_len[23:16]
-	// byte 13 -> payload_len[31:24]
-	assign payload_len_with_current ={rx_data, payload_len[23:0]};
+	always @(posedge clk or negedge rst)begin
+		if(rst)begin
+			state            <=waitSOF0s;
+			HEADERcount      <=4'd0;
+			PAYLOADcount     <=32'd0;
+			CHECKSUMacc      <=8'd0;
+			headerValid      <=1'b0;
+			version          <=8'd0;
+			flags            <=8'd0;
+			batchID          <=32'd0;
+			batchSize        <=16'd0;
+			vectorLEN        <=16'd0;
+			payloadLEN       <=32'd0;
+			payloadValid     <=1'b0;
+			payloadData      <=8'd0;
+			payloadIndex     <=32'd0;
+			payloadLabel     <=1'b0;
+			packetDone       <=1'b0;
+			packetError      <=1'b0;
+			checksumError    <=1'b0;
+			headerError      <=1'b0;
+			rxChecksum       <=8'd0;
+			cmChecksum       <=8'd0;
+			imgBYTEcount     <=32'd0;
+			payloadLENexp    <=32'd0;
+		end 
+		else begin
+			//Default pulse outputs
+			headerValid     <=1'b0;
+			payloadValid    <=1'b0;
+			packetDone      <=1'b0;
+			packetError     <=1'b0;
+			checksumError   <=1'b0;
+			headerError     <=1'b0;
 
-	always @(posedge clk or negedge rst_n) begin
-		if (!rst_n) begin
-			state             <=ST_WAIT_SOF0;
-			header_count      <=4'd0;
-			payload_count     <=32'd0;
-
-			checksum_acc      <=8'd0;
-
-			header_valid      <=1'b0;
-			version           <=8'd0;
-			flags             <=8'd0;
-			batch_id          <=32'd0;
-			batch_size        <=16'd0;
-			vector_len        <=16'd0;
-			payload_len       <=32'd0;
-
-			payload_valid     <=1'b0;
-			payload_data      <=8'd0;
-			payload_index     <=32'd0;
-			payload_is_label  <=1'b0;
-
-			packet_done       <=1'b0;
-			packet_error      <=1'b0;
-			checksum_error    <=1'b0;
-			header_error      <=1'b0;
-
-			received_checksum <=8'd0;
-			computed_checksum <=8'd0;
-
-			image_byte_count  <=32'd0;
-			expected_payload_len <=32'd0;
-		end else begin
-			// Default pulse outputs
-			header_valid     <=1'b0;
-			payload_valid    <=1'b0;
-			packet_done      <=1'b0;
-			packet_error     <=1'b0;
-			checksum_error   <=1'b0;
-			header_error     <=1'b0;
-
-			if (rx_valid) begin
+			if(rxDone)begin
 				case (state)
-
-					// Wait for first SOF byte: 0xAA
-					ST_WAIT_SOF0: begin
-						if (rx_data ==SOF0) begin
-							state <=ST_WAIT_SOF1;
-						end
+					waitSOF0s:begin
+						if(rxData==SOF0) state <=waitSOF1s;
 					end
-
-					// Wait for second SOF byte: 0x55
-					ST_WAIT_SOF1: begin
-						if (rx_data ==SOF1) begin
-							state             <=ST_HEADER;
-							header_count      <=4'd0;
-							payload_count     <=32'd0;
-							checksum_acc      <=8'd0;
-
-							version           <=8'd0;
-							flags             <=8'd0;
-							batch_id          <=32'd0;
-							batch_size        <=16'd0;
-							vector_len        <=16'd0;
-							payload_len       <=32'd0;
-							image_byte_count  <=32'd0;
-							expected_payload_len <=32'd0;
-						end else if (rx_data ==SOF0) begin
-							// If another 0xAA arrives, stay here.
-							// This helps detect sequences like AA AA 55.
-							state <=ST_WAIT_SOF1;
-						end else begin
-							state <=ST_WAIT_SOF0;
-						end
+					waitSOF1s:begin
+						if (rxData==SOF1)begin
+							state            <=HEADERs;
+							HEADERcount      <=4'd0;
+							PAYLOADcount     <=32'd0;
+							CHECKSUMacc      <=8'd0;
+							version          <=8'd0;
+							flags            <=8'd0;
+							batchID          <=32'd0;
+							batchSize        <=16'd0;
+							vectorLEN        <=16'd0;
+							payloadLEN       <=32'd0;
+							imgBYTEcount     <=32'd0;
+							payloadLENexp    <=32'd0;
+						end 
+						else if (rxData==SOF0) state <=waitSOF1s;
+						else                   state <=waitSOF0s;
 					end
-
-					// Read 14-byte header
-					ST_HEADER: begin
-						checksum_acc <=checksum_acc + rx_data;
-
-						case (header_count)
-							4'd0:  version          <=rx_data;
-							4'd1:  flags            <=rx_data;
-
-							4'd2:  batch_id[7:0]    <=rx_data;
-							4'd3:  batch_id[15:8]   <=rx_data;
-							4'd4:  batch_id[23:16]  <=rx_data;
-							4'd5:  batch_id[31:24]  <=rx_data;
-
-							4'd6:  batch_size[7:0]  <=rx_data;
-							4'd7:  batch_size[15:8] <=rx_data;
-
-							4'd8:  vector_len[7:0]  <=rx_data;
-							4'd9:  vector_len[15:8] <=rx_data;
-
-							4'd10: payload_len[7:0]   <=rx_data;
-							4'd11: payload_len[15:8]  <=rx_data;
-							4'd12: payload_len[23:16] <=rx_data;
-							4'd13: payload_len[31:24] <=rx_data;
-
-							default: ;
+					//Read 14-byte header
+					HEADERs: begin
+						CHECKSUMacc <=CHECKSUMacc +rxData;
+						case(HEADERcount)
+							//version: uint8
+							4'd0:  version           <=rxData;
+							//flags: uint8
+							4'd1:  flags             <=rxData;
+							//batchID: uint8
+							4'd2:  batchID[7:0]      <=rxData;
+							4'd3:  batchID[15:8]     <=rxData;
+							4'd4:  batchID[23:16]    <=rxData;
+							4'd5:  batchID[31:24]    <=rxData;
+							//batchSize: uint16
+							4'd6:  batchSize[7:0]    <=rxData;
+							4'd7:  batchSize[15:8]   <=rxData;
+							//vectorLEN: uint16
+							4'd8:  vectorLEN[7:0]    <=rxData;
+							4'd9:  vectorLEN[15:8]   <=rxData;
+							//payloadLEN: uint32
+							4'd10: payloadLEN[7:0]   <=rxData;
+							4'd11: payloadLEN[15:8]  <=rxData;
+							4'd12: payloadLEN[23:16] <=rxData;
+							4'd13: payloadLEN[31:24] <=rxData;
+							default:;
 						endcase
-
-						if (header_count ==HEADER_BYTES - 1) begin
-							header_valid <=1'b1;
-
-							image_byte_count     <=image_byte_count_calc;
-							expected_payload_len <=expected_payload_len_calc;
-
-							// Header checks
-							if (version !=EXPECTED_VERSION) begin
-								header_error <=1'b1;
-								packet_error <=1'b1;
-								state        <=ST_WAIT_SOF0;
-							end else if ((flags & ~FLAG_INCLUDE_LABEL) !=8'd0) begin
-								// Only bit0 is currently defined.
-								header_error <=1'b1;
-								packet_error <=1'b1;
-								state        <=ST_WAIT_SOF0;
-							end else if (
-								CHECK_PAYLOAD_LEN &&
-								(payload_len_with_current !=expected_payload_len_calc)
-							) begin
-								header_error <=1'b1;
-								packet_error <=1'b1;
-								state        <=ST_WAIT_SOF0;
-							end else begin
-								payload_count <=32'd0;
-
-								if (payload_len_with_current ==32'd0) begin
-									state <=ST_CHECKSUM;
-								end else begin
-									state <=ST_PAYLOAD;
-								end
+						if (HEADERcount==(HEADERbytes-1))begin
+							headerValid   <=1'b1;
+							imgBYTEcount  <=imgBYTEcountCALC;
+							payloadLENexp <=payloadLENexpCALC;
+							//Header checks
+							if(version!=versionEXP)begin
+								headerError <=1'b1;
+								packetError <=1'b1;
+								state       <=waitSOF0s;
 							end
-
-							header_count <=4'd0;
-						end else begin
-							header_count <=header_count + 4'd1;
+							else if((flags & ~incLABELmask)!=8'd0)begin
+								//Only bit0 is currently defined.
+								headerError <=1'b1;
+								packetError <=1'b1;
+								state       <=waitSOF0s;
+							end
+							else if(payloadLENcheck&&(payloadLENcurrent !=payloadLENexpCALC))begin
+								headerError <=1'b1;
+								packetError <=1'b1;
+								state       <=waitSOF0s;
+							end
+							else begin
+								PAYLOADcount <=32'd0;
+								if(payloadLENcurrent==32'd0) state <=CHECKSUMs;
+								else state <=PAYLOADs;
+							end
+							HEADERcount <=4'd0;
 						end
+						else HEADERcount <=HEADERcount+4'd1;
 					end
-
-					// Stream payload bytes
-					ST_PAYLOAD: begin
-						payload_valid <=1'b1;
-						payload_data  <=rx_data;
-						payload_index <=payload_count;
-
+					//Stream payload bytes
+					PAYLOADs:begin
+						payloadValid <=1'b1;
+						payloadData  <=rxData;
+						payloadIndex <=PAYLOADcount;
 						// If labels are included, label bytes come after image bytes.
-						payload_is_label <=
-							((flags & FLAG_INCLUDE_LABEL) !=8'd0) &&
-							(payload_count >=image_byte_count);
-
-						checksum_acc <=checksum_acc + rx_data;
-
-						if (payload_count ==payload_len - 1) begin
-							state <=ST_CHECKSUM;
-						end else begin
-							payload_count <=payload_count + 32'd1;
+						payloadLabel <=((flags & incLABELmask)!=8'd0)&&(PAYLOADcount >=imgBYTEcount);
+						CHECKSUMacc <=CHECKSUMacc+rxData;
+						if(PAYLOADcount==(payloadLEN-1)) state <=CHECKSUMs;
+						else PAYLOADcount <=PAYLOADcount + 32'd1;
+					end
+					//Read and check checksum byte
+					CHECKSUMs: begin
+						rxChecksum <=rxData;
+						cmChecksum <=CHECKSUMacc;
+						if(rxData==CHECKSUMacc) packetDone <=1'b1;
+						else begin
+							checksumError <=1'b1;
+							packetError   <=1'b1;
 						end
+						state <=waitSOF0s;
 					end
-
-					// Read and check checksum byte
-					ST_CHECKSUM: begin
-						received_checksum <=rx_data;
-						computed_checksum <=checksum_acc;
-
-						if (rx_data ==checksum_acc) begin
-							packet_done <=1'b1;
-						end else begin
-							checksum_error <=1'b1;
-							packet_error   <=1'b1;
-						end
-
-						state <=ST_WAIT_SOF0;
-					end
-
-					default: begin
-						state <=ST_WAIT_SOF0;
-					end
-
+					default: state <=waitSOF0s;
 				endcase
 			end
 		end
