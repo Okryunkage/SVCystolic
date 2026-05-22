@@ -27,8 +27,7 @@ module mig_ui128(
 	output[0:0] ddr2_cke,
 	output[0:0] ddr2_cs_n,
 	output[1:0] ddr2_dm,
-	output[0:0] ddr2_odt
-);
+	output[0:0] ddr2_odt);
 
 	wire ui_clk, ui_clk_sync_rst;
 	reg[2:0] mem_cmd;
@@ -130,7 +129,6 @@ module mig_ui128(
 		end
 		else begin
 			complete <=1'b0;
-
 			case(state)
 				stateIDLE:begin
 					mem_wdf_wren <=1'b0;
@@ -146,7 +144,6 @@ module mig_ui128(
 						state <=statePREREAD;
 					end
 				end
-
 				stateWDH:begin
 					if(mem_wdf_rdy)begin
 						mem_wdf_mask <=8'h00;
@@ -155,7 +152,6 @@ module mig_ui128(
 					mem_wdf_wren <=1'b1;
 					state <=stateWDL;
 				end
-
 				stateWDL:begin
 					if(mem_wdf_rdy)begin
 							mem_wdf_mask <=8'h00;
@@ -166,7 +162,6 @@ module mig_ui128(
 					complete <=1'b1;
 					state <=stateIDLE;
 				end
-
 				statePREREAD:begin
 					if(mem_rdy)begin
 						mem_en <=1'b0;
@@ -177,14 +172,12 @@ module mig_ui128(
 						end
 					end
 				end
-
 				stateREAD:begin
 					if(mem_rd_data_valid&mem_rd_data_end)begin
 						state <=stateIDLE;
 						complete <=1'b1;
 					end
 				end
-
 				stateWRITE:begin
 					if(mem_rdy)begin
 						mem_en <=1'b0;
