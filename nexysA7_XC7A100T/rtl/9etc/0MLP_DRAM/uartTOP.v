@@ -25,7 +25,7 @@ module uartTOP#(
 
 	wire RXtick, TXtick;
 	baudtickgen #(.CLK(boardCLK),.oversample(oversample),.baudrate(baudrate),.ACCwidth(ACCwidth)) baudGen(.clk(clk),.rst(rst),.ostick(RXtick),.baudtick(TXtick));
-	transmit #(.bits(8)) TX(.clk(clk),.tick(TXtick),.en(1'b1),.start(TXstart),.in(Txitem),.out(uartTX),.done(TXdone),.busy(TXbusy));
+	transmit #(.bits(8)) TX(.clk(clk),.tick(TXtick),.en(1'b1),.start(TXstart),.in(TXitem),.out(uartTX),.done(TXdone),.busy(TXbusy));
 	receive #(.bits(8),.oversample(oversample)) RX(.clk(clk),.tick(RXtick),.en(1'b1),.in(uartRX),.rst(rst),.out(RXout),.done(RXdone),.busy(RXbusy),.error(RXerror));
 
 endmodule

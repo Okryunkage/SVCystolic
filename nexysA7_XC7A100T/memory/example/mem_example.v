@@ -44,7 +44,7 @@ module memEx(
 	wire mem_wdf_rdy;
 
 	memory mem(
-		.sys_clk_i(migclk), .sys_rst(rst_n), .app_addr(addr[27:0]), .app_cmd(mem_cmd), .app_en(mem_en),
+		.sys_clk_i(migclk), .sys_rst(rst_n), .app_addr(addr[27:1]), .app_cmd(mem_cmd), .app_en(mem_en),
 		.init_calib_complete(), .ui_clk(ui_clk), .ui_clk_sync_rst(ui_clk_sync_rst), .app_rdy(mem_rdy),
 		.app_rd_data(mem_rd_data), .app_rd_data_end(mem_rd_data_end), .app_rd_data_valid(mem_rd_data_valid),
 		.app_wdf_data(mem_wdf_data), .app_wdf_mask(mem_wdf_mask), .app_wdf_wren(mem_wdf_wren), .app_wdf_end(mem_wdf_end),
