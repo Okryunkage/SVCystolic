@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module ddrPackW128#(
+module ddrPackW#(
 	parameter ADDRwidth =27,
 	parameter [(ADDRwidth-1):0] ADDRstride =27'd8,
 	parameter [7:0] PACKETimg =8'h01,
