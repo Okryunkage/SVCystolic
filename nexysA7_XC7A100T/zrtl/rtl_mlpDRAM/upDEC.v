@@ -105,7 +105,7 @@ module upDEC#(
 
 	assign payloadLENcurrent ={rxData, payloadLEN[23:0]};
 
-	always @(posedge clk or posedge rst)begin
+	always@(posedge clk or posedge rst)begin
 		if(rst)begin
 			state         <=waitSOF0s;
 			HEADERcount   <=4'd0;
@@ -115,7 +115,7 @@ module upDEC#(
 			headerInfo    <=56'd0;
 			imageInfo     <=64'd0;
 			paramInfo     <=64'd0;
-			payloadInfo   <=0'd0;
+			payloadInfo   <=40'd0;
 			payloadFlags  <=5'd0;
 			checksumInfo  <=16'd0;
 			imgBYTEcount  <=32'd0;
@@ -123,7 +123,7 @@ module upDEC#(
 		end
 		else begin
 			statusFlags   <=6'd0;
-			payyloadFlags <=5'd0;
+			payloadFlags  <=5'd0;
 			if(rxDone)begin
 				case(state)
 					waitSOF0s: if(rxData==SOF0) state <=waitSOF1s;
