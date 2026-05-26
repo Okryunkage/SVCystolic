@@ -52,11 +52,12 @@ module upDEC#(
 	output reg  [15:0] checksumInfo,
 	output wire        busy);
 
-	localparam [2:0] waitSOF0s =3'd0;
-	localparam [2:0] waitSOF1s =3'd1;
-	localparam [2:0] HEADERs   =3'd2;
-	localparam [2:0] PAYLOADs  =3'd3;
-	localparam [2:0] CHECKSUMs =3'd4;
+	localparam [2:0] waitSOF0s    =3'd0;
+	localparam [2:0] waitSOF1s    =3'd1;
+	localparam [2:0] HEADERs      =3'd2;
+	localparam [2:0] HEADERchecks =3'd3;
+	localparam [2:0] PAYLOADs     =3'd4;
+	localparam [2:0] CHECKSUMs    =3'd5;
 
 	localparam [3:0] HEADERbytes =4'd15;
 
@@ -89,7 +90,8 @@ module upDEC#(
 	assign {vectorLEN,batchSize,batchID}          =imageInfo;
 	assign {elemCount,bitWidth,paramType,layerID} =paramInfo;
 
-	wire [31:0] imageBYTEcountCALC, imagePayloadLENexpCALC, paramPayloadLENexpCALC, bytesPerElemCALC, payloadLENcurrent;
+	wire [31:0] imgBYTEcountCALC, imgPayloadLENexpCALC, paramPayloadLENexpCALC;
+	//wire [31:0]  bytesPerElemCALC;
 
 	assign busy =(state !=waitSOF0s);
 
@@ -98,12 +100,23 @@ module upDEC#(
 
 	assign imgBYTEcountCALC ={16'd0,batchSize}*{16'd0,vectorLEN};
 
-	assign imagePayloadLENexpCALC =imgBYTEcountCALC+(((flags&incLABELmask)!=8'd0)?{16'd0,batchSize}:32'd0);
+	assign imgPayloadLENexpCALC =imgBYTEcountCALC+(((flags&incLABELmask)!=8'd0)?{16'd0,batchSize}:32'd0);
 
-	assign bytesPerElemCALC =({16'd0,bitWidth}+32'd7)>>3;//ceil(bitWidht/8)
-	assign paramPayloadLENexpCALC =elemCount*bytesPerElemCALC;
+	//assign bytesPerElemCALC =({16'd0,bitWidth}+32'd7)>>3;//ceil(bitWidht/8)
+	//assign paramPayloadLENexpCALC =elemCount*bytesPerElemCALC;
+	wire [2:0] bytesPerElemCALC =(bitWidth<=16'd8)?3'd1:
+								(bitWidth<=16'd16)?3'd2:
+								(bitWidth<=16'd24)?3'd3:3'd4;
+	assign paramPayloadLENexpCALC =(bytesPerElemCALC==3'd1)?elemCount:
+							(bytesPerElemCALC==3'd2)?(elemCount<<1):
+							(bytesPerElemCALC==3'd3)?((elemCount<<1)+elemCount):(elemCount<<2);
 
-	assign payloadLENcurrent ={rxData, payloadLEN[23:0]};
+	//assign payloadLENcurrent ={rxData, payloadLEN[23:0]};
+
+	//To match the timing requirement,
+	//(payloadLEN-1) and ((flags & incLABELmask) != 8'd0) is calculated once and stored in reg.
+	reg [31:0] payloadLastIndex;
+	reg        incLABELreg;
 
 	always@(posedge clk or posedge rst)begin
 		if(rst)begin
@@ -120,11 +133,77 @@ module upDEC#(
 			checksumInfo  <=16'd0;
 			imgBYTEcount  <=32'd0;
 			payloadLENexp <=32'd0;
+
+			payloadLastIndex <=32'd0;
+			incLABELreg <=1'b0;
 		end
 		else begin
 			statusFlags   <=6'd0;
 			payloadFlags  <=5'd0;
-			if(rxDone)begin
+			//HEADERchecks should work when !RXdone
+			if(state==HEADERchecks)begin
+				if(version !=versionEXP)begin
+					{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
+					state <=waitSOF0s;
+				end
+				else if((packetType !=PACKETimg)&&(packetType !=PACKETparam))begin
+					{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
+					state <=waitSOF0s;
+				end
+				else if(packetType==PACKETimg)begin
+					if((flags & ~incLABELmask) !=8'd0)begin
+						{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
+						state <=waitSOF0s;
+					end
+					else if(payloadLENcheck &&(payloadLEN!=imgPayloadLENexpCALC))begin
+						{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
+						state <=waitSOF0s;
+					end
+					else begin
+						statusFlags[STheaderVALID] <=1'b1;
+						imgBYTEcount  <=imgBYTEcountCALC;
+						payloadLENexp <=imgPayloadLENexpCALC;
+						PAYLOADcount  <=32'd0;
+						if(payloadLEN==32'd0) state <=CHECKSUMs;
+						else state <=PAYLOADs;
+
+						payloadLastIndex <=payloadLEN-32'd1;
+						incLABELreg      <=((flags&incLABELmask)!=8'd0);
+					end
+				end
+				else begin
+					//packetType ==PACKETparam
+					if((flags & ~paramSIGNEDmask) !=8'd0)begin
+						{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
+						state <=waitSOF0s;
+					end
+					else if((paramType !=PACKETparamW)&&(paramType !=PACKETparamB))begin
+						{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
+						state <=waitSOF0s;
+					end
+					else if((bitWidth==16'd0)||(bitWidth>16'd32))begin
+						{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
+						//if bitWidth is 0 or greater than 32, goto waitSOF0s.
+						state <=waitSOF0s;
+					end
+					else if(payloadLENcheck &&(payloadLEN!=paramPayloadLENexpCALC))begin
+						{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
+						state <=waitSOF0s;
+					end
+					else begin
+						statusFlags[STheaderVALID] <=1'b1;
+						imgBYTEcount  <=32'd0;
+						payloadLENexp <=paramPayloadLENexpCALC;
+						PAYLOADcount  <=32'd0;
+						if(payloadLEN==32'd0) state <=CHECKSUMs;
+						else state <=PAYLOADs;
+
+						payloadLastIndex <=payloadLEN-32'd1;
+						incLABELreg      <=1'b0;
+					end
+				end
+			end
+			else if(rxDone)begin
 				case(state)
 					waitSOF0s: if(rxData==SOF0) state <=waitSOF1s;
 					waitSOF1s:begin
@@ -141,6 +220,9 @@ module upDEC#(
 							checksumInfo  <=16'd0;
 							imgBYTEcount  <=32'd0;
 							payloadLENexp <=32'd0;
+
+							payloadLastIndex <=32'd0;
+							incLABELreg <=1'b0;
 						end
 						else if(rxData ==SOF0) state <=waitSOF1s;
 						else                   state <=waitSOF0s;
@@ -177,63 +259,10 @@ module upDEC#(
 							4'd14: headerInfo[55:48] <=rxData;
 							default: ;
 						endcase
-						if (HEADERcount==(HEADERbytes-1))begin
+						if(HEADERcount==(HEADERbytes-1))begin
 							HEADERcount <=4'd0;
 							//Header checks
-							if (version !=versionEXP)begin
-								{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
-								state <=waitSOF0s;
-							end
-							else if((packetType !=PACKETimg)&&(packetType !=PACKETparam))begin
-								{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
-								state <=waitSOF0s;
-							end
-							else if(packetType ==PACKETimg)begin
-								if((flags & ~incLABELmask) !=8'd0)begin
-									{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
-									state <=waitSOF0s;
-								end
-								else if(payloadLENcheck &&(payloadLENcurrent !=imagePayloadLENexpCALC))begin
-									{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
-									state <=waitSOF0s;
-								end
-								else begin
-									statusFlags[STheaderVALID] <=1'b1;
-									imgBYTEcount  <=imgBYTEcountCALC;
-									payloadLENexp <=imagePayloadLENexpCALC;
-									PAYLOADcount  <=32'd0;
-									if(payloadLENcurrent==32'd0) state <=CHECKSUMs;
-									else state <=PAYLOADs;
-								end
-							end
-							else begin
-								//packetType ==PACKETparam
-								if((flags & ~paramSIGNEDmask) !=8'd0)begin
-									{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
-									state <=waitSOF0s;
-								end
-								else if((paramType !=PACKETparamW)&&(paramType !=PACKETparamB))begin
-									{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
-									state <=waitSOF0s;
-								end
-								else if((bitWidth==16'd0)||(bitWidth>16'd32))begin
-									{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
-									//if bitWidth is 0 or greater than 32, goto waitSOF0s.
-									state <=waitSOF0s;
-								end
-								else if(payloadLENcheck &&(payloadLENcurrent !=paramPayloadLENexpCALC))begin
-									{statusFlags[STheaderERROR],statusFlags[STpacketERROR]} <=2'b11;
-									state <=waitSOF0s;
-								end
-								else begin
-									statusFlags[STheaderVALID] <=1'b1;
-									imgBYTEcount  <=32'd0;
-									payloadLENexp <=paramPayloadLENexpCALC;
-									PAYLOADcount  <=32'd0;
-									if(payloadLENcurrent==32'd0) state <=CHECKSUMs;
-									else state <=PAYLOADs;
-								end
-							end
+							state <=HEADERchecks;
 						end
 						else HEADERcount <=HEADERcount+4'd1;
 					end
@@ -245,14 +274,14 @@ module upDEC#(
 							payloadFlags[PFimage] <=1'b1;
 							//If labels are included, label bytes come after image bytes.
 							//user can check if the output data is img or label by PFlabel.
-							payloadFlags[PFlabel] <=((flags&incLABELmask)!=8'd0)&&(PAYLOADcount>=imgBYTEcount);
+							payloadFlags[PFlabel] <=incLABELreg&&(PAYLOADcount>=imgBYTEcount);
 						end
 						else if(packetType==PACKETparam)begin
 							payloadFlags[PFparam]  <=1'b1;
 							payloadFlags[PFweight] <=(paramType==PACKETparamW);
 							payloadFlags[PFbias]   <=(paramType ==PACKETparamB);
 						end
-						if(PAYLOADcount==(payloadLEN-1)) state <=CHECKSUMs;
+						if(PAYLOADcount==payloadLastIndex) state <=CHECKSUMs;
 						else PAYLOADcount <=PAYLOADcount+32'd1;
 					end
 					CHECKSUMs:begin
