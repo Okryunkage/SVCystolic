@@ -1,253 +1,149 @@
 `timescale 1ns/1ps
 
-module ddrAddressBook #(
-    parameter ADDR_WIDTH = 27,
+module ddrADDRbook128#(
+	parameter ADDRwidth =27,
+	parameter [ADDRwidth-1:0] RESETbaseADDR ={ADDRwidth{1'b0}},
+	parameter [7:0] PACKETimg    =8'h01,
+	parameter [7:0] PACKETparam  =8'h02,
+	parameter [7:0] PACKETparamW =8'h00,
+	parameter [7:0] PACKETparamB =8'h01,
+	parameter [7:0] incLABELmask =8'h01)(
+	input  wire                  clk,
+	input  wire                  rst,
+	//Optional clear for sticky error flags.
+	input  wire                  clear,
+	//From ddrPackW128
+	input  wire                  writeDone,
+	input  wire [3:0]            writerErrorFlags,
+	input  wire [ADDRwidth-1:0]  pStartAddr,
+	input  wire [ADDRwidth-1:0]  pNextAddr,
+	//wMetaInfo ={packetType[8],flags[8],layerID[8],paramType[8],
+	//            bitWidth[16],elemCount[32],batchID[32],batchSize[16],vectorLEN[16]}
+	input  wire [143:0]          wMetaInfo,
+	input  wire [31:0]           wPayloadBytes,
+	//Current allocator pointer mirror.
+	output reg  [ADDRwidth-1:0]  nextFreeAddr,
+	//validFlags ={fc2B,fc2w,fc1b,fc1w,label,img}
+	output reg  [5:0]            validFlags,
+	//startADDRbook stores start addresses for each slot.
+	//Slot mapping order follows the same as validFlags
+	output reg  [6*ADDRwidth-1:0] startADDRbook,
+	//payloadBytesBook stores payload byte count for each slot.
+	output reg  [6*32-1:0]        payloadBytesBook,
+	//bookErrorFlags[0] =addressBookError
+	//bookErrorFlags[1] =unknownPacketError
+	//bookErrorFlags[2] =writerReportedError
+	output reg  [2:0]             bookErrorFlags);
 
-    parameter [ADDR_WIDTH-1:0] RESET_BASE_ADDR = {ADDR_WIDTH{1'b0}},
+	localparam integer SLOTimage =0;
+	localparam integer SLOTlavel =1;
+	localparam integer SLOTfc1W  =2;
+	localparam integer SLOTfc1B  =3;
+	localparam integer SLOTfc2W  =4;
+	localparam integer SLOTfc2B  =5;
+	localparam integer BOOKerr       =0;
+	localparam integer UNKNOWNerr    =1;
+	localparam integer WRITERrepErr  =2;
 
-    parameter [7:0] PACKET_TYPE_IMAGE = 8'h01,
-    parameter [7:0] PACKET_TYPE_PARAM = 8'h02,
+	wire writerError;
+	wire acceptedWrite;
+	assign writerError   =writeDone&& (|writerErrorFlags);//reduction OR
+	assign acceptedWrite =writeDone&&!(|writerErrorFlags);//write successfully done in ddrPackW
+	//Only these fields are needed for address classification.
+	wire [7:0]  wPacketType;
+	wire [7:0]  wFlags;
+	wire [7:0]  wLayerID;
+	wire [7:0]  wParamType;
+	wire [15:0] wBatchSize;
+	wire [15:0] wVectorLEN;
+	assign wPacketType =wMetaInfo[143:136];
+	assign wFlags      =wMetaInfo[135:128];
+	assign wLayerID    =wMetaInfo[127:120];
+	assign wParamType  =wMetaInfo[119:112];
+	assign wBatchSize  =wMetaInfo[31:16];
+	assign wVectorLEN  =wMetaInfo[15:0];
 
-    parameter [7:0] PARAM_TYPE_WEIGHT = 8'h00,
-    parameter [7:0] PARAM_TYPE_BIAS   = 8'h01
-)(
-    input  wire                  clk,
-    input  wire                  rst,
+	wire isImage;
+	wire isParam;
+	wire isFc1Weight;
+	wire isFc1Bias;
+	wire isFc2Weight;
+	wire isFc2Bias;
+	assign isImage =(wPacketType==PACKETimg);
+	assign isParam =(wPacketType==PACKETparam);
+	assign isFc1Weight =isParam&&(wLayerID ==8'd1)&&(wParamType ==PACKETparamW);
+	assign isFc1Bias   =isParam&&(wLayerID ==8'd1)&&(wParamType ==PACKETparamB);
+	assign isFc2Weight =isParam&&(wLayerID ==8'd2)&&(wParamType ==PACKETparamW);
+	assign isFc2Bias   =isParam&&(wLayerID ==8'd2)&&(wParamType ==PACKETparamB);
 
-    // Optional software/manual clear for sticky errors.
-    input  wire                  clear,
+	wire incLABEL;
+	wire [31:0] imageBytes, labelBytes;
+	wire [(ADDRwidth-1):0] imageByteOffset;
+	wire [(ADDRwidth-1):0] labelStartAddr;
+	assign incLABEL =((wFlags&incLABELmask)!=8'd0);
+	assign imageBytes ={16'd0,wBatchSize}*{16'd0,wVectorLEN};
+	assign labelBytes =incLABEL?{16'd0,wBatchSize}:32'd0;
+	assign imageByteOffset =imageBytes;
+	assign labelStartAddr =pStartAddr+imageByteOffset;
 
-    // From ddrPacketWriter128
-    input  wire                  writeDone,
-    input  wire                  writerError,
-
-    input  wire [ADDR_WIDTH-1:0] packetStartAddr,
-    input  wire [ADDR_WIDTH-1:0] packetLastAddr,
-    input  wire [ADDR_WIDTH-1:0] packetNextAddr,
-    input  wire                  packetLastAddrValid,
-
-    input  wire [7:0]            writtenPacketType,
-    input  wire [7:0]            writtenFlags,
-    input  wire [7:0]            writtenLayerID,
-    input  wire [7:0]            writtenParamType,
-    input  wire [15:0]           writtenBitWidth,
-    input  wire [31:0]           writtenElemCount,
-    input  wire [31:0]           writtenBatchID,
-    input  wire [15:0]           writtenBatchSize,
-    input  wire [15:0]           writtenVectorLEN,
-
-    input  wire [31:0]           writtenPayloadBytes,
-    input  wire [31:0]           writtenWordCount,
-
-    // Current allocator pointer mirror.
-    output reg  [ADDR_WIDTH-1:0] nextFreeAddr,
-
-    // IMAGE packet address
-    output reg                   imageValid,
-    output reg  [ADDR_WIDTH-1:0] imageStartAddr,
-    output reg  [ADDR_WIDTH-1:0] imageLastAddr,
-    output reg  [ADDR_WIDTH-1:0] imageNextAddr,
-    output reg  [31:0]           imagePayloadBytes,
-    output reg  [31:0]           imageWordCount,
-    output reg  [31:0]           imageBatchID,
-    output reg  [15:0]           imageBatchSize,
-    output reg  [15:0]           imageVectorLEN,
-    output reg  [7:0]            imageFlags,
-
-    // FC1 weight
-    output reg                   fc1WeightValid,
-    output reg  [ADDR_WIDTH-1:0] fc1WeightStartAddr,
-    output reg  [ADDR_WIDTH-1:0] fc1WeightLastAddr,
-    output reg  [ADDR_WIDTH-1:0] fc1WeightNextAddr,
-    output reg  [15:0]           fc1WeightBitWidth,
-    output reg  [31:0]           fc1WeightElemCount,
-    output reg  [31:0]           fc1WeightPayloadBytes,
-    output reg  [31:0]           fc1WeightWordCount,
-
-    // FC1 bias
-    output reg                   fc1BiasValid,
-    output reg  [ADDR_WIDTH-1:0] fc1BiasStartAddr,
-    output reg  [ADDR_WIDTH-1:0] fc1BiasLastAddr,
-    output reg  [ADDR_WIDTH-1:0] fc1BiasNextAddr,
-    output reg  [15:0]           fc1BiasBitWidth,
-    output reg  [31:0]           fc1BiasElemCount,
-    output reg  [31:0]           fc1BiasPayloadBytes,
-    output reg  [31:0]           fc1BiasWordCount,
-
-    // FC2 weight
-    output reg                   fc2WeightValid,
-    output reg  [ADDR_WIDTH-1:0] fc2WeightStartAddr,
-    output reg  [ADDR_WIDTH-1:0] fc2WeightLastAddr,
-    output reg  [ADDR_WIDTH-1:0] fc2WeightNextAddr,
-    output reg  [15:0]           fc2WeightBitWidth,
-    output reg  [31:0]           fc2WeightElemCount,
-    output reg  [31:0]           fc2WeightPayloadBytes,
-    output reg  [31:0]           fc2WeightWordCount,
-
-    // FC2 bias
-    output reg                   fc2BiasValid,
-    output reg  [ADDR_WIDTH-1:0] fc2BiasStartAddr,
-    output reg  [ADDR_WIDTH-1:0] fc2BiasLastAddr,
-    output reg  [ADDR_WIDTH-1:0] fc2BiasNextAddr,
-    output reg  [15:0]           fc2BiasBitWidth,
-    output reg  [31:0]           fc2BiasElemCount,
-    output reg  [31:0]           fc2BiasPayloadBytes,
-    output reg  [31:0]           fc2BiasWordCount,
-
-    // Sticky status
-    output reg                   addressBookError,
-    output reg                   unknownPacketError,
-    output reg                   writerReportedError
-);
-
-    wire acceptedWrite;
-    wire [ADDR_WIDTH-1:0] safeLastAddr;
-
-    assign acceptedWrite = writeDone && !writerError;
-
-    // For normal non-empty packets, packetLastAddrValid should be 1.
-    // For zero-length packets, use packetStartAddr as a harmless fallback.
-    assign safeLastAddr = packetLastAddrValid ? packetLastAddr : packetStartAddr;
-
-    always @(posedge clk or posedge rst) begin
-        if (rst) begin
-            nextFreeAddr <= RESET_BASE_ADDR;
-
-            imageValid        <= 1'b0;
-            imageStartAddr    <= {ADDR_WIDTH{1'b0}};
-            imageLastAddr     <= {ADDR_WIDTH{1'b0}};
-            imageNextAddr     <= {ADDR_WIDTH{1'b0}};
-            imagePayloadBytes <= 32'd0;
-            imageWordCount    <= 32'd0;
-            imageBatchID      <= 32'd0;
-            imageBatchSize    <= 16'd0;
-            imageVectorLEN    <= 16'd0;
-            imageFlags        <= 8'd0;
-
-            fc1WeightValid        <= 1'b0;
-            fc1WeightStartAddr    <= {ADDR_WIDTH{1'b0}};
-            fc1WeightLastAddr     <= {ADDR_WIDTH{1'b0}};
-            fc1WeightNextAddr     <= {ADDR_WIDTH{1'b0}};
-            fc1WeightBitWidth     <= 16'd0;
-            fc1WeightElemCount    <= 32'd0;
-            fc1WeightPayloadBytes <= 32'd0;
-            fc1WeightWordCount    <= 32'd0;
-
-            fc1BiasValid        <= 1'b0;
-            fc1BiasStartAddr    <= {ADDR_WIDTH{1'b0}};
-            fc1BiasLastAddr     <= {ADDR_WIDTH{1'b0}};
-            fc1BiasNextAddr     <= {ADDR_WIDTH{1'b0}};
-            fc1BiasBitWidth     <= 16'd0;
-            fc1BiasElemCount    <= 32'd0;
-            fc1BiasPayloadBytes <= 32'd0;
-            fc1BiasWordCount    <= 32'd0;
-
-            fc2WeightValid        <= 1'b0;
-            fc2WeightStartAddr    <= {ADDR_WIDTH{1'b0}};
-            fc2WeightLastAddr     <= {ADDR_WIDTH{1'b0}};
-            fc2WeightNextAddr     <= {ADDR_WIDTH{1'b0}};
-            fc2WeightBitWidth     <= 16'd0;
-            fc2WeightElemCount    <= 32'd0;
-            fc2WeightPayloadBytes <= 32'd0;
-            fc2WeightWordCount    <= 32'd0;
-
-            fc2BiasValid        <= 1'b0;
-            fc2BiasStartAddr    <= {ADDR_WIDTH{1'b0}};
-            fc2BiasLastAddr     <= {ADDR_WIDTH{1'b0}};
-            fc2BiasNextAddr     <= {ADDR_WIDTH{1'b0}};
-            fc2BiasBitWidth     <= 16'd0;
-            fc2BiasElemCount    <= 32'd0;
-            fc2BiasPayloadBytes <= 32'd0;
-            fc2BiasWordCount    <= 32'd0;
-
-            addressBookError   <= 1'b0;
-            unknownPacketError <= 1'b0;
-            writerReportedError <= 1'b0;
-        end
-        else begin
-            if (clear) begin
-                addressBookError    <= 1'b0;
-                unknownPacketError  <= 1'b0;
-                writerReportedError <= 1'b0;
-            end
-
-            if (writeDone && writerError) begin
-                addressBookError    <= 1'b1;
-                writerReportedError <= 1'b1;
-            end
-
-            if (acceptedWrite) begin
-                // Mirror allocator next pointer from the packet writer.
-                nextFreeAddr <= packetNextAddr;
-
-                if (writtenPacketType == PACKET_TYPE_IMAGE) begin
-                    imageValid        <= 1'b1;
-                    imageStartAddr    <= packetStartAddr;
-                    imageLastAddr     <= safeLastAddr;
-                    imageNextAddr     <= packetNextAddr;
-                    imagePayloadBytes <= writtenPayloadBytes;
-                    imageWordCount    <= writtenWordCount;
-                    imageBatchID      <= writtenBatchID;
-                    imageBatchSize    <= writtenBatchSize;
-                    imageVectorLEN    <= writtenVectorLEN;
-                    imageFlags        <= writtenFlags;
-                end
-                else if (writtenPacketType == PACKET_TYPE_PARAM) begin
-                    if ((writtenLayerID == 8'd1) &&
-                        (writtenParamType == PARAM_TYPE_WEIGHT)) begin
-                        fc1WeightValid        <= 1'b1;
-                        fc1WeightStartAddr    <= packetStartAddr;
-                        fc1WeightLastAddr     <= safeLastAddr;
-                        fc1WeightNextAddr     <= packetNextAddr;
-                        fc1WeightBitWidth     <= writtenBitWidth;
-                        fc1WeightElemCount    <= writtenElemCount;
-                        fc1WeightPayloadBytes <= writtenPayloadBytes;
-                        fc1WeightWordCount    <= writtenWordCount;
-                    end
-                    else if ((writtenLayerID == 8'd1) &&
-                             (writtenParamType == PARAM_TYPE_BIAS)) begin
-                        fc1BiasValid        <= 1'b1;
-                        fc1BiasStartAddr    <= packetStartAddr;
-                        fc1BiasLastAddr     <= safeLastAddr;
-                        fc1BiasNextAddr     <= packetNextAddr;
-                        fc1BiasBitWidth     <= writtenBitWidth;
-                        fc1BiasElemCount    <= writtenElemCount;
-                        fc1BiasPayloadBytes <= writtenPayloadBytes;
-                        fc1BiasWordCount    <= writtenWordCount;
-                    end
-                    else if ((writtenLayerID == 8'd2) &&
-                             (writtenParamType == PARAM_TYPE_WEIGHT)) begin
-                        fc2WeightValid        <= 1'b1;
-                        fc2WeightStartAddr    <= packetStartAddr;
-                        fc2WeightLastAddr     <= safeLastAddr;
-                        fc2WeightNextAddr     <= packetNextAddr;
-                        fc2WeightBitWidth     <= writtenBitWidth;
-                        fc2WeightElemCount    <= writtenElemCount;
-                        fc2WeightPayloadBytes <= writtenPayloadBytes;
-                        fc2WeightWordCount    <= writtenWordCount;
-                    end
-                    else if ((writtenLayerID == 8'd2) &&
-                             (writtenParamType == PARAM_TYPE_BIAS)) begin
-                        fc2BiasValid        <= 1'b1;
-                        fc2BiasStartAddr    <= packetStartAddr;
-                        fc2BiasLastAddr     <= safeLastAddr;
-                        fc2BiasNextAddr     <= packetNextAddr;
-                        fc2BiasBitWidth     <= writtenBitWidth;
-                        fc2BiasElemCount    <= writtenElemCount;
-                        fc2BiasPayloadBytes <= writtenPayloadBytes;
-                        fc2BiasWordCount    <= writtenWordCount;
-                    end
-                    else begin
-                        addressBookError   <= 1'b1;
-                        unknownPacketError <= 1'b1;
-                    end
-                end
-                else begin
-                    addressBookError   <= 1'b1;
-                    unknownPacketError <= 1'b1;
-                end
-            end
-        end
-    end
+	always@(posedge clk or posedge rst)begin
+		if(rst)begin
+			nextFreeAddr     <=RESETbaseADDR;
+			validFlags       <=6'd0;
+			startADDRbook    <={(6*ADDRwidth){1'b0}};
+			payloadBytesBook <={(6*32){1'b0}};
+			bookErrorFlags   <=3'd0;
+		end
+		else begin
+			if(clear) bookErrorFlags <=3'd0;
+			if(writerError)begin
+				bookErrorFlags[BOOKerr]      <=1'b1;
+				bookErrorFlags[WRITERrepErr] <=1'b1;
+			end
+			if(acceptedWrite)begin
+				nextFreeAddr <=pNextAddr;
+				if(isImage)begin
+					validFlags[SLOTimage] <=1'b1;
+					startADDRBook[SLOTimage*ADDRwidth+:ADDRwidth] <=pStartAddr;
+					payloadBytesBook[SLOTimage*32+:32] <=imageBytes;
+					if(incLABEL)begin
+						validFlags[SLOTlabel] <=1'b1;
+						startADDRBook[SLOTlabel*ADDRwidth+:ADDRwidth] <=labelStartAddr;
+						payloadBytesBook[SLOTlabel*32+:32] <=labelBytes;
+					end
+					else begin
+						validFlags[SLOTlabel] <= 1'b0;
+						startADDRBook[SLOTlabel*ADDRwidth+:ADDRwidth] <={ADDRwidth{1'b0}};
+						payloadBytesBook[SLOTlabel*32+:32] <=32'd0;
+					end
+				end
+				else if(isFc1Weight)begin
+					validFlags[SLOTfc1W] <=1'b1;
+					startADDRbook[SLOTfc1W*ADDRwidth+:ADDRwidth] <=pStartAddr;
+					payloadBytesBook[SLOTfc1W*32+:32] <=wPayloadBytes;
+				end
+				else if(isFc1Bias)begin
+					validFlags[SLOTfc1B] <=1'b1;
+					startADDRbook[SLOTfc1B*ADDRwidth+:ADDRwidth] <=pStartAddr;
+					payloadBytesBook[SLOTfc1B*32+:32] <=wPayloadBytes;
+				end
+				else if(isFc2Weight)begin
+					validFlags[SLOTfc2W] <=1'b1;
+					startADDRbook[SLOTfc2W*ADDRwidth+:ADDRwidth] <=pStartAddr;
+					payloadBytesBook[SLOTfc2W*32 +: 32]
+						<=wPayloadBytes;
+				end
+				else if (isFc2Bias) begin
+					validFlags[SLOTfc2B] <=1'b1;
+					startADDRbook[SLOTfc2B*ADDRwidth+:ADDRwidth] <=pStartAddr;
+					payloadBytesBook[SLOTfc2B*32+:32] <=wPayloadBytes;
+				end
+				else begin
+					bookErrorFlags[BOOKerr]    <=1'b1;
+					bookErrorFlags[UNKNOWNerr] <=1'b1;
+				end
+			end
+		end
+	end
 
 endmodule
