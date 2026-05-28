@@ -50,7 +50,7 @@ module upDEC#(
 	output reg  [39:0] payloadInfo,
 	output reg  [4:0]  payloadFlags,
 	output reg  [15:0] checksumInfo,
-	output wire        busy);
+	output wire        busy);	
 
 	localparam [2:0] waitSOF0s    =3'd0;
 	localparam [2:0] waitSOF1s    =3'd1;
