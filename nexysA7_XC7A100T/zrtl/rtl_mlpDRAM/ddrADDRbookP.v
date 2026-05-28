@@ -10,9 +10,9 @@ module ddrADDRbookP #(
 	parameter [7:0] incLABELmask =8'h01)(
 	input  wire                  clk,
 	input  wire                  rst,
-	// Optional clear for sticky error flags.
+	//Optional clear for sticky error flags.
 	input  wire                  clear,
-	// From ddrPackW128
+	//From ddrPackW128
 	input  wire                  writeDone,
 	input  wire [3:0]            writerErrorFlags,
 	input  wire [(ADDRwidth-1):0]pStartAddr,
@@ -47,9 +47,9 @@ module ddrADDRbookP #(
 	localparam integer BOOKerr      =0;
 	localparam integer UNKNOWNerr   =1;
 	localparam integer WRITERrepErr =2;
-	// ------------------------------------------------------------
-	// Stage 0: capture writeDone transaction
-	// ------------------------------------------------------------
+	//############################################################
+	//##         Stage 0: capture writeDone transaction         ##
+	//############################################################
 	reg                         s0_valid;
 	reg                         s0_writerError;
 	reg [(ADDRwidth-1):0]       s0_pStartAddr;
@@ -71,9 +71,9 @@ module ddrADDRbookP #(
 	wire s0_isFc2Weight =s0_isParam&&(s0_layerID==8'd2)&&(s0_paramType==PACKETparamW);
 	wire s0_isFc2Bias   =s0_isParam&&(s0_layerID==8'd2)&&(s0_paramType==PACKETparamB);
 	wire s0_incLABEL    =((s0_flags&incLABELmask)!=8'd0);
-	// ------------------------------------------------------------
-	// Stage 1: classification register + image byte calculation
-	// ------------------------------------------------------------
+	//############################################################
+	//##   Stage 1: classification reg + img byte calculation   ##
+	//############################################################
 	reg                         s1_valid;
 	reg                         s1_writerError;
 	reg [(ADDRwidth-1):0]       s1_pStartAddr;
@@ -87,9 +87,9 @@ module ddrADDRbookP #(
 	reg                         s1_incLABEL;
 	reg [31:0]                  s1_imageBytes;
 	reg [31:0]                  s1_labelBytes;
-	// ------------------------------------------------------------
-	// Stage 2: label start address calculation
-	// ------------------------------------------------------------
+	//############################################################
+	//##        Stage 2: label start address calculation        ##
+	//############################################################
 	reg                         s2_valid;
 	reg                         s2_writerError;
 	reg [(ADDRwidth-1):0]       s2_pStartAddr;
@@ -107,9 +107,9 @@ module ddrADDRbookP #(
 	//imageAddrOffset =ceil(imageBytes/16)*8 =((imageBytes+15)>>4)<<3
 	//add imageAddrOffset value to address per one image vector
 	wire [31:0] imageAddrOffsetCalc32 =((s1_imageBytes+32'd15)>>4)<<3;
-	// ------------------------------------------------------------
-	// Pipeline + address book update
-	// ------------------------------------------------------------
+	//############################################################
+	//##             Pipeline + address book update             ##
+	//############################################################
 	always@(posedge clk or posedge rst)begin
 		if(rst)begin
 			nextFreeAddr     <=RESETbaseADDR;
@@ -159,27 +159,23 @@ module ddrADDRbookP #(
 			s2_labelStartAddr <={ADDRwidth{1'b0}};
 		end
 		else begin
-			// ----------------------------------------------------
-			// Clear only sticky error flags.
-			// If a new error happens in the same cycle, it will be set again.
-			// ----------------------------------------------------
+			//Clear only sticky error flags.
+			//If a new error happens in the same cycle, it will be set again.
 			if(clear) bookErrorFlags <=3'd0;
-
-			// ----------------------------------------------------
-			// Stage 0
-			// Capture write result from ddrPackW128.
-			// ----------------------------------------------------
+			//############################################################
+			//##                         Stage 0                        ##
+			//##         Capture write result from ddrPackW128.         ##
+			//############################################################
 			s0_valid         <=writeDone;
 			s0_writerError   <=|writerErrorFlags;
 			s0_pStartAddr    <=pStartAddr;
 			s0_pNextAddr     <=pNextAddr;
 			s0_wMetaInfo     <=wMetaInfo;
 			s0_wPayloadBytes <=wPayloadBytes;
-
-			// ----------------------------------------------------
-			// Stage 1
-			// Decode metadata and calculate byte counts.
-			// ----------------------------------------------------
+			//############################################################
+			//##                         Stage 1                        ##
+			//##       Decode metadata and calculate byte counts.       ##
+			//############################################################
 			s1_valid         <=s0_valid;
 			s1_writerError   <=s0_writerError;
 			s1_pStartAddr    <=s0_pStartAddr;
@@ -192,18 +188,16 @@ module ddrADDRbookP #(
 			s1_isFc2Weight   <=s0_isFc2Weight;
 			s1_isFc2Bias     <=s0_isFc2Bias;
 			s1_incLABEL      <=s0_incLABEL;
-			// Image packet layout:
-			//   payload =image bytes + optional label bytes
-			//
-			// imageBytes =batchSize * vectorLEN
-			// labelBytes =batchSize, only when label is included
+			//Image packet layout: payload =image bytes + optional label bytes
+			//imageBytes =batchSize * vectorLEN
+			//labelBytes =batchSize, only when label is included
 			s1_imageBytes <={16'd0,s0_batchSize}*{16'd0,s0_vectorLEN};
 			s1_labelBytes <=s0_incLABEL?{16'd0,s0_batchSize}:32'd0;
-			// ----------------------------------------------------
-			// Stage 2
-			// Convert image byte count to MIG-style address offset,
-			// then calculate label start address.
-			// ----------------------------------------------------
+			//############################################################
+			//##                         Stage 2                        ##
+			//## Convert image byte count to MIG-style address offset,  ##
+			//##           then calculate label start address.          ##
+			//############################################################
 			s2_valid         <=s1_valid;
 			s2_writerError   <=s1_writerError;
 			s2_pStartAddr    <=s1_pStartAddr;
@@ -221,10 +215,10 @@ module ddrADDRbookP #(
 			s2_labelBytes    <=s1_labelBytes;
 
 			s2_labelStartAddr <=s1_pStartAddr+imageAddrOffsetCalc32[ADDRwidth-1:0];
-			// ----------------------------------------------------
-			// Commit stage
-			// Address book update happens after the pipeline delay.
-			// ----------------------------------------------------
+			//############################################################
+			//##                      Commit stage                      ##
+			//##  Address book update happens after the pipeline delay  ##
+			//############################################################
 			if(s2_valid)begin
 				if(s2_writerError)begin
 					bookErrorFlags[BOOKerr]      <=1'b1;

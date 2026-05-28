@@ -23,7 +23,6 @@ FLAG_SIGNED =0x01
 #payload_len : uint32
 PARAM_HEADER_STRUCT =struct.Struct("<BBBBBHII")
 
-
 def parse_int_token(token:str)->int:
 	#got potential issue recognizing HEX if there's no alphabet digit in line.
 	"""
