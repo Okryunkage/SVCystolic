@@ -142,7 +142,6 @@ module fc1DDR#(
 			else             biasExtend32 ={{(accWidth-32){inValue[31]}},inValue};
 		end
 	endfunction
-	
 	function signed [accWidth-1:0] relu;
 		input signed [accWidth-1:0] inValue;begin
 			if(inValue[accWidth-1]) relu ={accWidth{1'b0}};
@@ -209,20 +208,20 @@ module fc1DDR#(
 							inIdx       <={inIDXwidth{1'b0}};
 							tileIdx     <={tileIDXwidth{1'b0}};
 							inLastADDR  <=inBaseADDR +((inLines-1)*addrStride);
-							wLastADDR <=wBaseADDR+((wLINEStotal-1)*addrStride);
-							bLastADDR <=bBaseADDR+((bLINEStotal-1)*addrStride);
-							state <=S_LOAD_X_REQ;
+							wLastADDR   <=wBaseADDR+((wLINEStotal-1)*addrStride);
+							bLastADDR   <=bBaseADDR+((bLINEStotal-1)*addrStride);
+							state       <=S_LOAD_X_REQ;
 						end
 					end
 				end
 				//Load input vector from DDR into xMem.
 				S_LOAD_X_REQ:begin
 					if(ddrReady)begin
-						ddrAddr      <=inBaseADDR+(xLineIdx*addrStride);
-						LastReadADDR <=inBaseADDR+(xLineIdx*addrStride);
+						ddrAddr       <=inBaseADDR+(xLineIdx*addrStride);
+						LastReadADDR  <=inBaseADDR+(xLineIdx*addrStride);
 						debugReadLine <=xLineIdx;
-						ddrRstrobe   <=1'b1;
-						state        <=S_LOAD_X_WAIT;
+						ddrRstrobe    <=1'b1;
+						state         <=S_LOAD_X_WAIT;
 					end
 				end
 				S_LOAD_X_WAIT:begin
@@ -246,8 +245,8 @@ module fc1DDR#(
 				//Each bias is little-endian int32.
 				S_BIAS_REQ:begin
 					if(ddrReady)begin
-						ddrAddr <=bBaseADDR+(((tileIdx*bLINEperTILE)+biasLineIdx)*addrStride);
-						LastReadADDR <=bBaseADDR+(((tileIdx*bLINEperTILE)+biasLineIdx)*addrStride);
+						ddrAddr       <=bBaseADDR+(((tileIdx*bLINEperTILE)+biasLineIdx)*addrStride);
+						LastReadADDR  <=bBaseADDR+(((tileIdx*bLINEperTILE)+biasLineIdx)*addrStride);
 						debugReadLine <=(tileIdx*bLINEperTILE)+biasLineIdx;
 						ddrRstrobe    <=1'b1;
 						state         <=S_BIAS_WAIT;
@@ -256,8 +255,7 @@ module fc1DDR#(
 				S_BIAS_WAIT:begin
 					if(ddrTranComp)begin
 						for (i =0; i<ddrBytes; i =i+1)begin
-							if((biasLineIdx*ddrBytes+i)<bBYTEperTILE)
-								biasByteMem[biasLineIdx*ddrBytes+i] <=getByte128(ddrData, i);
+							if((biasLineIdx*ddrBytes+i)<bBYTEperTILE) biasByteMem[biasLineIdx*ddrBytes+i] <=getByte128(ddrData, i);
 						end
 						if(biasLineIdx==(bLINEperTILE-1)) state <=S_BIAS_INIT;
 						else begin
@@ -279,11 +277,11 @@ module fc1DDR#(
 						state        <=S_ERROR;
 					end
 					else if(ddrReady)begin
-						ddrAddr      <=wBaseADDR+(wLineIndexCalc*addrStride);
-						LastReadADDR <=wBaseADDR+(wLineIndexCalc*addrStride);
+						ddrAddr       <=wBaseADDR+(wLineIndexCalc*addrStride);
+						LastReadADDR  <=wBaseADDR+(wLineIndexCalc*addrStride);
 						debugReadLine <=wLineIndexCalc;
-						ddrRstrobe   <=1'b1;
-						state        <=S_W_WAIT;
+						ddrRstrobe    <=1'b1;
+						state         <=S_W_WAIT;
 					end
 				end
 				S_W_WAIT:begin
@@ -292,31 +290,17 @@ module fc1DDR#(
 						state <=S_PRE_MAC;
 					end
 				end
-
-				//MAC: acc[lane] +=input[inIdx]*weight[tile lane][inIdx]
-				/*
-				S_MAC:begin
-					for(i=0;i<tile;i=i+1)begin
-						acc[i] <=acc[i]
-								+($signed(inputExtend(xMem[inIdx]))*$signed(weightExtend(getByte128(rdBuf, weightByteInLine+i))));
-					end
-					if(inIdx==(inNum-1)) state <=S_WRITE_OUT;
-					else begin
-						inIdx <=inIdx+1'b1;
-						state <=S_W_REQ;
-					end
+				S_PRE_MAC:begin
+					xValueReg <=xMem[inIdx];
+					for(i=0;i<tile;i=i+1) wValueReg[i] <=getByte128(rdBuf,weightByteInLine+i);
+					state <=S_MAC;
 				end
-				*/
 				S_MAC:begin
 					for(i=0;i<tile;i=i+1)begin
-						acc[i] <=acc[i]
-								+($signed(inputExtend(xValueReg))
-								*$signed(weightExtend(wValueReg[i])));
+						acc[i] <=acc[i]+($signed(inputExtend(xValueReg))*$signed(weightExtend(wValueReg[i])));
 					end
 
-					if(inIdx==(inNum-1)) begin
-						state <=S_WRITE_OUT;
-					end
+					if(inIdx==(inNum-1)) state <=S_WRITE_OUT;
 					else begin
 						inIdx <=inIdx+1'b1;
 						state <=S_W_REQ;
@@ -342,18 +326,7 @@ module fc1DDR#(
 					busy <=1'b0;
 					state <=S_IDLE;
 				end
-
-				S_PRE_MAC:begin
-					xValueReg <=xMem[inIdx];
-
-					for(i=0;i<tile;i=i+1)begin
-						wValueReg[i] <=getByte128(rdBuf, weightByteInLine+i);
-					end
-
-					state <=S_MAC;
-				end
 				default:state <=S_IDLE;
-
 			endcase
 		end
 	end

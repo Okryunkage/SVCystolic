@@ -157,70 +157,28 @@ module fcBatchAccTOP#(
 	//##              fcTOP                 ##
 	//########################################
 	fcTOP#(
-		.addrWidth(addrWidth),
-		.addrStride(addrStride),
-
-		.fc1InNum(fc1InNum),
-		.fc1OutNum(fc1OutNum),
-		.fc2OutNum(fc2OutNum),
-
-		.fc1Tile(fc1Tile),
-		.fc2Tile(fc2Tile),
-
-		.inWidth(inWidth),
-		.wWidth(wWidth),
-		.bWidth(bWidth),
-		.accWidth(accWidth),
-
-		.rqOutWidth(rqOutWidth),
-		.rqShift(rqShift),
-
-		.byte0LSB(byte0LSB),
-		.checkPB(checkPB)) u_fcTOP(
-		.clk(clk),
-		.rst(rst),
-		.start(fcStart),
-
+		.addrWidth(addrWidth),.addrStride(addrStride),
+		.fc1InNum(fc1InNum),.fc1OutNum(fc1OutNum),.fc2OutNum(fc2OutNum),
+		.fc1Tile(fc1Tile),.fc2Tile(fc2Tile),
+		.inWidth(inWidth),.wWidth(wWidth),.bWidth(bWidth),.accWidth(accWidth),
+		.rqOutWidth(rqOutWidth),.rqShift(rqShift),
+		.byte0LSB(byte0LSB),.checkPB(checkPB))
+		u_fcTOP(
+		.clk(clk),.rst(rst),.start(fcStart),
 		.inBaseADDR(currentInBaseADDR),
-
-		.fc1wBaseADDR(fc1wBaseADDR),
-		.fc1bBaseADDR(fc1bBaseADDR),
-
-		.fc2wBaseADDR(fc2wBaseADDR),
-		.fc2bBaseADDR(fc2bBaseADDR),
-
+		.fc1wBaseADDR(fc1wBaseADDR),.fc1bBaseADDR(fc1bBaseADDR),
+		.fc2wBaseADDR(fc2wBaseADDR),.fc2bBaseADDR(fc2bBaseADDR),
 		.inPB(inPB),
-		.fc1wPB(fc1wPB),
-		.fc1bPB(fc1bPB),
-		.fc2wPB(fc2wPB),
-		.fc2bPB(fc2bPB),
-
-		.ddrAddr(fcDDRaddr),
-		.ddrRstrobe(fcDDRstrobe),
-		.ddrData(ddrData),
-		.ddrReady(ddrReady),
-		.ddrTranComp(ddrTranComp),
-
-		.busy(fcBusy),
-		.done(fcDone),
-
+		.fc1wPB(fc1wPB),.fc1bPB(fc1bPB),
+		.fc2wPB(fc2wPB),.fc2bPB(fc2bPB),
+		.ddrAddr(fcDDRaddr),.ddrRstrobe(fcDDRstrobe),
+		.ddrData(ddrData),.ddrReady(ddrReady),.ddrTranComp(ddrTranComp),
+		.busy(fcBusy),.done(fcDone),
 		.outIndex(fcOutIndex),
-
-		.fc1OutFlat(),
-		.rqOutFlat(),
-		.fc2OutFlat(),
-
-		.fc1Done(),
-		.rqDone(),
-		.fc2Done(),
-
-		.fc1Busy(),
-		.fc2Busy(),
-
-		.fc1Error(),
-		.fc2Error(),
-		.error(fcError),
-
+		.fc1OutFlat(),.rqOutFlat(),.fc2OutFlat(),
+		.fc1Done(),.rqDone(),.fc2Done(),
+		.fc1Busy(),.fc2Busy(),
+		.fc1Error(),.fc2Error(),.error(fcError),
 		.fc1DebugState(fc1DebugState),
 		.fc2DebugState(fc2DebugState),
 		.fc1DebugInIdx(fc1DebugInIdx),
@@ -228,23 +186,17 @@ module fcBatchAccTOP#(
 		.fc1DebugReadLine(fc1DebugReadLine),
 		.fc2DebugInIdx(fc2DebugInIdx),
 		.fc2DebugtileIdx(fc2DebugtileIdx),
-		.fc2DebugReadLine(fc2DebugReadLine)
-	);
+		.fc2DebugReadLine(fc2DebugReadLine));
 
 	//########################################
 	//##           labelReader              ##
 	//########################################
 	labelReader#(
-		.addrWidth(addrWidth),
-		.addrStride(addrStride),
-		.byte0LSB(byte0LSB)) u_labelReader(
-		.clk(clk),
-		.rst(rst),
-		.start(labelStart),
-
+		.addrWidth(addrWidth),.addrStride(addrStride),.byte0LSB(byte0LSB))
+		u_labelReader(
+		.clk(clk),.rst(rst),.start(labelStart),
 		.labelBaseAddr(labelBaseADDR),
 		.labelIndex({{(32-batchIDXwidth){1'b0}},batchIdx}),
-
 		.ddrAddr(labelDDRaddr),
 		.ddrRstrobe(labelDDRstrobe),
 		.ddrData(ddrData),
@@ -313,9 +265,7 @@ module fcBatchAccTOP#(
 				end
 
 				//Generate one-cycle start pulse for fcTOP.
-				S_FC_START:begin
-					state <=S_FC_WAIT;
-				end
+				S_FC_START: state <=S_FC_WAIT;
 
 				//Wait until fcTOP finishes one image inference.
 				S_FC_WAIT:begin
@@ -331,9 +281,7 @@ module fcBatchAccTOP#(
 				end
 
 				//Generate one-cycle start pulse for labelReader.
-				S_LABEL_START:begin
-					state <=S_LABEL_WAIT;
-				end
+				S_LABEL_START: state <=S_LABEL_WAIT;
 
 				//Wait until target label is read from DDR.
 				//Latch labelValue here, then compare in S_COMPARE.
@@ -347,39 +295,27 @@ module fcBatchAccTOP#(
 				//Compare current prediction with registered current label.
 				S_COMPARE:begin
 					currentCorrect <=compareMatch;
-
 					totalCount   <=totalCount+32'd1;
 					correctCount <=correctCountNext;
-
-					if(currentLabel>=fc2OutNum)begin
-						labelValueError <=1'b1;
-					end
-
-					if(batchIdx==(batchSize-1))begin
-						state <=S_DONE;
-					end
+					if(currentLabel>=fc2OutNum) labelValueError <=1'b1;
+					if(batchIdx==(batchSize-1)) state <=S_DONE;
 					else begin
 						batchIdx <=batchIdx+1'b1;
 						state    <=S_FC_START;
 					end
 				end
-
 				S_DONE:begin
 					busy <=1'b0;
 					done <=1'b1;
 					batchDone <=1'b1;
 					state <=S_IDLE;
 				end
-
 				S_ERROR:begin
 					busy <=1'b0;
 					done <=1'b1;
 					state <=S_IDLE;
 				end
-
-				default:begin
-					state <=S_IDLE;
-				end
+				default: state <=S_IDLE;
 			endcase
 		end
 	end
