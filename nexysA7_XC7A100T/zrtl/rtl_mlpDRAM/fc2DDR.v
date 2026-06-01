@@ -149,23 +149,18 @@ module fc2DDR#(
 		integer bytePos;
 		begin
 			bytePos =startByte+laneIndex;
-
 			if(bytePos<16) getWeightByte =getByte128(word0,bytePos);
 			else           getWeightByte =getByte128(word1,bytePos-16);
 		end
 	endfunction
-
 	function signed [accWidth-1:0] inputExtend;
-		input [inWidth-1:0] inValue;
-		begin
+		input [inWidth-1:0] inValue;begin
 			if(inSigned) inputExtend ={{(accWidth-inWidth){inValue[inWidth-1]}},inValue};
 			else         inputExtend ={{(accWidth-inWidth){1'b0}},inValue};
 		end
 	endfunction
-
 	function signed [accWidth-1:0] weightExtend;
-		input [7:0] inValue;
-		begin
+		input [7:0] inValue;begin
 			weightExtend ={{(accWidth-8){inValue[7]}},inValue};
 		end
 	endfunction
