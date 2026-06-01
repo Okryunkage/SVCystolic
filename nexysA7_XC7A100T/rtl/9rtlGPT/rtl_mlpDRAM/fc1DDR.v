@@ -106,7 +106,7 @@ module fc1DDR#(
 	//Index of the current weight entry. One entry contains 'tile' weights for the current input index.
 	wire [31:0] wByteOffsetCalc =wEntryIndexCalc * wBYTEperENTRY;
 	//Byte offset of the current weight entry from the weight base address.
-	wire [31:0] wLineIndexCalc  =wByteOffsetCalc >> 4;
+	wire [31:0] wLineIndexCalc  =wByteOffsetCalc>>4;
 	//DDR 128bit line index. One line is 16 Bytes.
 	wire [3:0]  wByteInLineCalc =wByteOffsetCalc[3:0];
 	//Start byte position inside the 128bit line
