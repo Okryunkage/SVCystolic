@@ -5,8 +5,7 @@ module pe_cvt#(
 	clk, preclk,
 	weight, in, psum,
 	weightO, inO, psumO);
-	`include "ceillog2.vh"
-	localparam integer buswire=ceillog2(size)+16;
+	localparam integer buswire=$clog2(size)+16;
 	localparam integer bussize=buswire-1;
 	input clk;
 	input preclk;
@@ -27,13 +26,13 @@ module pe_cvt#(
 	dadda8 reduc(ppbus, corbus, out0, out1);
 	wire [16:0] mulResult;
 	reg [16:0] treeReg;
-	//cpaS #(17) mulACC({out0[15],out0}, {out1[15],out1}, mulResult);
-	assign mulResult =$signed({out0[15],out0})+$signed({out1[15],out1});
+	cpaS #(17) mulACC({out0[15],out0}, {out1[15],out1}, mulResult);
+	//assign mulResult =$signed({out0[15],out0})+$signed({out1[15],out1});
 	always@(posedge clk)begin
 		inO <=in;
 		psumreg <=psum;
 		treeReg <=mulResult;
 	end
-	//cpaS #(buswire) finalacc({{(buswire-17){treeReg[16]}},treeReg},psumreg,psumO);
-	assign psumO =$signed(treeReg) + $signed(psumreg);
+	cpaS #(buswire) finalacc({{(buswire-17){treeReg[16]}},treeReg},psumreg,psumO);
+	//assign psumO =$signed(treeReg) + $signed(psumreg);
 endmodule
