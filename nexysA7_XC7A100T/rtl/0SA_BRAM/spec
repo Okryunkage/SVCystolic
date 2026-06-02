@@ -1,0 +1,82 @@
+FPGA Systolic Array Project
+1. 사용모듈
+	-Systolic Array(SA)
+	-BRAM
+	-DDR2 DRAM
+	-UART module
+	-etc(ReLu, requantize, ...)
+
+2. 구조 설명
+	-NN의 weight는 int8, bias는 int32, input은 uint8로 quantize되어있음.
+
+	-SA(SA_IOr.v) 모듈은 weight-stationary(WS) 기반이며, input&output에 reg를 추가하여 diagonal encoding이 필요하지 않음.
+	-64X64 size SA를 사용할 것임. size는 parameter 변수를 통해 손쉽게 조정 가능.
+	-784X64X10 MLP 구조를 연산할 것이며, image input vector [784*1]을 복수 개 묶어 batch matrix의 형태로 입력할 것임.
+	-SA size가 신경망 weight matrix보다 작으므로, weight matrix 및 batch matrix를 tiling을 통해서 나누어서 진행.
+	-SA_IOr 모듈의 output에 accumulator를 부착, tile 연산의 결과들을 accumulator에서 합쳐 final GEMM 연산 결과를 출력할 수 있도록 함.
+	-accumulator에는 bias 값을 preload할 수 있도록 함.
+	-accumulator는 64*batch_size 만큼 있어야 함. 이 구조가 가능한지에 대한 확인이 필요 (nexys a7-100T에서 resource 부족 가능성).
+	-fc1 layer(784 input, 64 output)에서, 64X784 weight matrix를 13개의 tile로 나눔. (64X64 tile 12개, 64X16 tile 1개)
+	-fc2 layer(64  input, 10 output)의 경우, SA의 크기가 weight matrix보다 작으므로, SA의 10개 column만 사용.
+
+	-fc1 연산 시 accumulator 출력은 ReLu 함수(MSB?32'b0:accOut)를 거친 뒤 requantize.
+	-requantize 결과를 BRAM에 저장 후 fc2 연산 시 사용.
+
+	-최종출력은 argMax 함수를 통해 predIndex*batch_size 결과 추출.
+
+	-BRAM은 총 6개 instance를 사용
+		=fc1Weight memory, [8 (bit-width) *784(input_num) *64(output_num) bit capacity], [bandWidth =8*64 bit]
+		=fc1Bias   memory, [32(bit-width)                 *64(output_num) bit capacity], [bandWidth =?]
+		=fc2Weight memory, [8 (bit-width) *64(input_num)  *10(output_num) bit capacity], [bandWidth =8*64 bit]
+		=fc2Bias   memory, [32(bit-width)                 *10(output_num) bit capacity], [bandWidth =?]
+		=fc2In     memory, [8 (bit-width) *64(input_num)  *x (batch_size) bit capacity], [bandWidth =8*64 bit]
+		=batch tile cache, [8 (bit-width) *64(tile_size)  *x (batch_size) bit capacity], [bandWidth =8*64 bit]
+		=weight memory와 bias 메모리는 2개를 merge해서 총 3개의 instance를 사용하는 것도 고려.
+	-parameter memory 4개는 mem file을 통해 initialize됨.
+	-batch tile cache BRAM의 경우, DRAM에서 현재 연산에 사용되는 tile을 불러와서 저장해둠.
+	-매 tile computation iteration마다, DRAM에서 tile을 cache로 불러오는 과정을 반복.
+
+	-DDR2 DRAM은 mig user interface(mig_ui.v)를 통해 제어.
+	-모듈 최초 동작 시, UART를 통해 batch 이미지를 전송 받고, 이를 DRAM에 저장
+	-DRAM bandwidth는 16Byte(128bit)이므로, 64X1 tile vector를 systolic array에 입력하기 위해 DRAM read 4cycle 필요.
+	-DRAM에는 input vector가 차례로 write됨.
+	-DRAM 주소는 한번의 burst마다 8씩 증가.
+	-DRAM read 시 read address에 49(vector_index)*8씩 더하면서 read하여 tile matrix를 vector 단위로 serial하게 읽을 수 있음.
+	-하나의 vector가 784Byte size이므로, 마지막 tile은 vector가 16Byte임. DRAM에서 1cycle만 읽고, cache의 나머지 48byte는 0으로 채움.
+
+	-python을 통해 random test dataset bath_size 개를 컴퓨터에서 전송.
+	-UART 모듈을 통해 이를 받아 mig_ui로 DRAM write.
+	-이후 inference가 완료된 후, button을 눌러 UART 송신.
+
+	-TOP 모듈 FSM state
+		=idleS    : UART batch 수신 대기
+					+ RXbusy 신호 rise 시 goto UARTrecS
+		=UARTrecS : UART 데이터 수신 및 128bit Buffer reg에 저장. (1Byte씩 16번 저장하므로, counter 필요)
+					+ counter 값에 따라 goto IDLEs or memWs
+		=memWS    : Buffer reg 값 write. write address 기록.
+					+ transactionComplete 시 
+						+ 기록한 vector 수가 입력한 parameter batch_size 숫자에 도달하였을 때 goto wComps
+						+ 아닐 때 goto IDLES
+		=wCompS   : 버튼 입력 대기
+					+ 버튼이 눌렸을 때 goto DRAMrS
+		=memRS    : 메모리에서 currentIndex의 tile read 및 cache 저장. 마지막 tile은 1cycle(16Byte)만 읽고, 나머지는 0으로 채움.
+					+ 읽기 및 cache write이 끝나면 goto fc1S
+		=fc1loadS : bram memory에서 weight를 읽어와 SA에 preload.
+					+ preload 완료 시 goto fc1inferS
+		=fc1inferS: cache에서 batch data를 불러워 한 번에 한 vector씩 sequential하게 SA input에 입력
+					+ 연산이 다 끝나면 (연산 결과가 SA에서 언제 다 나오는지 확인해야함)
+						+ 마지막 tile이 아니면 goto memRS
+						+ 아니면 goto reluS
+		=reluS    : accmulation된 fc1 output matrix에 bias를 더한 뒤 relu 연산 *timing violation이 생기면 add bias state 분리*
+					+ 연산이 다 끝나면 goto requantS
+		=requantS : relu 연산된 값을 requantize하여 fc2In memory에 저장
+					+ 저장이 다 끝나면 goto fc2loadS
+		=fc2loadS : bram memory에서 weight를 읽어와 SA에 preload.
+					+preload 완료 시 goto fc2inferS
+		=fc2inferS: fc2In memory에서 data를 불러와 한 번에 한 vector씩 sequential하게 SA input에 입력하기
+					+ 연산이 다 끝나면 goto argMaxS
+		=argMaxS  : register에 저장된 fc2inferS 결과를 argMaxS 연산하여 predIndex 추출
+					+ 연산이 다 끝나면 goto UARTtranS
+		=UARTtranS: predIndex를 UART 송신
+					+ 송신이 완료되면 goto idleS
+		=default  : goto idleS
