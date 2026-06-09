@@ -1,0 +1,1 @@
+python EXPORTin.py --out-dir ./ --batch-size 100 --data-dir ../data --download

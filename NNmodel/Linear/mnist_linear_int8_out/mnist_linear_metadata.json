@@ -1,0 +1,19 @@
+{
+  "network": "MNIST linear classifier, no hidden layer, 784x10",
+  "hardware_formula": "acc[out] = sum_i input_int8[i] * weight_int8[out][i] + bias_int32[out]",
+  "input_quantization": "input_int8 = round(pixel_float_0_to_1 * 255) - 128, equivalent to uint8_pixel - 128",
+  "input_scale": 0.0078125,
+  "weight_quantization": "symmetric signed int8, per-tensor scale, range -127..127",
+  "weight_scale": 0.0033734405878931284,
+  "accumulator_scale": 2.6355004592915066e-05,
+  "bias_quantization": "bias_int32 = round(float_bias / accumulator_scale)",
+  "input_dim": 784,
+  "output_dim": 10,
+  "tile_size": 10,
+  "padded_input_dim": 790,
+  "num_tiles": 79,
+  "weight_tile_file_order": "for tile 0..78, for out 0..9, one 80-bit row",
+  "weight_tile_lsb_rule": "in mnist_linear_w_tile10_lsb.mem, Verilog word[8*k +: 8] is weight for input base+k",
+  "bias_file_order": "out 0..9, one 32-bit two's-complement hex per line",
+  "final_integer_test_accuracy": 0.9213
+}

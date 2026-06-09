@@ -1,0 +1,29 @@
+=== AXKU062 / 32x32 SA fixed-point MNIST MLP export ===
+
+IN_NUM=784
+HID_NUM=64
+OUT_NUM=10
+SA_SIZE=32
+FC1_IN_TILES=25
+FC1_OUT_TILES=2
+FC2_IN_TILES=2
+
+IN_WIDTH=8, IN_FRAC=8
+W1_WIDTH=8, W1_FRAC=6
+B1_WIDTH=32, B1_FRAC=14
+A1_WIDTH=8, A1_FRAC=4
+W2_WIDTH=8, W2_FRAC=6
+B2_WIDTH=32, B2_FRAC=10
+RQ_SHIFT=10
+
+Memory format:
+  input_batch_sa32.mem : 256-bit, depth=batch_size*25, addr=image_index*25+input_tile
+  fc1_w_sa32.mem       : 256-bit, depth=64*25=1600, addr=out_ch*25+input_tile
+  fc1_b_32bit.mem      : 32-bit,  depth=64
+  fc2_w_sa32.mem       : 256-bit, depth=32*2=64, addr=out_col*2+input_tile, out_col 10~31 padded zero
+  fc2_b_32bit_pad.mem  : 32-bit,  depth=32, class 10~31 padded zero
+
+fc1.weight_int shape = (64, 784)
+fc1.bias_int   shape = (64,)
+fc2.weight_int shape = (10, 64)
+fc2.bias_int   shape = (10,)

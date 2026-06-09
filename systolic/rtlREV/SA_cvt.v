@@ -2,13 +2,14 @@
 
 module SA_cvt#(
 	parameter integer size=4)(
-	clk,wEn,
+	clk,preclk,
 	weight,in,
 	result);
-	localparam integer buswire=$clog2(size)+16;
+	`include "ceillog2.vh"
+	localparam integer buswire=ceillog2(size)+16;
 	localparam integer bussize=buswire-1;
 	input clk;
-	input wEn;
+	input preclk;
 	input wire [(8*size-1):0] weight;
 	input wire [(8*size-1):0] in;
 	output wire [(size*buswire-1):0] result;
@@ -43,7 +44,7 @@ module SA_cvt#(
 					assign psumIn =c[j].r[i-1].psumO;
 				end
 				pe_cvt #(size) PE(
-					clk,wEn,weightIn,inputIn,psumIn,
+					clk,preclk,weightIn,inputIn,psumIn,
 					c[j].r[i].weightP,
 					c[j].r[i].inP,
 					c[j].r[i].psumO);
