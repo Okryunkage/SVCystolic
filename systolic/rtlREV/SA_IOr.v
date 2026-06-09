@@ -2,11 +2,12 @@
 
 module SA_IOr#(
 	parameter integer size=16)(
-	clk,wEn,
+	clk,preclk,
 	weight,in,result);
-	localparam integer buswire =$clog2(size)+16;
+	`include "ceillog2.vh"
+	localparam integer buswire =ceillog2(size)+16;
 	localparam integer bussize =buswire-1;
-	input clk, wEn;
+	input clk, preclk;
 	input  wire [(8*size-1):0] weight;
 	input  wire [(8*size-1):0] in;
 	output wire [(buswire*size-1):0] result;
@@ -40,5 +41,5 @@ module SA_IOr#(
 		end
 	endgenerate
 
-    SA_cvt #(size) SA(clk, wEn, weight, inX, resultX);
+    SA_cvt #(size) SA(clk, preclk, weight, inX, resultX);
 endmodule

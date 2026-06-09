@@ -1,0 +1,43 @@
+{
+  "model": "MNIST linear classifier 784->10",
+  "input_quantization": "input_int8 = uint8_pixel - 128",
+  "weight_quantization": "signed int8, clipped to [-127, 127]",
+  "bias_quantization": "signed int32",
+  "input_dim": 784,
+  "out_dim": 10,
+  "tile_size": 10,
+  "padded_input_dim": 790,
+  "input_tile_num": 79,
+  "sa_size": 10,
+  "verilog_expected_layout": {
+    "inputAddr": "image * 79 + tile",
+    "weightAddr": "out * 79 + tile",
+    "biasAddr": "out",
+    "input_word": "word[8*k +: 8] = input_int8[tile*10+k]",
+    "weight_word": "word[8*k +: 8] = weight_int8[out][tile*10+k]",
+    "acc_word": "word[32*out +: 32] = acc[out]"
+  },
+  "training": {
+    "epochs": 50,
+    "train_batch_size": 256,
+    "lr": 0.05,
+    "weight_decay": 1e-05,
+    "logit_div": 256.0,
+    "seed": 1
+  },
+  "export_batch": {
+    "batch_size": 100,
+    "test_start_index": 0,
+    "integer_reference_accuracy_on_export_batch": 0.95
+  },
+  "test_integer_accuracy": 0.9042,
+  "files": {
+    "weight_outmajor_for_sabtr": "mnist_linear_w_outmajor_for_sabtr.mem",
+    "weight_tilemajor_debug_do_not_use_with_sabtr": "mnist_linear_w_tilemajor_debug_do_not_use_with_sabtr.mem",
+    "bias_int32": "mnist_linear_b_int32.mem",
+    "input_batch_tile10_lsb": "input_batch_tile10_lsb.mem",
+    "label_batch": "label_batch.mem",
+    "ref_acc_10x32_lsb": "ref_acc_10x32_lsb.mem",
+    "ref_pred": "ref_pred.mem"
+  }
+}
