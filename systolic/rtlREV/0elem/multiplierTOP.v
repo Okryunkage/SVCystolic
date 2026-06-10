@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module multiplierTOPcpa(
+module mulTOPcpa(
     input [7:0] multiplier,
     input [7:0] multiplicant,
     output [15:0] result
@@ -21,7 +21,7 @@ module multiplierTOPcpa(
     assign result = finalWire[15:0];
 endmodule
 
-module multiplierTOP(
+module mulTOP(
 	input [7:0]  multiplier,
 	input [7:0]  multiplicant,
 	output[15:0] result0,
@@ -36,16 +36,46 @@ module multiplierTOP(
 endmodule
 
 module mulTOPpip(
-	input wire        clk,
-	input wire [7:0]  multiplier,
-	input wire [7:0]  multiplicant,
-	output reg [15:0] result0,
-	output reg [15:0] result1);
-	localparam integer size=8;
+	input wire       clk,
+	input wire[7:0]  multiplier,
+	input wire[7:0]  multiplicant,
+	output reg[15:0] result0,
+	output reg[15:0] result1);
+	localparam integer size =8;
 	wire[(3*size/2-1):0]        encbus;
 	wire[((size+1)*size/2-1):0] partialBus;
 	wire[(size-2):0]            correction;
 	booth_encoder#(size) BoothEnc(multiplier,encbus);
+	ppgen#(size) ppGenerater(encbus,multiplicant,partialBus,correction);
+	wire[15:0] result0W, result1W;
+	dadda8 reductionTree(partialBus,correction,result0W,result1W);
+	always@(posedge clk)begin
+		result0 <=result0W;
+		result1 <=result1W;
+	end
+endmodule
+
+module mulTOPenc(
+	input wire [11:0] encbus,
+	input wire [7:0]  multiplicant,
+	output wire[15:0] result0,
+	output wire[15:0] result1);
+	localparam integer size =8;
+	wire[((size+1)*size/2-1):0] partialBus;
+	wire[(size-2):0]            correction;
+	ppgen#(size) ppGenerater(encbus,multiplicant,partialBus,correction);
+	dadda8 reductionTree(partialBus,correction,result0,result1);
+endmodule
+
+module mulTOPepp(
+	input wire       clk,
+	input wire[11:0] encbus,
+	input wire[7:0]  multiplicant,
+	output reg[15:0] result0,
+	output reg[15:0] result1);
+	localparam integer size =8;
+	wire[((size+1)*size/2-1):0] partialBus;
+	wire[(size-2):0]            correction;
 	ppgen#(size) ppGenerater(encbus,multiplicant,partialBus,correction);
 	wire[15:0] result0W, result1W;
 	dadda8 reductionTree(partialBus,correction,result0W,result1W);
