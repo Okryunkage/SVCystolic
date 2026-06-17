@@ -1,40 +1,36 @@
 `timescale 1ns/1ps
 
-module tb_CPA_FSA_pip;
+module tb_C_SA_pip;
 	parameter integer size =16;
 	localparam integer bussize =$clog2(size)+16;
 	localparam integer buswire =bussize-1;
-	parameter integer PIPE_WAIT =1;
+	parameter integer PIPE_WAIT =2;
 
 	reg clk;
 	reg en;
 	reg  [7:0]       weight;
 	reg  [7:0]       in;
-	reg  [buswire:0] psum0;
-	reg  [buswire:0] psum1;
+	reg  [buswire:0] psum;
 	wire [7:0]       weightO;
 	wire [7:0]       inO;
-	wire [buswire:0] psumO0;
-	wire [buswire:0] psumO1;
+	wire [buswire:0] psumO;
 
-	CPA_FSA_pip#(.size(size)) dut(
+	C_SA_pip#(.size(size)) dut(
 		.clk(clk),.en(en),
 		.weight(weight),.in(in),
-		.psum0(psum0),.psum1(psum1),
+		.psum(psum),
 		.weightO(weightO),.inO(inO),
-		.psumO0(psumO0),.psumO1(psumO1));
+		.psumO(psumO));
 
 	initial begin
 		clk =1'b0;
 	end
 	always #5 clk =~clk;
 
-	reg[bussize:0] sumExt;
 	reg[buswire:0] sumMod;
 	integer signedSum;
 	always@(*)begin
-		sumExt =psumO0+psumO1;
-		sumMod =sumExt[buswire:0];
+		sumMod =psumO;
 		if(sumMod[buswire]==1'b1) signedSum =sumMod-(1<<bussize);
 		else signedSum =sumMod;
 	end
@@ -42,8 +38,7 @@ module tb_CPA_FSA_pip;
 	task applyVector;
 		input [7:0]       w;
 		input [7:0]       i;
-		input [buswire:0] p0;
-		input [buswire:0] p1;
+		input [buswire:0] p;
 		integer k;
 		begin
 			//1) weight load
@@ -52,42 +47,40 @@ module tb_CPA_FSA_pip;
 			weight =w;
 			@(posedge clk);
 			#1;
-			$display("[%0t] LOAD WEIGHT: weight=%0d, weightO=%0d",$time,weight,weightO);
+			$display("[%0t] LOAD WEIGHT: weight=%0d, weightO=%0d",$time,$signed(weight),$signed(weightO));
 			//2) input / psum load
 			@(negedge clk);
-			en    =1'b0;
-			in    =i;
-			psum0 =p0;
-			psum1 =p1;
+			en   =1'b0;
+			in   =i;
+			psum =p;
 			@(posedge clk);
 			#1;
-			$display("[%0t] INPUT/PSUM: in=%0d, inO=%0d, psum0=%0d, psum1=%0d",$time,in,inO,psum0,psum1);
+			$display("[%0t] INPUT/PSUM: in=%0d, inO=%0d, psum=%0d",$time,$signed(in),$signed(inO),$signed(psum));
 			//3) pipeline latency wait
 			for (k=0;k<PIPE_WAIT;k =k+1)begin
 				@(posedge clk);
 				#1;
-				$display("[%0t] PIPE WAIT %0d: psumO0=%0d, psumO1=%0d",$time,k+1,psumO0,psumO1);
+				$display("[%0t] PIPE WAIT %0d: psumO=%0d",$time,k+1,psumO);
 			end
-			$display("[%0t] FINAL OUTPUT: psumO0=%0d, psumO1=%0d",$time,psumO0,psumO1);
-			$display("%0d X %0d + %0d + %0d = %0d",$signed(in),$signed(weight),$signed(psum0),$signed(psum1),$signed(signedSum));
+			$display("[%0t] FINAL OUTPUT: psumO=%0d",$time,psumO);
+			$display("%0d X %0d + %0d = %0d",$signed(in),$signed(weight),$signed(psum),$signed(signedSum));
 			$display("--------------------------------------------------");
 		end
 	endtask
 	initial begin
 		$dumpfile("out1.vcd");
-		$dumpvars(0, tb_CPA_FSA_pip);
+		$dumpvars(0, tb_C_SA_pip);
 
 		en     =1'b0;
 		weight =8'd0;
 		in     =8'd0;
-		psum0  ={bussize{1'b0}};
-		psum1  ={bussize{1'b0}};
+		psum   ={bussize{1'b0}};
 		repeat(3) @(posedge clk);
-		applyVector(8'd3,   8'd4,   0, 0);
-		applyVector(8'd7,   8'd9,   5, 2);
-		applyVector(8'd15,  8'd2,   10, 3);
-		applyVector(8'd255, 8'd1,   0, 0);
-		applyVector(8'd8,   8'd8,   20, 20);
+		applyVector(8'd3,   8'd4,   0);
+		applyVector(8'd7,   8'd9,   7);
+		applyVector(8'd15,  8'd2,   13);
+		applyVector(8'd255, 8'd1,   0);
+		applyVector(8'd8,   8'd8,   40);
 		repeat(10) @(posedge clk);
 		$finish;
 	end

@@ -7,10 +7,8 @@ module bka #(
 	input cin,
 	output [(size-1):0] sum,
 	output cout);
-	
-	`include "ceillog2.vh"
 
-	localparam integer log = ceillog2(size);
+	localparam integer log = $clog2(size);
 	localparam integer sizel = (1<<log); //size_local
 	
 	wire [(sizel-1):0] pad_a, pad_b;
