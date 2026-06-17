@@ -9,7 +9,7 @@ module accumulator#(
 	psumO0,psumO1);
 	localparam integer bussize=$clog2(arraysize)+16;
 	localparam integer busize=bussize-1;
-	localparam integer busadd=ceillog2(arraysize)-1;
+	localparam integer busadd=$clog2(arraysize)-1;
 	input [15:0] result0;
 	input [15:0] result1;
 	input [busize:0] psum0;

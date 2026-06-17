@@ -16,8 +16,9 @@ iverilog -g2012 -Wall \
 	"$rtlDir/0elem/adder.v" \
 	"$rtlDir/0elem/accumulator.v" \
 	"$rtlDir/0elem/tree.v" \
-	"$rtlDir/0pe/CPA_FSA.v" \
-	"tb_CPA_FSA.v" \
+	"$rtlDir/0elem/bka.v" \
+	"$rtlDir/0pe/B_SA.v" \
+	"tb_B_SA.v" \
 	-o out
 vvp out
 #gtkwave out.vcd &
