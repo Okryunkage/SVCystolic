@@ -26,6 +26,24 @@ module CPA_FSA_pip#(
 	accumulator#(size) acc(out0,out1,psumreg0,psumreg1,psumO0,psumO1);
 endmodule
 
+module CPA_FSA_pip0#(
+	parameter integer size=16)(
+	clk, en,
+	weight, in,
+	weightO, inO, psumO0, psumO1);
+	localparam integer bussize =$clog2(size)+16;
+	localparam integer buswire =bussize-1;
+	input wire             clk, en;
+	input wire[7:0]        weight, in;
+	output reg[7:0]        weightO, inO;
+	output wire[buswire:0] psumO0, psumO1;
+	always@(posedge clk)begin
+		if(en) weightO <=weight;
+		else inO <=in;
+	end
+	mulTOPpip mul(.clk(clk),.multiplier(weightO),.multiplicant(inO),.result0(psumO0),.result1(psumO1));
+endmodule
+
 module CPA_FSA#(
 	parameter integer size=16)(
 	clk, en,
