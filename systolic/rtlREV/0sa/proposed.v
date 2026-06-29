@@ -31,8 +31,13 @@ module proposed(
 			end
 		end
 	endgenerate
+
 	generate
 		for(i=0;i<size;i=i+1)begin:column
+			reg signed[(outW-1):0] finalPsum0;
+			reg signed[(outW-1):0] finalPsum1;
+			reg signed[(outW-1):0] finalResult;
+
 			for(j=0;j<size;j=j+1)begin:row
 				localparam integer W  =psumWidth(j+1);
 				localparam integer PW =(j==0)?W:psumWidth(j);
@@ -45,7 +50,7 @@ module proposed(
 					assign weightIn =weight[(i*8)+:8];
 					assign inIn     =in[(i*8)+:8];
 					PE16 PE(.clk(clk),.en(en),
-						.weight(weight),.in(inIn),
+						.weight(weightIn),.in(inIn),
 						.weightO(c[i].r[j].weightP),.inO(c[i].r[j].inP),
 						.psumO0(c[i].r[j].psum0P),.psumO1(c[i].r[j].psum1P));
 				end
@@ -98,7 +103,21 @@ module proposed(
 					end
 				end
 			end
-			assign result[(i*outW)+:outW] =$signed(c[i].r[size-1].psum0P)+$signed(c[i].r[size-1].psum1P);
+
+			always@(posedge clk)begin
+				if(en)begin
+					finalPsum0  <={outW{1'b0}};
+					finalPsum1  <={outW{1'b0}};
+					finalResult <={outW{1'b0}};
+				end
+				else begin
+					finalPsum0  <=c[i].r[size-1].psum0P;
+					finalPsum1  <=c[i].r[size-1].psum1P;
+					finalResult <=finalPsum0+finalPsum1;
+				end
+			end
+
+			assign result[(i*outW)+:outW] =finalResult;
 		end
 	endgenerate
 endmodule
