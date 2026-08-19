@@ -1,8 +1,8 @@
 `timescale 1ns/1ps
 
 module tb_proposed;
-	localparam integer size =32;
-	localparam integer outW =21;
+	localparam integer size =64;
+	localparam integer outW =22;
 
 	reg clk, en;
 	reg [(8*size-1):0]    weight, in;
@@ -91,8 +91,8 @@ module tb_proposed;
 
 	task applyTESTpattern1;begin
 		for(i=0;i<size;i=i+1)begin
-			weightArr[i] =i-16;
-			inArr    [i] =15-i;
+			weightArr[i] =i-(size/2);
+			inArr    [i] =(size/2-1)-i;
 		end
 	end
 	endtask
