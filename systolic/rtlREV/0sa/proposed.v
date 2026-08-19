@@ -2,8 +2,8 @@
 
 module proposed(
 	clk, en, weight, in, result);
-	localparam integer size =32;
-	localparam integer outW =21;
+	localparam integer size =64;
+	localparam integer outW =22;
 	input wire                   clk, en;
 	input wire [(8*size-1):0]    weight, in;
 	output wire[(size*outW-1):0] result;
@@ -15,7 +15,8 @@ module proposed(
 			else if(rowNum<=4)  psumWidth =18;
 			else if(rowNum<=8)  psumWidth =19;
 			else if(rowNum<=16) psumWidth =20;
-			else                psumWidth =21;
+			else if(rowNum<=32) psumWidth =21;
+			else                psumWidth =22;
 		end
 	endfunction
 
@@ -96,6 +97,13 @@ module proposed(
 					end
 					else if(W==21)begin:genPE21
 						PE21 PE(.clk(clk),.en(en),
+							.weight(weightIn),.in(inIn),
+							.psum0(psum0In),.psum1(psum1In),
+							.weightO(c[i].r[j].weightP),.inO(c[i].r[j].inP),
+							.psumO0(c[i].r[j].psum0P),.psumO1(c[i].r[j].psum1P));
+					end
+					else if(W==22)begin:genPE22
+						PE22 PE(.clk(clk),.en(en),
 							.weight(weightIn),.in(inIn),
 							.psum0(psum0In),.psum1(psum1In),
 							.weightO(c[i].r[j].weightP),.inO(c[i].r[j].inP),
