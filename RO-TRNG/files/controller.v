@@ -15,29 +15,28 @@
 // ============================================================
 
 module controller #(
-    parameter integer TOTAL_BITS        = 10_000_000,
-    parameter integer FIFO_BYTES        = 4096,
-    parameter integer ADDR_W            = $clog2(FIFO_BYTES),
-    parameter integer GAP_CYCLES        = 100_000,
+    parameter integer TOTAL_BITS        =10_000_000,
+    parameter integer FIFO_BYTES        =4096,
+    parameter integer ADDR_W            =$clog2(FIFO_BYTES),
+    parameter integer GAP_CYCLES        =100_000,
 
-    parameter integer SWEEP_EN          = 0,
-    parameter integer FIXED_XOR_NUM_SEL = 51,
+    parameter integer SWEEP_EN          =0,
+    parameter integer FIXED_XOR_NUM_SEL =51,
 
-    parameter integer PRE_HEADER        = 256,
-    parameter integer START_REP         = 5,
-    parameter integer END_REP           = 5
-)(
+    parameter integer PRE_HEADER        =256,
+    parameter integer START_REP         =5,
+    parameter integer END_REP           =5)(
     input  wire       clk,
     input  wire       sw0,
     input  wire       btnc,
     input  wire       rng_bit,
     input  wire       uart_busy,
 
-    output reg        uart_rst   = 1'b1,
-    output reg        uart_start = 1'b0,
-    output reg  [7:0] uart_data  = 8'h00,
+    output reg        uart_rst   =1'b1,
+    output reg        uart_start =1'b0,
+    output reg  [7:0] uart_data  =8'h00,
 
-    output reg  [5:0] xor_num_sel = FIXED_XOR_NUM_SEL[5:0]
+    output reg  [5:0] xor_num_sel =FIXED_XOR_NUM_SEL[5:0]
 );
 
     // ============================================================
