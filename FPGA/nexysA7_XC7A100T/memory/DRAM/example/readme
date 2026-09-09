@@ -1,0 +1,42 @@
+##############################
+#     DDR2 Example Files     #
+##############################
+
+This directory contains two independent DDR2 test designs. `example_top.v` and `mig_example_top.v` are alternative top-level modules and should not be used together.
+
+## `memory.v`
+A wrapper around the Xilinx MIG-generated `memory_mig` module. It exposes the MIG application interface and connects it to the physical DDR2 signals.
+
+## `example_top.v`
+A standalone top-level module for testing DDR2 with the Xilinx MIG traffic generator. 
+It automatically writes test patterns, reads them back, and reports mismatches through `tg_compare_error`.
+This module is intended for validating the MIG configuration and DDR2 hardware. Do not use it together with `mig_example_top.v`.
+
+## `mem_example.v`
+A custom memory-interface wrapper that converts simple read and write requests into MIG application-interface transactions. 
+It supports 8-, 16-, 32-, and 64-bit accesses, byte masking, unaligned addresses, and clock-domain crossing between `boardclk` and `ui_clk`.
+The module sends or receives a 128-bit DDR2 burst as two 64-bit MIG data beats.
+
+## `mig_example_top.v`
+A standalone top-level module for testing the custom memory interface. 
+It generates pseudo-random addresses and data using an LFSR, writes data to DDR2, reads part of it back, compares the result, and displays the comparison result on `LED[0]`.
+This is an alternative to `example_top.v` and uses custom test logic instead of the Xilinx MIG traffic generator.
+
+## Design Relationships
+
+```text
+Xilinx automatic test:
+
+example_top
+  └─ memory
+      └─ memory_mig
+          └─ DDR2
+
+
+Custom interface test:
+
+mig_example_top
+  └─ mem_example
+      └─ memory
+          └─ memory_mig
+              └─ DDR2
