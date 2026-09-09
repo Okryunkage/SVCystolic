@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 
 //The same module in </nexysA7_XC7A100T/rtl/0etc/mig_ui.v>
-//Signal Description can be found on </nexysA7_XC7A100T/memory/readme>
+//Signal Description can be found on </nexysA7_XC7A100T/memory/DRAM/guide/MIG_IO_guide.txt>
 module memEx(
 	input migclk,
 	input rst_n,

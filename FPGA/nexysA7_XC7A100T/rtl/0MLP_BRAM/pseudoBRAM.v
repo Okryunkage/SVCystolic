@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module BRAM#(
+module pseudoBRAM#(
 	parameter integer dataWidth =8,
 	parameter integer depth     =256,
 	parameter integer addrWidth =8,
@@ -30,7 +30,7 @@ module BRAM#(
 			reg[(dataWidth-1):0] doutPIPE;
 			always@(posedge clka)begin
 				if(ena)begin
-					if(wea) mem[addra] <= dina;
+					if(wea) mem[addra] <=dina;
 					doutPIPE <=mem[addra];
 					douta    <=doutPIPE;
 				end

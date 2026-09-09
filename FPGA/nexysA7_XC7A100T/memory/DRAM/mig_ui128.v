@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-//Signal Description can be found on </nexysA7_XC7A100T/memory/readme>
+//Signal Description can be found on </nexysA7_XC7A100T/memory/DRAM/guide/MIG_IO_guide.txt>
 module mig_ui128(
 	input migclk,
 	input rst_n,
@@ -27,7 +27,8 @@ module mig_ui128(
 	output[0:0] ddr2_cke,
 	output[0:0] ddr2_cs_n,
 	output[1:0] ddr2_dm,
-	output[0:0] ddr2_odt);
+	output[0:0] ddr2_odt
+);
 
 	wire ui_clk, ui_clk_sync_rst;
 	reg[2:0] mem_cmd;
@@ -106,7 +107,7 @@ module mig_ui128(
 	localparam CMDwrite     =3'h0;
 
 	always@(posedge ui_clk)begin
-		if(ui_clk_sync_rst) data_out <=64'h0;
+		if(ui_clk_sync_rst) data_out <=128'h0;
 		else begin
 			if(((state==stateREAD)&&(mem_rd_data_valid))||((state==statePREREAD)&&(mem_rdy)&&(mem_rd_data_valid)))begin
 				//when (data is available normally)or(data available right after the command accepted)
@@ -129,6 +130,7 @@ module mig_ui128(
 		end
 		else begin
 			complete <=1'b0;
+
 			case(state)
 				stateIDLE:begin
 					mem_wdf_wren <=1'b0;
@@ -144,6 +146,7 @@ module mig_ui128(
 						state <=statePREREAD;
 					end
 				end
+
 				stateWDH:begin
 					if(mem_wdf_rdy)begin
 						mem_wdf_mask <=8'h00;
@@ -152,6 +155,7 @@ module mig_ui128(
 					mem_wdf_wren <=1'b1;
 					state <=stateWDL;
 				end
+
 				stateWDL:begin
 					if(mem_wdf_rdy)begin
 							mem_wdf_mask <=8'h00;
@@ -162,6 +166,7 @@ module mig_ui128(
 					complete <=1'b1;
 					state <=stateIDLE;
 				end
+
 				statePREREAD:begin
 					if(mem_rdy)begin
 						mem_en <=1'b0;
@@ -172,12 +177,14 @@ module mig_ui128(
 						end
 					end
 				end
+
 				stateREAD:begin
 					if(mem_rd_data_valid&mem_rd_data_end)begin
 						state <=stateIDLE;
 						complete <=1'b1;
 					end
 				end
+
 				stateWRITE:begin
 					if(mem_rdy)begin
 						mem_en <=1'b0;
