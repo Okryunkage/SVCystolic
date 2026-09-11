@@ -1,0 +1,93 @@
+# Postponed Evaluation of Type Annotations
+
+## Why `from __future__ import annotations` Is Used
+
+The following statement enables postponed evaluation of Python type annotations:
+
+```python
+from __future__ import annotations
+```
+
+Without this statement, Python may evaluate type annotations immediately when a function or class is defined. With postponed evaluation enabled, annotations are stored in a deferred form and evaluated only when needed.
+
+For example, this project uses annotations such as:
+
+```python
+def load_checkpoint_compat(
+    path: Path | str,
+    device: torch.device,
+) -> dict:
+    ...
+```
+
+and:
+
+```python
+def symmetric_int8_fake_quant(
+    x: torch.Tensor,
+    reduce_dims: tuple[int, ...] | None = None,
+) -> torch.Tensor:
+    ...
+```
+
+These annotations indicate that:
+
+- `path` may be either a `Path` object or a string.
+- `device` should be a PyTorch device.
+- `reduce_dims` may be a tuple of integers or `None`.
+- The fake-quantization function returns a PyTorch tensor.
+
+Postponing annotation evaluation offers several benefits:
+
+1. It allows a class to be referenced in a type annotation before the class definition is fully completed.
+2. It reduces problems caused by circular type references.
+3. It avoids evaluating imported types when a function is defined.
+4. It improves compatibility with some modern type-annotation patterns.
+
+Type annotations are intended primarily for documentation, code editors, and static type-checking tools. They do not enforce types at runtime and do not change the neural network's numerical behavior.
+
+Therefore, this statement does not affect:
+
+- CNN training
+- DropChannel masks
+- Monte Carlo inference
+- INT8 fake quantization
+- Model accuracy or uncertainty estimates
+
+It only changes how Python processes the type hints written in the source code.
+
+## Python 3.8 Compatibility
+
+This project is executed in a Python 3.8 environment. Postponed annotations are supported in Python 3.8, but newer union syntax such as:
+
+```python
+Path | str
+```
+
+was introduced as standard type-union syntax in Python 3.10. For maximum Python 3.8 compatibility, the older `typing` syntax can be used:
+
+```python
+from typing import Dict, Optional, Tuple, Union
+```
+
+For example:
+
+```python
+def load_checkpoint_compat(
+    path: Union[Path, str],
+    device: torch.device,
+) -> dict:
+    ...
+```
+
+and:
+
+```python
+def symmetric_int8_fake_quant(
+    x: torch.Tensor,
+    reduce_dims: Optional[Tuple[int, ...]] = None,
+) -> torch.Tensor:
+    ...
+```
+
+If type hints are not required, they may also be removed entirely without changing the model's behavior.
