@@ -26,7 +26,7 @@ class Config:
 	mc_samples: int =30
 	channel_drop_probs: tuple[float,float] =(0.1,0.2)
 	weight_fractional_bits: int =7
-	checkpoint: str ="MCDC_int8.pt"
+	checkpoint: str ="MCDC_int8_Fixed.pt"
 
 CFG =Config()
 
@@ -53,12 +53,14 @@ def fixed_point_weight(
 class FixedPointConv2d(nn.Conv2d):
 	def forward(self, x: torch.Tensor)-> torch.Tensor:
 		weight_q =fixed_point_weight(self.weight, CFG.weight_fractional_bits)
-		return F.conv2d(x, weight_q, self.bias, self.stride, self.padding, self.dilation, self.groups,)
+		bias_q   =fixed_point_weight(self.bias, CFG.weight_fractional_bits)
+		return F.conv2d(x, weight_q, bias_q, self.stride, self.padding, self.dilation, self.groups,)
 
 class FixedPointLinear(nn.Linear):
 	def forward(self, x:torch.Tensor)-> torch.Tensor:
 		weight_q =fixed_point_weight(self.weight, CFG.weight_fractional_bits)
-		return F.linear(x, weight_q, self.bias)
+		bias_q   =fixed_point_weight(self.bias, CFG.weight_fractional_bits)
+		return F.linear(x, weight_q, bias_q)
 
 class BayesianInt8ChannelCNN(nn.Module):
 	def __init__(self, channel_drop_probs: tuple[float, float])-> None:
