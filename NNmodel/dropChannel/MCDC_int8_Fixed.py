@@ -14,7 +14,7 @@ from torchvision import datasets, transforms
 #Value of "Config" can't be changed after the initilization by "@dataclass(frozen=True)"
 @dataclass(frozen=True)
 class Config:
-	data_dir: str ="./data"
+	data_dir: str ="/home/okryunkage/dataset"
 	batch_size: int =128
 	epochs: int =30
 	learning_rate: float =1e-3
