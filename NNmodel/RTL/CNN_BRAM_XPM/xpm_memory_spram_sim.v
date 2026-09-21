@@ -20,7 +20,7 @@ SImplifications:
 	-asymmetric read/write widths are not accurately modeled
 */
 
-module xpm_memory_spram_sim#(
+module xpm_memory_spram#(
 	parameter integer ADDR_WIDTH_A        =6,
 	parameter integer AUTO_SLEEP_TIME     =0,
 	parameter integer BYTE_WRITE_WIDTH_A  =32,
