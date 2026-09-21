@@ -4,13 +4,6 @@
   Neural-network accelerators, RTL designs, and FPGA implementations
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/HDL-SystemVerilog-blue" alt="SystemVerilog">
-  <img src="https://img.shields.io/badge/Simulation-Verilator-orange" alt="Verilator">
-  <img src="https://img.shields.io/badge/Synthesis-Yosys-green" alt="Yosys">
-  <img src="https://img.shields.io/badge/FPGA-AMD%20Vivado-red" alt="AMD Vivado">
-</p>
-
 ---
 
 ## Overview
@@ -91,5 +84,5 @@ chmod +x run.sh
 ## Author
 
 **Siyeol Lee**  
-Department of Intelligent Semiconductor Engineering
+Department of Intelligent Semiconductor
 Incheon National University
