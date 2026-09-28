@@ -2,7 +2,7 @@ set -euo pipefail
 
 rootDir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 currentDir="$(pwd)"
-rtlDir="$rootDir/RTL/CNN_BRAM_XPM"
+rtlDir="$rootDir/rtl/CNN_BRAM_XPM"
 tbDir="$rootDir/testbench"
 hDir="$rootDir/header"
 
@@ -17,7 +17,7 @@ iverilog -g2012 -Wall \
 	-I "$currentDir" \
 	-I "$hDir" \
 	-I "$tbDir" \
-	"$rtlDir/convCore_pipe.sv" \
+	"$rtlDir/convCore.sv" \
 	"$rtlDir/convMEM.sv" \
 	"$rtlDir/convTOP.sv" \
 	"$rtlDir/xpm_memory_spram_sim.v" \

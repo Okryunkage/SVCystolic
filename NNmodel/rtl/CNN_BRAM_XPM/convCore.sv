@@ -1,6 +1,6 @@
 `timescale 1ns/1ps
 
-module convCore_pipe#(
+module convCore#(
 	parameter int tile=8, inChannels=1, outChannels=32,
 	parameter int inHeight=28, inWidth=28,
 	parameter int kernelH=3, kernelW=3,
@@ -130,9 +130,10 @@ module convCore_pipe#(
 					end
 					if(weightValid[1])begin
 						inputChannel =consumeTerm/(kernelH*kernelW);
-						kernelRow =(consumeTerm/kernelW)%kernelH;
+						kernelRow    =(consumeTerm/kernelW)%kernelH;
 						kernelColumn =consumeTerm%kernelW;
-						inputRow =outputColumn*strideW+kernelColumn-padW;
+						inputRow     =outputRow   *strideH+kernelRow   -padH;
+						inputColumn  =outputColumn*strideW+kernelColumn-padW;
 						if(inputRow<0 || inputRow>=inHeight || inputColumn<0 || inputColumn>=inWidth) inputValue ='0;
 						else inputValue =extendInput(inData[inputChannel][inputRow][inputColumn]);
 						for(lane=0; lane<tile; lane++)begin
@@ -158,7 +159,9 @@ module convCore_pipe#(
 						outputRow <=outputRow+1'b1;
 						state <=PIXEL_INIT;
 					end
-					else if(tileIndex !=outHeight-1)begin
+					else if(tileIndex !=numTile-1)begin
+						tileIndex <=tileIndex +1'b1;
+						outputRow <='0;
 						outputColumn <='0;
 						weightBaseAddress <=weightBaseAddress +kernelTerms;
 						baddr <=tileIndex+1'b1;

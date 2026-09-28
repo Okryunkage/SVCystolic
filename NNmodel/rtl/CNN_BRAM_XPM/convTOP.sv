@@ -37,7 +37,7 @@ module convBRAM#(
 		.wAddrW(wAddrW),.bAddrW(bAddrW)) memory(
 		.clk(clk),.waddr(waddr),.baddr(baddr),.wdata(wdata),.bdata(bdata));
 
-	convCore_pipe#(
+	convCore#(
 		.tile(tile),.inChannels(inChannels),.outChannels(outChannels),
 		.inHeight(inHeight),.inWidth(inWidth),
 		.kernelH(kernelH),.kernelW(kernelW),

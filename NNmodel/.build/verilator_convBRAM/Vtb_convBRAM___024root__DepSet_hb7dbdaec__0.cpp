@@ -6,11 +6,80 @@
 #include "Vtb_convBRAM__Syms.h"
 #include "Vtb_convBRAM___024root.h"
 
-VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0(Vtb_convBRAM___024root* vlSelf) {
+VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__1(Vtb_convBRAM___024root* vlSelf) {
     if (false && vlSelf) {}  // Prevent unused
     Vtb_convBRAM__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0\n"); );
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__1\n"); );
+    // Init
+    CData/*7:0*/ tb_convBRAM__DOT____Vlvbound_h2e4877c0__0;
+    tb_convBRAM__DOT____Vlvbound_h2e4877c0__0 = 0;
+    VlWide<4>/*127:0*/ __Vtemp_1;
     // Body
+    vlSelf->tb_convBRAM__DOT__errors = 0U;
+    vlSelf->tb_convBRAM__DOT__cycles = 0U;
+    vlSelf->tb_convBRAM__DOT__busySeen = 0U;
+    if (VL_TESTPLUSARGS_I(std::string{"waves"})) {
+        __Vtemp_1[0U] = 0x2e766364U;
+        __Vtemp_1[1U] = 0x4252414dU;
+        __Vtemp_1[2U] = 0x636f6e76U;
+        __Vtemp_1[3U] = 0x74625fU;
+        vlSymsp->_vm_contextp__->dumpfile(VL_CVT_PACK_STR_NW(4, __Vtemp_1));
+        vlSymsp->_traceDumpOpen();
+    }
+    vlSelf->tb_convBRAM__DOT__row = 0U;
+    vlSelf->tb_convBRAM__DOT__column = 0U;
+    tb_convBRAM__DOT____Vlvbound_h2e4877c0__0 = 1U;
+    vlSelf->tb_convBRAM__DOT__inData[0U][(3U & vlSelf->tb_convBRAM__DOT__row)][(3U 
+                                                                                & vlSelf->tb_convBRAM__DOT__column)] 
+        = tb_convBRAM__DOT____Vlvbound_h2e4877c0__0;
+    vlSelf->tb_convBRAM__DOT__row = 0U;
+    vlSelf->tb_convBRAM__DOT__column = 1U;
+    tb_convBRAM__DOT____Vlvbound_h2e4877c0__0 = 2U;
+    vlSelf->tb_convBRAM__DOT__inData[0U][(3U & vlSelf->tb_convBRAM__DOT__row)][(3U 
+                                                                                & vlSelf->tb_convBRAM__DOT__column)] 
+        = tb_convBRAM__DOT____Vlvbound_h2e4877c0__0;
+    vlSelf->tb_convBRAM__DOT__row = 0U;
+    vlSelf->tb_convBRAM__DOT__column = 2U;
+    tb_convBRAM__DOT____Vlvbound_h2e4877c0__0 = 3U;
+    vlSelf->tb_convBRAM__DOT__inData[0U][(3U & vlSelf->tb_convBRAM__DOT__row)][(3U 
+                                                                                & vlSelf->tb_convBRAM__DOT__column)] 
+        = tb_convBRAM__DOT____Vlvbound_h2e4877c0__0;
+    vlSelf->tb_convBRAM__DOT__row = 1U;
+    vlSelf->tb_convBRAM__DOT__column = 0U;
+    tb_convBRAM__DOT____Vlvbound_h2e4877c0__0 = 4U;
+    vlSelf->tb_convBRAM__DOT__inData[0U][(3U & vlSelf->tb_convBRAM__DOT__row)][(3U 
+                                                                                & vlSelf->tb_convBRAM__DOT__column)] 
+        = tb_convBRAM__DOT____Vlvbound_h2e4877c0__0;
+    vlSelf->tb_convBRAM__DOT__row = 1U;
+    vlSelf->tb_convBRAM__DOT__column = 1U;
+    tb_convBRAM__DOT____Vlvbound_h2e4877c0__0 = 5U;
+    vlSelf->tb_convBRAM__DOT__inData[0U][(3U & vlSelf->tb_convBRAM__DOT__row)][(3U 
+                                                                                & vlSelf->tb_convBRAM__DOT__column)] 
+        = tb_convBRAM__DOT____Vlvbound_h2e4877c0__0;
+    vlSelf->tb_convBRAM__DOT__row = 1U;
+    vlSelf->tb_convBRAM__DOT__column = 2U;
+    tb_convBRAM__DOT____Vlvbound_h2e4877c0__0 = 6U;
+    vlSelf->tb_convBRAM__DOT__inData[0U][(3U & vlSelf->tb_convBRAM__DOT__row)][(3U 
+                                                                                & vlSelf->tb_convBRAM__DOT__column)] 
+        = tb_convBRAM__DOT____Vlvbound_h2e4877c0__0;
+    vlSelf->tb_convBRAM__DOT__row = 2U;
+    vlSelf->tb_convBRAM__DOT__column = 0U;
+    tb_convBRAM__DOT____Vlvbound_h2e4877c0__0 = 7U;
+    vlSelf->tb_convBRAM__DOT__inData[0U][(3U & vlSelf->tb_convBRAM__DOT__row)][(3U 
+                                                                                & vlSelf->tb_convBRAM__DOT__column)] 
+        = tb_convBRAM__DOT____Vlvbound_h2e4877c0__0;
+    vlSelf->tb_convBRAM__DOT__row = 2U;
+    vlSelf->tb_convBRAM__DOT__column = 1U;
+    tb_convBRAM__DOT____Vlvbound_h2e4877c0__0 = 8U;
+    vlSelf->tb_convBRAM__DOT__inData[0U][(3U & vlSelf->tb_convBRAM__DOT__row)][(3U 
+                                                                                & vlSelf->tb_convBRAM__DOT__column)] 
+        = tb_convBRAM__DOT____Vlvbound_h2e4877c0__0;
+    vlSelf->tb_convBRAM__DOT__row = 2U;
+    vlSelf->tb_convBRAM__DOT__column = 2U;
+    tb_convBRAM__DOT____Vlvbound_h2e4877c0__0 = 9U;
+    vlSelf->tb_convBRAM__DOT__inData[0U][(3U & vlSelf->tb_convBRAM__DOT__row)][(3U 
+                                                                                & vlSelf->tb_convBRAM__DOT__column)] 
+        = tb_convBRAM__DOT____Vlvbound_h2e4877c0__0;
     vlSelf->tb_convBRAM__DOT__expected0[0U] = 0xdU;
     vlSelf->tb_convBRAM__DOT__expected0[1U] = 0x16U;
     vlSelf->tb_convBRAM__DOT__expected0[2U] = 0x11U;
@@ -20,74 +89,131 @@ VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0
     vlSelf->tb_convBRAM__DOT__expected0[6U] = 0x19U;
     vlSelf->tb_convBRAM__DOT__expected0[7U] = 0x28U;
     vlSelf->tb_convBRAM__DOT__expected0[8U] = 0x1dU;
-    vlSelf->tb_convBRAM__DOT__inData[0U][0U][0U] = 1U;
-    vlSelf->tb_convBRAM__DOT__inData[0U][0U][1U] = 2U;
-    vlSelf->tb_convBRAM__DOT__inData[0U][0U][2U] = 3U;
-    vlSelf->tb_convBRAM__DOT__inData[0U][1U][0U] = 4U;
-    vlSelf->tb_convBRAM__DOT__inData[0U][1U][1U] = 5U;
-    vlSelf->tb_convBRAM__DOT__inData[0U][1U][2U] = 6U;
-    vlSelf->tb_convBRAM__DOT__inData[0U][2U][0U] = 7U;
-    vlSelf->tb_convBRAM__DOT__inData[0U][2U][1U] = 8U;
-    vlSelf->tb_convBRAM__DOT__row = 2U;
-    vlSelf->tb_convBRAM__DOT__column = 2U;
-    vlSelf->tb_convBRAM__DOT__inData[0U][2U][2U] = 9U;
+    vlSelf->tb_convBRAM__DOT__expected1[0U] = 1U;
+    vlSelf->tb_convBRAM__DOT__expected1[1U] = 3U;
+    vlSelf->tb_convBRAM__DOT__expected1[2U] = 5U;
+    vlSelf->tb_convBRAM__DOT__expected1[3U] = 7U;
+    vlSelf->tb_convBRAM__DOT__expected1[4U] = 9U;
+    vlSelf->tb_convBRAM__DOT__expected1[5U] = 0xbU;
+    vlSelf->tb_convBRAM__DOT__expected1[6U] = 0xdU;
+    vlSelf->tb_convBRAM__DOT__expected1[7U] = 0xfU;
+    vlSelf->tb_convBRAM__DOT__expected1[8U] = 0x11U;
     vlSelf->tb_convBRAM__DOT__index = 9U;
-    co_await vlSelf->__VtrigSched_h52bcd072__0.trigger(0U, 
+    VL_WRITEF("=== Convolution test started ===\nInput: 1 2 3 / 4 5 6 / 7 8 9\nExpected weights: ch0 all ones, ch1 center=2\nExpected biases: ch0=+1, ch1=-1\nDebug monitor: output position [1][1]\n");
+    co_await vlSelf->__VtrigSched_h52bcc9ff__0.trigger(0U, 
                                                        nullptr, 
-                                                       "@(posedge tb_convBRAM.clk)", 
-                                                       "/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
-                                                       45);
-    vlSelf->__Vm_traceActivity[2U] = 1U;
-    co_await vlSelf->__VtrigSched_h52bcd072__0.trigger(0U, 
+                                                       "@(negedge tb_convBRAM.clk)", 
+                                                       "/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
+                                                       190);
+    vlSelf->__Vm_traceActivity[3U] = 1U;
+    co_await vlSelf->__VtrigSched_h52bcc9ff__0.trigger(0U, 
                                                        nullptr, 
-                                                       "@(posedge tb_convBRAM.clk)", 
-                                                       "/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
-                                                       45);
-    vlSelf->__Vm_traceActivity[2U] = 1U;
-    co_await vlSelf->__VtrigSched_h52bcd072__0.trigger(0U, 
+                                                       "@(negedge tb_convBRAM.clk)", 
+                                                       "/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
+                                                       190);
+    vlSelf->__Vm_traceActivity[3U] = 1U;
+    co_await vlSelf->__VtrigSched_h52bcc9ff__0.trigger(0U, 
                                                        nullptr, 
-                                                       "@(posedge tb_convBRAM.clk)", 
-                                                       "/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
-                                                       45);
-    vlSelf->__Vm_traceActivity[2U] = 1U;
+                                                       "@(negedge tb_convBRAM.clk)", 
+                                                       "/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
+                                                       190);
+    vlSelf->__Vm_traceActivity[3U] = 1U;
     vlSelf->tb_convBRAM__DOT__rst = 0U;
-    co_await vlSelf->__VtrigSched_h52bcd072__0.trigger(0U, 
+    co_await vlSelf->__VtrigSched_h52bcc9ff__0.trigger(0U, 
                                                        nullptr, 
-                                                       "@(posedge tb_convBRAM.clk)", 
-                                                       "/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
-                                                       47);
-    vlSelf->__Vm_traceActivity[2U] = 1U;
+                                                       "@(negedge tb_convBRAM.clk)", 
+                                                       "/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
+                                                       193);
+    vlSelf->__Vm_traceActivity[3U] = 1U;
     vlSelf->tb_convBRAM__DOT__start = 1U;
-    co_await vlSelf->__VtrigSched_h52bcd072__0.trigger(0U, 
+    co_await vlSelf->__VtrigSched_h52bcc9ff__0.trigger(0U, 
                                                        nullptr, 
-                                                       "@(posedge tb_convBRAM.clk)", 
-                                                       "/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
-                                                       48);
-    vlSelf->__Vm_traceActivity[2U] = 1U;
+                                                       "@(negedge tb_convBRAM.clk)", 
+                                                       "/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
+                                                       196);
+    vlSelf->__Vm_traceActivity[3U] = 1U;
     vlSelf->tb_convBRAM__DOT__start = 0U;
-    while ((1U & (~ (IData)(vlSelf->tb_convBRAM__DOT__done)))) {
-        co_await vlSelf->__VtrigSched_hba22dc0b__0.trigger(1U, 
-                                                           nullptr, 
-                                                           "@([changed] tb_convBRAM.done)", 
-                                                           "/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
-                                                           49);
-        vlSelf->__Vm_traceActivity[2U] = 1U;
+    if (vlSelf->tb_convBRAM__DOT__busy) {
+        vlSelf->tb_convBRAM__DOT__busySeen = 1U;
     }
-    co_await vlSelf->__VdlySched.delay(0x3e8ULL, nullptr, 
-                                       "/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
-                                       50);
-    vlSelf->__Vm_traceActivity[2U] = 1U;
+    while (((~ (IData)(vlSelf->tb_convBRAM__DOT__done)) 
+            & VL_GTS_III(32, 0x3e8U, vlSelf->tb_convBRAM__DOT__cycles))) {
+        co_await vlSelf->__VtrigSched_h52bcc9ff__0.trigger(0U, 
+                                                           nullptr, 
+                                                           "@(negedge tb_convBRAM.clk)", 
+                                                           "/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
+                                                           206);
+        vlSelf->__Vm_traceActivity[3U] = 1U;
+        vlSelf->tb_convBRAM__DOT__cycles = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__cycles);
+        if (vlSelf->tb_convBRAM__DOT__busy) {
+            vlSelf->tb_convBRAM__DOT__busySeen = 1U;
+        }
+    }
+    if (VL_UNLIKELY((1U & (~ (IData)(vlSelf->tb_convBRAM__DOT__done))))) {
+        VL_WRITEF("TIMEOUT cycles=%0d busy=%b done=%b\nCORE tile=%0# row=%0# col=%0# issueTerm=%0# consumeTerm=%0#\nCORE issueDone=%b weightValid=%b\n[%0t] %%Fatal: tb_convBRAM.sv:234: Assertion failed in %Ntb_convBRAM: Timeout waiting for done.\n",
+                  32,vlSelf->tb_convBRAM__DOT__cycles,
+                  1,(IData)(vlSelf->tb_convBRAM__DOT__busy),
+                  1,vlSelf->tb_convBRAM__DOT__done,
+                  1,(IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__tileIndex),
+                  2,vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__outputRow,
+                  2,(IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__outputColumn),
+                  4,vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__issueTerm,
+                  4,(IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__consumeTerm),
+                  1,vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__issueDone,
+                  2,(IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__weightValid),
+                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name());
+        VL_STOP_MT("/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 234, "");
+    }
+    VL_WRITEF("DONE cycles=%0d time=%0t\n",32,vlSelf->tb_convBRAM__DOT__cycles,
+              64,VL_TIME_UNITED_Q(1000),-9);
+    if (VL_UNLIKELY((1U & (~ (IData)(vlSelf->tb_convBRAM__DOT__busySeen))))) {
+        VL_WRITEF("FAIL: busy was never observed high.\n");
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    }
+    if (VL_UNLIKELY(vlSelf->tb_convBRAM__DOT__busy)) {
+        VL_WRITEF("FAIL: busy is not low at completion.\n");
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    }
+    if (VL_UNLIKELY((9U != vlSelf->tb_convBRAM__DOT__centerMacCount))) {
+        VL_WRITEF("FAIL: center MAC count expected=9 actual=%0d\n",
+                  32,vlSelf->tb_convBRAM__DOT__centerMacCount);
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    }
     vlSelf->tb_convBRAM__DOT__row = 0U;
     vlSelf->tb_convBRAM__DOT__column = 0U;
-    if (VL_UNLIKELY((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U) != vlSelf->tb_convBRAM__DOT__expected0
-                     [0U]))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:55: Assertion failed in %Ntb_convBRAM: ch0 [%0d][%0d] expected=%0d actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[0U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected0
+         [0U])) {
+        VL_WRITEF("FAIL ch0 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected0
+                  [0U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [0U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch0 [%0d][%0d] expected=%0d actual=%0d\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
                   32,vlSelf->tb_convBRAM__DOT__expected0
@@ -97,38 +223,78 @@ VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0
                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
                             : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 55, "");
     }
-    if (VL_UNLIKELY((1U != ((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                             ? vlSelf->tb_convBRAM__DOT__outData
-                            [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                             : 0U)))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:58: Assertion failed in %Ntb_convBRAM: ch1 [%0d][%0d] expected=1 actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[1U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected1
+         [0U])) {
+        VL_WRITEF("FAIL ch1 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
-                  32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 58, "");
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [0U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [1U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch1 [%0d][%0d] expected=%0d actual=%0d\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [0U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U));
     }
     vlSelf->tb_convBRAM__DOT__index = 1U;
     vlSelf->tb_convBRAM__DOT__row = 0U;
     vlSelf->tb_convBRAM__DOT__column = 1U;
-    if (VL_UNLIKELY((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U) != vlSelf->tb_convBRAM__DOT__expected0
-                     [1U]))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:55: Assertion failed in %Ntb_convBRAM: ch0 [%0d][%0d] expected=%0d actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[0U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected0
+         [1U])) {
+        VL_WRITEF("FAIL ch0 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected0
+                  [1U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [0U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch0 [%0d][%0d] expected=%0d actual=%0d\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
                   32,vlSelf->tb_convBRAM__DOT__expected0
@@ -138,38 +304,78 @@ VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0
                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
                             : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 55, "");
     }
-    if (VL_UNLIKELY((3U != ((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                             ? vlSelf->tb_convBRAM__DOT__outData
-                            [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                             : 0U)))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:58: Assertion failed in %Ntb_convBRAM: ch1 [%0d][%0d] expected=3 actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[1U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected1
+         [1U])) {
+        VL_WRITEF("FAIL ch1 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
-                  32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 58, "");
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [1U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [1U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch1 [%0d][%0d] expected=%0d actual=%0d\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [1U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U));
     }
     vlSelf->tb_convBRAM__DOT__index = 2U;
     vlSelf->tb_convBRAM__DOT__row = 0U;
     vlSelf->tb_convBRAM__DOT__column = 2U;
-    if (VL_UNLIKELY((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U) != vlSelf->tb_convBRAM__DOT__expected0
-                     [2U]))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:55: Assertion failed in %Ntb_convBRAM: ch0 [%0d][%0d] expected=%0d actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[0U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected0
+         [2U])) {
+        VL_WRITEF("FAIL ch0 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected0
+                  [2U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [0U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch0 [%0d][%0d] expected=%0d actual=%0d\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
                   32,vlSelf->tb_convBRAM__DOT__expected0
@@ -179,38 +385,78 @@ VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0
                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
                             : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 55, "");
     }
-    if (VL_UNLIKELY((5U != ((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                             ? vlSelf->tb_convBRAM__DOT__outData
-                            [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                             : 0U)))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:58: Assertion failed in %Ntb_convBRAM: ch1 [%0d][%0d] expected=5 actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[1U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected1
+         [2U])) {
+        VL_WRITEF("FAIL ch1 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
-                  32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 58, "");
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [2U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [1U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch1 [%0d][%0d] expected=%0d actual=%0d\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [2U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U));
     }
     vlSelf->tb_convBRAM__DOT__index = 3U;
     vlSelf->tb_convBRAM__DOT__row = 1U;
     vlSelf->tb_convBRAM__DOT__column = 0U;
-    if (VL_UNLIKELY((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U) != vlSelf->tb_convBRAM__DOT__expected0
-                     [3U]))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:55: Assertion failed in %Ntb_convBRAM: ch0 [%0d][%0d] expected=%0d actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[0U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected0
+         [3U])) {
+        VL_WRITEF("FAIL ch0 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected0
+                  [3U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [0U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch0 [%0d][%0d] expected=%0d actual=%0d\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
                   32,vlSelf->tb_convBRAM__DOT__expected0
@@ -220,38 +466,78 @@ VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0
                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
                             : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 55, "");
     }
-    if (VL_UNLIKELY((7U != ((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                             ? vlSelf->tb_convBRAM__DOT__outData
-                            [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                             : 0U)))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:58: Assertion failed in %Ntb_convBRAM: ch1 [%0d][%0d] expected=7 actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[1U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected1
+         [3U])) {
+        VL_WRITEF("FAIL ch1 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
-                  32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 58, "");
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [3U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [1U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch1 [%0d][%0d] expected=%0d actual=%0d\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [3U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U));
     }
     vlSelf->tb_convBRAM__DOT__index = 4U;
     vlSelf->tb_convBRAM__DOT__row = 1U;
     vlSelf->tb_convBRAM__DOT__column = 1U;
-    if (VL_UNLIKELY((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U) != vlSelf->tb_convBRAM__DOT__expected0
-                     [4U]))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:55: Assertion failed in %Ntb_convBRAM: ch0 [%0d][%0d] expected=%0d actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[0U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected0
+         [4U])) {
+        VL_WRITEF("FAIL ch0 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected0
+                  [4U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [0U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch0 [%0d][%0d] expected=%0d actual=%0d\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
                   32,vlSelf->tb_convBRAM__DOT__expected0
@@ -261,38 +547,78 @@ VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0
                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
                             : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 55, "");
     }
-    if (VL_UNLIKELY((9U != ((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                             ? vlSelf->tb_convBRAM__DOT__outData
-                            [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                             : 0U)))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:58: Assertion failed in %Ntb_convBRAM: ch1 [%0d][%0d] expected=9 actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[1U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected1
+         [4U])) {
+        VL_WRITEF("FAIL ch1 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
-                  32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 58, "");
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [4U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [1U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch1 [%0d][%0d] expected=%0d actual=%0d\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [4U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U));
     }
     vlSelf->tb_convBRAM__DOT__index = 5U;
     vlSelf->tb_convBRAM__DOT__row = 1U;
     vlSelf->tb_convBRAM__DOT__column = 2U;
-    if (VL_UNLIKELY((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U) != vlSelf->tb_convBRAM__DOT__expected0
-                     [5U]))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:55: Assertion failed in %Ntb_convBRAM: ch0 [%0d][%0d] expected=%0d actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[0U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected0
+         [5U])) {
+        VL_WRITEF("FAIL ch0 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected0
+                  [5U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [0U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch0 [%0d][%0d] expected=%0d actual=%0d\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
                   32,vlSelf->tb_convBRAM__DOT__expected0
@@ -302,38 +628,78 @@ VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0
                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
                             : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 55, "");
     }
-    if (VL_UNLIKELY((0xbU != ((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                               ? vlSelf->tb_convBRAM__DOT__outData
-                              [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                                     ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                                     : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                               : 0U)))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:58: Assertion failed in %Ntb_convBRAM: ch1 [%0d][%0d] expected=11 actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[1U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected1
+         [5U])) {
+        VL_WRITEF("FAIL ch1 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
-                  32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 58, "");
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [5U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [1U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch1 [%0d][%0d] expected=%0d actual=%0d\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [5U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U));
     }
     vlSelf->tb_convBRAM__DOT__index = 6U;
     vlSelf->tb_convBRAM__DOT__row = 2U;
     vlSelf->tb_convBRAM__DOT__column = 0U;
-    if (VL_UNLIKELY((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U) != vlSelf->tb_convBRAM__DOT__expected0
-                     [6U]))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:55: Assertion failed in %Ntb_convBRAM: ch0 [%0d][%0d] expected=%0d actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[0U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected0
+         [6U])) {
+        VL_WRITEF("FAIL ch0 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected0
+                  [6U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [0U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch0 [%0d][%0d] expected=%0d actual=%0d\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
                   32,vlSelf->tb_convBRAM__DOT__expected0
@@ -343,38 +709,78 @@ VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0
                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
                             : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 55, "");
     }
-    if (VL_UNLIKELY((0xdU != ((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                               ? vlSelf->tb_convBRAM__DOT__outData
-                              [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                                     ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                                     : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                               : 0U)))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:58: Assertion failed in %Ntb_convBRAM: ch1 [%0d][%0d] expected=13 actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[1U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected1
+         [6U])) {
+        VL_WRITEF("FAIL ch1 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
-                  32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 58, "");
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [6U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [1U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch1 [%0d][%0d] expected=%0d actual=%0d\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [6U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U));
     }
     vlSelf->tb_convBRAM__DOT__index = 7U;
     vlSelf->tb_convBRAM__DOT__row = 2U;
     vlSelf->tb_convBRAM__DOT__column = 1U;
-    if (VL_UNLIKELY((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U) != vlSelf->tb_convBRAM__DOT__expected0
-                     [7U]))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:55: Assertion failed in %Ntb_convBRAM: ch0 [%0d][%0d] expected=%0d actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[0U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected0
+         [7U])) {
+        VL_WRITEF("FAIL ch0 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected0
+                  [7U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [0U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch0 [%0d][%0d] expected=%0d actual=%0d\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
                   32,vlSelf->tb_convBRAM__DOT__expected0
@@ -384,38 +790,78 @@ VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0
                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
                             : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 55, "");
     }
-    if (VL_UNLIKELY((0xfU != ((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                               ? vlSelf->tb_convBRAM__DOT__outData
-                              [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                                     ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                                     : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                               : 0U)))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:58: Assertion failed in %Ntb_convBRAM: ch1 [%0d][%0d] expected=15 actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[1U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected1
+         [7U])) {
+        VL_WRITEF("FAIL ch1 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
-                  32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 58, "");
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [7U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [1U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch1 [%0d][%0d] expected=%0d actual=%0d\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [7U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U));
     }
     vlSelf->tb_convBRAM__DOT__index = 8U;
     vlSelf->tb_convBRAM__DOT__row = 2U;
     vlSelf->tb_convBRAM__DOT__column = 2U;
-    if (VL_UNLIKELY((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U) != vlSelf->tb_convBRAM__DOT__expected0
-                     [8U]))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:55: Assertion failed in %Ntb_convBRAM: ch0 [%0d][%0d] expected=%0d actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[0U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected0
+         [8U])) {
+        VL_WRITEF("FAIL ch0 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected0
+                  [8U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [0U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [0U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch0 [%0d][%0d] expected=%0d actual=%0d\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
                   32,vlSelf->tb_convBRAM__DOT__expected0
@@ -425,30 +871,72 @@ VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0
                                   ? (3U & vlSelf->tb_convBRAM__DOT__row)
                                   : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
                             : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 55, "");
     }
-    if (VL_UNLIKELY((0x11U != ((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                                ? vlSelf->tb_convBRAM__DOT__outData
-                               [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                                      ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                                      : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                                : 0U)))) {
-        VL_WRITEF("[%0t] %%Fatal: tb_convBRAM.sv:58: Assertion failed in %Ntb_convBRAM: ch1 [%0d][%0d] expected=17 actual=%0d\n",
-                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name(),
+    if ((((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+           ? vlSelf->tb_convBRAM__DOT__outData[1U][
+          ((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+            ? (3U & vlSelf->tb_convBRAM__DOT__row) : 0U)]
+          [(3U & vlSelf->tb_convBRAM__DOT__column)]
+           : 0U) != vlSelf->tb_convBRAM__DOT__expected1
+         [8U])) {
+        VL_WRITEF("FAIL ch1 [%0d][%0d] expected=%0d actual=%0d hex=%x\n",
                   32,vlSelf->tb_convBRAM__DOT__row,
                   32,vlSelf->tb_convBRAM__DOT__column,
-                  32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
-                       ? vlSelf->tb_convBRAM__DOT__outData
-                      [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
-                             ? (3U & vlSelf->tb_convBRAM__DOT__row)
-                             : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
-                       : 0U));
-        VL_STOP_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 58, "");
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [8U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U),32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                                       ? vlSelf->tb_convBRAM__DOT__outData
+                                      [1U][((2U >= 
+                                             (3U & vlSelf->tb_convBRAM__DOT__row))
+                                             ? (3U 
+                                                & vlSelf->tb_convBRAM__DOT__row)
+                                             : 0U)]
+                                      [(3U & vlSelf->tb_convBRAM__DOT__column)]
+                                       : 0U));
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    } else {
+        VL_WRITEF("OK   ch1 [%0d][%0d] expected=%0d actual=%0d\n",
+                  32,vlSelf->tb_convBRAM__DOT__row,
+                  32,vlSelf->tb_convBRAM__DOT__column,
+                  32,vlSelf->tb_convBRAM__DOT__expected1
+                  [8U],32,((2U >= (3U & vlSelf->tb_convBRAM__DOT__column))
+                            ? vlSelf->tb_convBRAM__DOT__outData
+                           [1U][((2U >= (3U & vlSelf->tb_convBRAM__DOT__row))
+                                  ? (3U & vlSelf->tb_convBRAM__DOT__row)
+                                  : 0U)][(3U & vlSelf->tb_convBRAM__DOT__column)]
+                            : 0U));
     }
     vlSelf->tb_convBRAM__DOT__index = 9U;
-    VL_WRITEF("PASS: XPM BRAM initialization, lane packing, latency and convolution\n");
-    VL_FINISH_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 62, "");
-    vlSelf->__Vm_traceActivity[2U] = 1U;
+    co_await vlSelf->__VtrigSched_h52bcc9ff__0.trigger(0U, 
+                                                       nullptr, 
+                                                       "@(negedge tb_convBRAM.clk)", 
+                                                       "/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
+                                                       309);
+    vlSelf->__Vm_traceActivity[3U] = 1U;
+    if (VL_UNLIKELY(vlSelf->tb_convBRAM__DOT__done)) {
+        VL_WRITEF("FAIL: done did not return low.\n");
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    }
+    if (VL_UNLIKELY(vlSelf->tb_convBRAM__DOT__busy)) {
+        VL_WRITEF("FAIL: busy did not remain low.\n");
+        vlSelf->tb_convBRAM__DOT__errors = ((IData)(1U) 
+                                            + vlSelf->tb_convBRAM__DOT__errors);
+    }
+    if (VL_UNLIKELY((0U != vlSelf->tb_convBRAM__DOT__errors))) {
+        VL_WRITEF("=== TEST FAILED: %0d error(s) ===\n[%0t] %%Fatal: tb_convBRAM.sv:326: Assertion failed in %Ntb_convBRAM: See MAC and FAIL messages above.\n",
+                  32,vlSelf->tb_convBRAM__DOT__errors,
+                  64,VL_TIME_UNITED_Q(1000),-9,vlSymsp->name());
+        VL_STOP_MT("/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 326, "");
+    }
+    VL_WRITEF("=== PASS: all outputs and completion checks matched ===\n");
+    VL_FINISH_MT("/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 330, "");
+    vlSelf->__Vm_traceActivity[3U] = 1U;
 }
 
 #ifdef VL_DEBUG
@@ -466,19 +954,13 @@ void Vtb_convBRAM___024root___eval_triggers__act(Vtb_convBRAM___024root* vlSelf)
                                       & (~ (IData)(vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__clk__0))) 
                                      | ((IData)(vlSelf->tb_convBRAM__DOT__rst) 
                                         & (~ (IData)(vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__rst__0)))));
-    vlSelf->__VactTriggered.set(2U, ((IData)(vlSelf->tb_convBRAM__DOT__done) 
-                                     != (IData)(vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__done__0)));
-    vlSelf->__VactTriggered.set(3U, vlSelf->__VdlySched.awaitingCurrentTime());
+    vlSelf->__VactTriggered.set(2U, vlSelf->__VdlySched.awaitingCurrentTime());
+    vlSelf->__VactTriggered.set(3U, ((~ (IData)(vlSelf->tb_convBRAM__DOT__clk)) 
+                                     & (IData)(vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__clk__0)));
     vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__clk__0 
         = vlSelf->tb_convBRAM__DOT__clk;
     vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__rst__0 
         = vlSelf->tb_convBRAM__DOT__rst;
-    vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__done__0 
-        = vlSelf->tb_convBRAM__DOT__done;
-    if (VL_UNLIKELY((1U & (~ (IData)(vlSelf->__VactDidInit))))) {
-        vlSelf->__VactDidInit = 1U;
-        vlSelf->__VactTriggered.set(2U, 1U);
-    }
 #ifdef VL_DEBUG
     if (VL_UNLIKELY(vlSymsp->_vm_contextp__->debug())) {
         Vtb_convBRAM___024root___dump_triggers__act(vlSelf);
@@ -531,7 +1013,7 @@ void Vtb_convBRAM___024root____Vthread__nba__0(void* voidSelf, bool even_cycle) 
     Verilated::mtaskId(27);
     if ((1ULL & vlSelf->__VnbaTriggered.word(0U))) {
         Vtb_convBRAM___024root___nba_sequent__TOP__25(vlSelf);
-        vlSelf->__Vm_traceActivity[4U] = 1U;
+        vlSelf->__Vm_traceActivity[5U] = 1U;
     }
     Verilated::endOfThreadMTask(vlSymsp->__Vm_evalMsgQp);
     vlSelf->__Vm_mtaskstate_29.signalUpstreamDone(even_cycle);
@@ -633,7 +1115,7 @@ void Vtb_convBRAM___024root____Vthread__nba__2(void* voidSelf, bool even_cycle) 
     Verilated::mtaskId(29);
     if ((2ULL & vlSelf->__VnbaTriggered.word(0U))) {
         Vtb_convBRAM___024root___nba_sequent__TOP__27(vlSelf);
-        vlSelf->__Vm_traceActivity[5U] = 1U;
+        vlSelf->__Vm_traceActivity[6U] = 1U;
     }
     Verilated::endOfThreadMTask(vlSymsp->__Vm_evalMsgQp);
     vlSelf->__Vm_mtaskstate_30.signalUpstreamDone(even_cycle);
@@ -651,7 +1133,7 @@ void Vtb_convBRAM___024root____Vthread__nba__2(void* voidSelf, bool even_cycle) 
     Verilated::mtaskId(44);
     if ((2ULL & vlSelf->__VnbaTriggered.word(0U))) {
         Vtb_convBRAM___024root___nba_sequent__TOP__51(vlSelf);
-        vlSelf->__Vm_traceActivity[6U] = 1U;
+        vlSelf->__Vm_traceActivity[7U] = 1U;
     }
     Verilated::endOfThreadMTask(vlSymsp->__Vm_evalMsgQp);
     Verilated::mtaskId(31);
@@ -870,7 +1352,7 @@ void Vtb_convBRAM___024root____Vthread__nba__7(void* voidSelf, bool even_cycle) 
     Verilated::mtaskId(26);
     if ((1ULL & vlSelf->__VnbaTriggered.word(0U))) {
         Vtb_convBRAM___024root___nba_sequent__TOP__24(vlSelf);
-        vlSelf->__Vm_traceActivity[3U] = 1U;
+        vlSelf->__Vm_traceActivity[4U] = 1U;
     }
     Verilated::endOfThreadMTask(vlSymsp->__Vm_evalMsgQp);
     vlSelf->__Vm_mtaskstate_47.signalUpstreamDone(even_cycle);

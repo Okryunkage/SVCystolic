@@ -13,6 +13,7 @@ VL_ATTR_COLD void Vtb_convBRAM___024root___eval_static(Vtb_convBRAM___024root* v
     VL_DEBUG_IF(VL_DBG_MSGF("+    Vtb_convBRAM___024root___eval_static\n"); );
     // Body
     Vtb_convBRAM___024root___eval_static__TOP(vlSelf);
+    vlSelf->__Vm_traceActivity[7U] = 1U;
     vlSelf->__Vm_traceActivity[6U] = 1U;
     vlSelf->__Vm_traceActivity[5U] = 1U;
     vlSelf->__Vm_traceActivity[4U] = 1U;
@@ -30,6 +31,7 @@ VL_ATTR_COLD void Vtb_convBRAM___024root___eval_static__TOP(Vtb_convBRAM___024ro
     vlSelf->tb_convBRAM__DOT__clk = 0U;
     vlSelf->tb_convBRAM__DOT__rst = 1U;
     vlSelf->tb_convBRAM__DOT__start = 0U;
+    vlSelf->tb_convBRAM__DOT__centerMacCount = 0U;
 }
 
 VL_ATTR_COLD void Vtb_convBRAM___024root___eval_initial__TOP(Vtb_convBRAM___024root* vlSelf) {
@@ -49,7 +51,6 @@ VL_ATTR_COLD void Vtb_convBRAM___024root___eval_initial__TOP(Vtb_convBRAM___024r
     vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem[6U] = 0U;
     vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem[7U] = 0U;
     vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem[8U] = 0U;
-    vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__i = 9U;
     vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightWord = 0U;
     vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__rd_pipe[0U] = 0U;
     vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__p = 1U;
@@ -62,9 +63,20 @@ VL_ATTR_COLD void Vtb_convBRAM___024root___eval_initial__TOP(Vtb_convBRAM___024r
     VL_READMEM_N(true, 16, 9, 0, VL_CVT_PACK_STR_NW(5, __Vtemp_1)
                  ,  &(vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem)
                  , 0, ~0ULL);
+    VL_WRITEF("CHECK file=tb_conv_w_tile.mem DEPTH=9\nCHECK addr=0 data=%x\nCHECK addr=1 data=%x\nCHECK addr=2 data=%x\nCHECK addr=3 data=%x\nCHECK addr=4 data=%x\nCHECK addr=5 data=%x\nCHECK addr=6 data=%x\nCHECK addr=7 data=%x\nCHECK addr=8 data=%x\n",
+              16,vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem
+              [0U],16,vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem
+              [1U],16,vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem
+              [2U],16,vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem
+              [3U],16,vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem
+              [4U],16,vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem
+              [5U],16,vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem
+              [6U],16,vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem
+              [7U],16,vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__mem
+              [8U]);
+    vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightMemory__DOT__i = 9U;
     vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__biasMemory__DOT__mem[0U] = 0U;
     vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__biasMemory__DOT__mem[1U] = 0U;
-    vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__biasMemory__DOT__i = 2U;
     vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__biasWord = 0U;
     vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__biasMemory__DOT__rd_pipe[0U] = 0U;
     vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__biasMemory__DOT__p = 1U;
@@ -77,6 +89,11 @@ VL_ATTR_COLD void Vtb_convBRAM___024root___eval_initial__TOP(Vtb_convBRAM___024r
     VL_READMEM_N(true, 16, 2, 0, VL_CVT_PACK_STR_NW(5, __Vtemp_2)
                  ,  &(vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__biasMemory__DOT__mem)
                  , 0, ~0ULL);
+    VL_WRITEF("CHECK file=tb_conv_b_tile.mem DEPTH=2\nCHECK addr=0 data=%x\nCHECK addr=1 data=%x\n",
+              16,vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__biasMemory__DOT__mem
+              [0U],16,vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__biasMemory__DOT__mem
+              [1U]);
+    vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__biasMemory__DOT__i = 2U;
 }
 
 VL_ATTR_COLD void Vtb_convBRAM___024root___eval_final(Vtb_convBRAM___024root* vlSelf) {
@@ -106,7 +123,7 @@ VL_ATTR_COLD void Vtb_convBRAM___024root___eval_settle(Vtb_convBRAM___024root* v
 #ifdef VL_DEBUG
             Vtb_convBRAM___024root___dump_triggers__stl(vlSelf);
 #endif
-            VL_FATAL_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 3, "", "Settle region did not converge.");
+            VL_FATAL_MT("/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 3, "", "Settle region did not converge.");
         }
         __VstlIterCount = ((IData)(1U) + __VstlIterCount);
         __VstlContinue = 0U;
@@ -177,10 +194,10 @@ VL_ATTR_COLD void Vtb_convBRAM___024root___dump_triggers__act(Vtb_convBRAM___024
         VL_DBG_MSGF("         'act' region trigger index 1 is active: @(posedge tb_convBRAM.clk or posedge tb_convBRAM.rst)\n");
     }
     if ((4ULL & vlSelf->__VactTriggered.word(0U))) {
-        VL_DBG_MSGF("         'act' region trigger index 2 is active: @([changed] tb_convBRAM.done)\n");
+        VL_DBG_MSGF("         'act' region trigger index 2 is active: @([true] __VdlySched.awaitingCurrentTime())\n");
     }
     if ((8ULL & vlSelf->__VactTriggered.word(0U))) {
-        VL_DBG_MSGF("         'act' region trigger index 3 is active: @([true] __VdlySched.awaitingCurrentTime())\n");
+        VL_DBG_MSGF("         'act' region trigger index 3 is active: @(negedge tb_convBRAM.clk)\n");
     }
 }
 #endif  // VL_DEBUG
@@ -201,10 +218,10 @@ VL_ATTR_COLD void Vtb_convBRAM___024root___dump_triggers__nba(Vtb_convBRAM___024
         VL_DBG_MSGF("         'nba' region trigger index 1 is active: @(posedge tb_convBRAM.clk or posedge tb_convBRAM.rst)\n");
     }
     if ((4ULL & vlSelf->__VnbaTriggered.word(0U))) {
-        VL_DBG_MSGF("         'nba' region trigger index 2 is active: @([changed] tb_convBRAM.done)\n");
+        VL_DBG_MSGF("         'nba' region trigger index 2 is active: @([true] __VdlySched.awaitingCurrentTime())\n");
     }
     if ((8ULL & vlSelf->__VnbaTriggered.word(0U))) {
-        VL_DBG_MSGF("         'nba' region trigger index 3 is active: @([true] __VdlySched.awaitingCurrentTime())\n");
+        VL_DBG_MSGF("         'nba' region trigger index 3 is active: @(negedge tb_convBRAM.clk)\n");
     }
 }
 #endif  // VL_DEBUG
@@ -224,8 +241,6 @@ VL_ATTR_COLD void Vtb_convBRAM___024root___ctor_var_reset(Vtb_convBRAM___024root
             }
         }
     }
-    vlSelf->tb_convBRAM__DOT__busy = VL_RAND_RESET_I(1);
-    vlSelf->tb_convBRAM__DOT__done = VL_RAND_RESET_I(1);
     for (int __Vi0 = 0; __Vi0 < 2; ++__Vi0) {
         for (int __Vi1 = 0; __Vi1 < 3; ++__Vi1) {
             for (int __Vi2 = 0; __Vi2 < 3; ++__Vi2) {
@@ -233,12 +248,27 @@ VL_ATTR_COLD void Vtb_convBRAM___024root___ctor_var_reset(Vtb_convBRAM___024root
             }
         }
     }
+    vlSelf->tb_convBRAM__DOT__busy = VL_RAND_RESET_I(1);
+    vlSelf->tb_convBRAM__DOT__done = VL_RAND_RESET_I(1);
     for (int __Vi0 = 0; __Vi0 < 9; ++__Vi0) {
         vlSelf->tb_convBRAM__DOT__expected0[__Vi0] = 0;
     }
-    vlSelf->tb_convBRAM__DOT__index = 0;
-    vlSelf->tb_convBRAM__DOT__row = 0;
-    vlSelf->tb_convBRAM__DOT__column = 0;
+    for (int __Vi0 = 0; __Vi0 < 9; ++__Vi0) {
+        vlSelf->tb_convBRAM__DOT__expected1[__Vi0] = 0;
+    }
+    vlSelf->tb_convBRAM__DOT__index = VL_RAND_RESET_I(32);
+    vlSelf->tb_convBRAM__DOT__row = VL_RAND_RESET_I(32);
+    vlSelf->tb_convBRAM__DOT__column = VL_RAND_RESET_I(32);
+    vlSelf->tb_convBRAM__DOT__cycles = VL_RAND_RESET_I(32);
+    vlSelf->tb_convBRAM__DOT__errors = VL_RAND_RESET_I(32);
+    vlSelf->tb_convBRAM__DOT__busySeen = VL_RAND_RESET_I(1);
+    vlSelf->tb_convBRAM__DOT__centerMacCount = VL_RAND_RESET_I(32);
+    vlSelf->tb_convBRAM__DOT__dbgTerm = VL_RAND_RESET_I(32);
+    vlSelf->tb_convBRAM__DOT__dbgInputExpected = VL_RAND_RESET_I(32);
+    vlSelf->tb_convBRAM__DOT__dbgW0 = VL_RAND_RESET_I(8);
+    vlSelf->tb_convBRAM__DOT__dbgW1 = VL_RAND_RESET_I(8);
+    vlSelf->tb_convBRAM__DOT__dbgAcc0 = VL_RAND_RESET_I(32);
+    vlSelf->tb_convBRAM__DOT__dbgAcc1 = VL_RAND_RESET_I(32);
     vlSelf->tb_convBRAM__DOT__dut__DOT__waddr = VL_RAND_RESET_I(4);
     vlSelf->tb_convBRAM__DOT__dut__DOT__baddr = VL_RAND_RESET_I(1);
     vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightWord = VL_RAND_RESET_I(16);
@@ -333,9 +363,7 @@ VL_ATTR_COLD void Vtb_convBRAM___024root___ctor_var_reset(Vtb_convBRAM___024root
     vlSelf->__Vdlyvset__tb_convBRAM__DOT__dut__DOT__core__DOT__biasValue__v3 = 0;
     vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__clk__0 = VL_RAND_RESET_I(1);
     vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__rst__0 = VL_RAND_RESET_I(1);
-    vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__done__0 = VL_RAND_RESET_I(1);
-    vlSelf->__VactDidInit = 0;
-    for (int __Vi0 = 0; __Vi0 < 7; ++__Vi0) {
+    for (int __Vi0 = 0; __Vi0 < 8; ++__Vi0) {
         vlSelf->__Vm_traceActivity[__Vi0] = 0;
     }
 }

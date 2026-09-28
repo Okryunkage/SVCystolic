@@ -8,6 +8,7 @@
 VL_ATTR_COLD void Vtb_convBRAM___024root___eval_initial__TOP(Vtb_convBRAM___024root* vlSelf);
 VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0(Vtb_convBRAM___024root* vlSelf);
 VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__1(Vtb_convBRAM___024root* vlSelf);
+VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__2(Vtb_convBRAM___024root* vlSelf);
 
 void Vtb_convBRAM___024root___eval_initial(Vtb_convBRAM___024root* vlSelf) {
     if (false && vlSelf) {}  // Prevent unused
@@ -18,24 +19,97 @@ void Vtb_convBRAM___024root___eval_initial(Vtb_convBRAM___024root* vlSelf) {
     vlSelf->__Vm_traceActivity[1U] = 1U;
     Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0(vlSelf);
     Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__1(vlSelf);
+    Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__2(vlSelf);
     vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__clk__0 
         = vlSelf->tb_convBRAM__DOT__clk;
     vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__rst__0 
         = vlSelf->tb_convBRAM__DOT__rst;
-    vlSelf->__Vtrigprevexpr___TOP__tb_convBRAM__DOT__done__0 
-        = vlSelf->tb_convBRAM__DOT__done;
 }
 
-VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__1(Vtb_convBRAM___024root* vlSelf) {
+VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0(Vtb_convBRAM___024root* vlSelf) {
     if (false && vlSelf) {}  // Prevent unused
     Vtb_convBRAM__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
-    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__1\n"); );
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__0\n"); );
+    // Body
+    while (1U) {
+        co_await vlSelf->__VtrigSched_h52bcd072__0.trigger(0U, 
+                                                           nullptr, 
+                                                           "@(posedge tb_convBRAM.clk)", 
+                                                           "/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
+                                                           82);
+        vlSelf->__Vm_traceActivity[2U] = 1U;
+        if (VL_UNLIKELY((((((~ (IData)(vlSelf->tb_convBRAM__DOT__rst)) 
+                            & (IData)(vlSelf->tb_convBRAM__DOT__busy)) 
+                           & ((IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__weightValid) 
+                              >> 1U)) & (1U == (IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__outputRow))) 
+                         & (1U == (IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__outputColumn))))) {
+            vlSelf->tb_convBRAM__DOT__dbgTerm = vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__consumeTerm;
+            vlSelf->tb_convBRAM__DOT__dbgInputExpected 
+                = ((IData)(1U) + vlSelf->tb_convBRAM__DOT__dbgTerm);
+            vlSelf->tb_convBRAM__DOT__dbgW0 = (0xffU 
+                                               & (IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightWord));
+            vlSelf->tb_convBRAM__DOT__dbgW1 = (0xffU 
+                                               & ((IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__memory__DOT__weightWord) 
+                                                  >> 8U));
+            vlSelf->tb_convBRAM__DOT__dbgAcc0 = vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__accumulator
+                [0U];
+            vlSelf->tb_convBRAM__DOT__dbgAcc1 = vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__accumulator
+                [1U];
+            vlSelf->tb_convBRAM__DOT__centerMacCount 
+                = ((IData)(1U) + vlSelf->tb_convBRAM__DOT__centerMacCount);
+            VL_WRITEF("MAC BEFORE term=%0d expected_input=%0d w0=%0d w1=%0d acc0=%0d acc1=%0d\n",
+                      32,vlSelf->tb_convBRAM__DOT__dbgTerm,
+                      32,vlSelf->tb_convBRAM__DOT__dbgInputExpected,
+                      8,(IData)(vlSelf->tb_convBRAM__DOT__dbgW0),
+                      8,vlSelf->tb_convBRAM__DOT__dbgW1,
+                      32,vlSelf->tb_convBRAM__DOT__dbgAcc0,
+                      32,vlSelf->tb_convBRAM__DOT__dbgAcc1);
+            co_await vlSelf->__VdlySched.delay(0x3e8ULL, 
+                                               nullptr, 
+                                               "/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
+                                               110);
+            vlSelf->__Vm_traceActivity[2U] = 1U;
+            VL_WRITEF("MAC AFTER  term=%0d acc0=%0d acc1=%0d\n",
+                      32,vlSelf->tb_convBRAM__DOT__dbgTerm,
+                      32,vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__accumulator
+                      [0U],32,vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__accumulator
+                      [1U]);
+            if (VL_UNLIKELY((8U == vlSelf->tb_convBRAM__DOT__dbgTerm))) {
+                VL_WRITEF("FINAL ACC expected0=46 actual0=%0d expected1=9 actual1=%0d\n",
+                          32,vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__accumulator
+                          [0U],32,vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__accumulator
+                          [1U]);
+                co_await vlSelf->__VtrigSched_h52bcd072__0.trigger(0U, 
+                                                                   nullptr, 
+                                                                   "@(posedge tb_convBRAM.clk)", 
+                                                                   "/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
+                                                                   128);
+                vlSelf->__Vm_traceActivity[2U] = 1U;
+                co_await vlSelf->__VdlySched.delay(0x3e8ULL, 
+                                                   nullptr, 
+                                                   "/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
+                                                   129);
+                vlSelf->__Vm_traceActivity[2U] = 1U;
+                VL_WRITEF("CENTER OUTPUT expected0=46 actual0=%0d expected1=9 actual1=%0d\n",
+                          32,vlSelf->tb_convBRAM__DOT__outData
+                          [0U][1U][1U],32,vlSelf->tb_convBRAM__DOT__outData
+                          [1U][1U][1U]);
+            }
+        }
+    }
+    vlSelf->__Vm_traceActivity[2U] = 1U;
+}
+
+VL_INLINE_OPT VlCoroutine Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__2(Vtb_convBRAM___024root* vlSelf) {
+    if (false && vlSelf) {}  // Prevent unused
+    Vtb_convBRAM__Syms* const __restrict vlSymsp VL_ATTR_UNUSED = vlSelf->vlSymsp;
+    VL_DEBUG_IF(VL_DBG_MSGF("+    Vtb_convBRAM___024root___eval_initial__TOP__Vtiming__2\n"); );
     // Body
     while (1U) {
         co_await vlSelf->__VdlySched.delay(0x1388ULL, 
                                            nullptr, 
-                                           "/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
-                                           17);
+                                           "/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 
+                                           38);
         vlSelf->tb_convBRAM__DOT__clk = (1U & (~ (IData)(vlSelf->tb_convBRAM__DOT__clk)));
     }
 }
@@ -359,14 +433,21 @@ VL_INLINE_OPT void Vtb_convBRAM___024root___nba_sequent__TOP__27(Vtb_convBRAM___
                             = (3U & ((IData)(1U) + (IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__outputRow)));
                         vlSelf->__Vdly__tb_convBRAM__DOT__dut__DOT__core__DOT__outputColumn = 0U;
                         vlSelf->__Vdly__tb_convBRAM__DOT__dut__DOT__core__DOT__state = 5U;
-                    } else {
+                    } else if (vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__tileIndex) {
+                        vlSelf->__Vdly__tb_convBRAM__DOT__dut__DOT__core__DOT__tileIndex 
+                            = (1U & ((IData)(1U) + (IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__tileIndex)));
                         vlSelf->__Vdly__tb_convBRAM__DOT__dut__DOT__core__DOT__weightBaseAddress 
                             = (0xfU & ((IData)(9U) 
                                        + (IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__weightBaseAddress)));
+                        vlSelf->__Vdly__tb_convBRAM__DOT__dut__DOT__core__DOT__outputRow = 0U;
                         vlSelf->__Vdly__tb_convBRAM__DOT__dut__DOT__core__DOT__outputColumn = 0U;
                         vlSelf->tb_convBRAM__DOT__dut__DOT__baddr 
                             = (1U & ((IData)(1U) + (IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__tileIndex)));
                         vlSelf->__Vdly__tb_convBRAM__DOT__dut__DOT__core__DOT__state = 1U;
+                    } else {
+                        vlSelf->tb_convBRAM__DOT__busy = 0U;
+                        vlSelf->tb_convBRAM__DOT__done = 1U;
+                        vlSelf->__Vdly__tb_convBRAM__DOT__dut__DOT__core__DOT__state = 0U;
                     }
                 } else {
                     vlSelf->__Vdly__tb_convBRAM__DOT__dut__DOT__core__DOT__weightValid 
@@ -390,6 +471,10 @@ VL_INLINE_OPT void Vtb_convBRAM___024root___nba_sequent__TOP__27(Vtb_convBRAM___
                         vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__kernelColumn 
                             = VL_MODDIV_III(32, (IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__consumeTerm), (IData)(3U));
                         vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__inputRow 
+                            = (((IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__outputRow) 
+                                + vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__kernelRow) 
+                               - (IData)(1U));
+                        vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__inputColumn 
                             = (((IData)(vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__outputColumn) 
                                 + vlSelf->tb_convBRAM__DOT__dut__DOT__core__DOT__kernelColumn) 
                                - (IData)(1U));
@@ -741,10 +826,10 @@ void Vtb_convBRAM___024root___timing_resume(Vtb_convBRAM___024root* vlSelf) {
     if ((1ULL & vlSelf->__VactTriggered.word(0U))) {
         vlSelf->__VtrigSched_h52bcd072__0.resume("@(posedge tb_convBRAM.clk)");
     }
-    if ((4ULL & vlSelf->__VactTriggered.word(0U))) {
-        vlSelf->__VtrigSched_hba22dc0b__0.resume("@([changed] tb_convBRAM.done)");
-    }
     if ((8ULL & vlSelf->__VactTriggered.word(0U))) {
+        vlSelf->__VtrigSched_h52bcc9ff__0.resume("@(negedge tb_convBRAM.clk)");
+    }
+    if ((4ULL & vlSelf->__VactTriggered.word(0U))) {
         vlSelf->__VdlySched.resume();
     }
 }
@@ -757,8 +842,8 @@ void Vtb_convBRAM___024root___timing_commit(Vtb_convBRAM___024root* vlSelf) {
     if ((! (1ULL & vlSelf->__VactTriggered.word(0U)))) {
         vlSelf->__VtrigSched_h52bcd072__0.commit("@(posedge tb_convBRAM.clk)");
     }
-    if ((! (4ULL & vlSelf->__VactTriggered.word(0U)))) {
-        vlSelf->__VtrigSched_hba22dc0b__0.commit("@([changed] tb_convBRAM.done)");
+    if ((! (8ULL & vlSelf->__VactTriggered.word(0U)))) {
+        vlSelf->__VtrigSched_h52bcc9ff__0.commit("@(negedge tb_convBRAM.clk)");
     }
 }
 
@@ -823,7 +908,7 @@ void Vtb_convBRAM___024root___eval(Vtb_convBRAM___024root* vlSelf) {
 #ifdef VL_DEBUG
             Vtb_convBRAM___024root___dump_triggers__nba(vlSelf);
 #endif
-            VL_FATAL_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 3, "", "NBA region did not converge.");
+            VL_FATAL_MT("/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 3, "", "NBA region did not converge.");
         }
         __VnbaIterCount = ((IData)(1U) + __VnbaIterCount);
         __VnbaContinue = 0U;
@@ -834,7 +919,7 @@ void Vtb_convBRAM___024root___eval(Vtb_convBRAM___024root* vlSelf) {
 #ifdef VL_DEBUG
                 Vtb_convBRAM___024root___dump_triggers__act(vlSelf);
 #endif
-                VL_FATAL_MT("/home/okryunkage/okryun0/NNmodel/testbench/CNN/tb_convBRAM.sv", 3, "", "Active region did not converge.");
+                VL_FATAL_MT("/home/svcial/svc0/NNmodel/testbench/CNN/tb_convBRAM.sv", 3, "", "Active region did not converge.");
             }
             vlSelf->__VactIterCount = ((IData)(1U) 
                                        + vlSelf->__VactIterCount);
