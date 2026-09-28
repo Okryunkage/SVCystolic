@@ -103,6 +103,12 @@ module xpm_memory_spram#(
 			MEMORY_INIT_FILE !="")begin
 			$display("xpm_memory_spram_sim: loading memory file: %s", MEMORY_INIT_FILE);
 			$readmemh(MEMORY_INIT_FILE, mem);
+			/*
+			$display("CHECK file=%s DEPTH=%0d", MEMORY_INIT_FILE, DEPTH);
+			for (i = 0; i < DEPTH; i = i + 1) begin
+    			$display("CHECK addr=%0d data=%h", i, mem[i]);
+			end
+*/
 		end
 	end
 

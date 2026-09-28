@@ -3,7 +3,7 @@ set -euo pipefail
 
 rootDir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 currentDir="$(pwd -P)"
-rtlDir="$rootDir/RTL/CNN_BRAM_XPM"
+rtlDir="$rootDir/rtl/CNN_BRAM_XPM"
 tbDir="$rootDir/testbench"
 hDir="$rootDir/header"
 buildDir="$rootDir/.build/verilator_convBRAM"
@@ -43,7 +43,7 @@ verilator \
 	-I"$currentDir" \
 	-I"$hDir" \
 	-I"$tbDir" \
-	"$rtlDir/convCore_pipe.sv" \
+	"$rtlDir/convCore.sv" \
 	"$rtlDir/convMEM.sv" \
 	"$rtlDir/convTOP.sv" \
 	"$rtlDir/xpm_memory_spram_sim.v" \
@@ -51,6 +51,12 @@ verilator \
 
 cd "$currentDir"
 
+echo "=== Actual memory file ==="
+pwd
+realpath tb_conv_w_tile.mem
+cat -n tb_conv_w_tile.mem
+echo "=== File bytes ==="
+od -An -tx1c tb_conv_w_tile.mem
 "$buildDir/$binaryName"
 
 if [[ "${SHOW_WAVE:-0}" == "1" && -f out.vcd ]]; then
