@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-rootDir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+rootDir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 currentDir="$(pwd -P)"
-rtlDir="$rootDir/rtl/CNN_BRAM_XPM"
+rtlDir="$rootDir/rtl"
 tbDir="$rootDir/testbench"
 hDir="$rootDir/header"
-buildDir="$rootDir/.build/verilator_convBRAM"
+buildDir="$rootDir/.build/verilator_out"
 
-topModule="tb_convBRAM"
-binaryName="sim_convBRAM"
+topModule="tb_sng"
+binaryName="sim_sng"
 
 #buildJobs="${BUILD_JOBS:-$(nproc)}"
 #simThreads="${SIM_THREADS:-$(nproc)}"
@@ -43,20 +43,14 @@ verilator \
 	-I"$currentDir" \
 	-I"$hDir" \
 	-I"$tbDir" \
-	"$rtlDir/convCore.sv" \
-	"$rtlDir/convMEM.sv" \
-	"$rtlDir/convTOP.sv" \
-	"$tbDir/xpm_memory_spram_sim.v" \
-	"$tbDir/CNN/tb_convBRAM.sv"
+	"$rtlDir/RO.v" \
+	"$rtlDir/sng_lut.v" \
+	"$rtlDir/sng_mux.v" \
+	"$tbDir/LUT6_sim.v" \
+	"$tbDir/tb_sng.v"
 
 cd "$currentDir"
 
-echo "=== Actual memory file ==="
-pwd
-realpath tb_conv_w_tile.mem
-cat -n tb_conv_w_tile.mem
-echo "=== File bytes ==="
-od -An -tx1c tb_conv_w_tile.mem
 "$buildDir/$binaryName"
 
 if [[ "${SHOW_WAVE:-0}" == "1" && -f out.vcd ]]; then
