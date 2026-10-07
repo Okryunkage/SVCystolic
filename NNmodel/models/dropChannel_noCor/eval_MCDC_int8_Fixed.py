@@ -60,19 +60,19 @@ class FixedPointLinear(nn.Linear):
 		return F.linear(x, weight_q, bias_q)
 
 class DropChannelNoScale(nn.Module):
-    def __init__(self,p:float):
-        super().__init__()
-        if not 0.0<=p<1.0:
-            raise ValueError("p must be in [0,1)")
-        self.p =p
-    def forward(self, x:torch.Tensor)->torch.Tensor:
-        if not self.training or self.p ==0.0:
-            return x
-        keep =torch.rand(
-                (x.shape[0], x.shape[1], 1, 1),
-                device =x.device,
-        ) >=self.p
-        return x*keep.to(dtype=x.dtype)
+	def __init__(self,p:float):
+		super().__init__()
+		if not 0.0<=p<1.0:
+			raise ValueError("p must be in [0,1)")
+		self.p =p
+	def forward(self, x:torch.Tensor)->torch.Tensor:
+		if not self.training or self.p ==0.0:
+			return x
+		keep =torch.rand(
+				(x.shape[0], x.shape[1], 1, 1),
+				device =x.device,
+		) >=self.p
+		return x*keep.to(dtype=x.dtype)
 
 class BayesianInt8ChannelCNN(nn.Module):
 	def __init__(self, channel_drop_probs: tuple[float, float])-> None:
