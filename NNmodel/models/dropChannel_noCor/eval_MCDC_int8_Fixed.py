@@ -100,7 +100,7 @@ class BayesianInt8ChannelCNN(nn.Module):
 def enable_mc_dropchannel(model: nn.Module)-> None:
 	model.eval()
 	for module in model.modules():
-		if isinstance(module, nn.Dropout2d):
+		if isinstance(module, DropChannelNoScale):
 			module.train()
 
 def expected_calibration_error(probabilities: torch.Tensor,	labels: torch.Tensor, num_bins: int=15)-> float:
