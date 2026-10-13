@@ -1,0 +1,17 @@
+rtl/requantize.sv
+rtl/functions.sv
+rtl/convMEM.sv
+rtl/maxPool.sv
+rtl/dropChannelMask.sv
+rtl/mnistImageMEM.sv
+rtl/convInputReader.sv
+rtl/convCore.sv
+rtl/convTOP.sv
+rtl/fcInputReader.sv
+rtl/fcCore.sv
+rtl/mnistBRAMTOP.sv
+rtl/mnistUart.sv
+rtl/rng/RO.v
+rtl/rng/sng_lut.v
+rtl/lutRngSource.sv
+rtl/mnistUartBRAMTOP.sv
